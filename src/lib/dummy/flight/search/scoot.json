@@ -1,0 +1,870 @@
+{
+	"provider": "Scoot",
+	"regionFormat": null,
+	"schedules": [
+		{
+			"nextPageToken": "01JWWCYZD8GDGX68697NZRH8TK",
+			"trips": [
+				{
+					"provider": "Scoot",
+					"tripType": "Pair",
+					"departureDateTime": {
+						"year": 2025,
+						"month": 6,
+						"day": 4,
+						"hour": 16,
+						"minute": 30
+					},
+					"arrivalDateTime": {
+						"year": 2025,
+						"month": 6,
+						"day": 4,
+						"hour": 17,
+						"minute": 30
+					},
+					"origin": {
+						"airport": {
+							"code": "CGK",
+							"name": "Soekarno Hatta International Airport",
+							"terminal": ""
+						},
+						"city": {
+							"name": "Jakarta"
+						},
+						"country": {
+							"code": "ID",
+							"name": "Indonesia"
+						}
+					},
+					"destination": {
+						"airport": {
+							"code": "SIN",
+							"name": "Changi International Airport",
+							"terminal": ""
+						},
+						"city": {
+							"name": "Singapore"
+						},
+						"country": {
+							"code": "SG",
+							"name": "Singapore"
+						}
+					},
+					"platingCarrier": {
+						"code": "TR",
+						"flightNumber": "1407",
+						"name": "Scoot",
+						"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/TR-mail.png"
+					},
+					"arrivesNextDay": false,
+					"transitCount": 0,
+					"travelTime": "01:30:00",
+					"classes": [
+						{
+							"uniqueId": "MDFKV1dDWVpEOFlaSlpIRjlZQ0hIMlBCNEhfQ0dLU0lOIzAjMA==_y8d2081",
+							"cabinClass": "E1 - Economy",
+							"bookingClass": "E1",
+							"seatCount": "1",
+							"fare": {
+								"currency": "IDR",
+								"total": 2000000,
+								"paxFares": [
+									{
+										"base": {
+											"category": "BASE_FARE",
+											"code": "base_fare",
+											"currency": "IDR",
+											"total": 1500000
+										},
+										"fareBasis": "ABCD",
+										"paxCount": 1,
+										"paxType": "Adult",
+										"total": 2000000,
+										"equivalent": null,
+										"taxes": [
+											{
+												"category": "TAX",
+												"code": "tax",
+												"currency": "IDR",
+												"total": 500000
+											}
+										]
+									}
+								]
+							},
+							"fareType": null,
+							"promoCode": null
+						}
+					],
+					"segments": [
+						{
+							"uniqueId": "MDFKV1dDWVpEOFYzUk5ES1lWV1k4NThYNFRfQ0dLU0lOIzAjMA==",
+							"departureDateTime": {
+								"year": 2025,
+								"month": 6,
+								"day": 4,
+								"hour": 17,
+								"minute": 30
+							},
+							"arrivalDateTime": {
+								"year": 2025,
+								"month": 6,
+								"day": 4,
+								"hour": 18,
+								"minute": 30
+							},
+							"origin": {
+								"airport": {
+									"code": "CGK",
+									"name": "Soekarno Hatta International Airport",
+									"terminal": ""
+								},
+								"city": {
+									"name": "Jakarta"
+								},
+								"country": {
+									"code": "ID",
+									"name": "Indonesia"
+								}
+							},
+							"destination": {
+								"airport": {
+									"code": "SIN",
+									"name": "Changi International Airport",
+									"terminal": ""
+								},
+								"city": {
+									"name": "Singapore"
+								},
+								"country": {
+									"code": "SG",
+									"name": "Singapore"
+								}
+							},
+							"marketingCarrier": {
+								"code": "TR",
+								"flightNumber": "1407",
+								"name": "Scoot",
+								"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/TR-mail.png"
+							},
+							"operatingCarrier": null,
+							"flightTime": "01:00:00",
+							"transitTime": null,
+							"openJaw": false,
+							"classes": [],
+							"aircraft": {
+								"code": "73S",
+								"shortName": "Boeing 737",
+								"longName": "Boeing 737 Advanced All Series"
+							},
+							"facilities": [],
+							"legs": []
+						}
+					],
+					"key": "Citilink_h83f8ln-0-0"
+				},
+				{
+					"provider": "Scoot",
+					"tripType": "Pair",
+					"departureDateTime": {
+						"year": 2025,
+						"month": 6,
+						"day": 4,
+						"hour": 17,
+						"minute": 30
+					},
+					"arrivalDateTime": {
+						"year": 2025,
+						"month": 6,
+						"day": 4,
+						"hour": 18,
+						"minute": 30
+					},
+					"origin": {
+						"airport": {
+							"code": "CGK",
+							"name": "Soekarno Hatta International Airport",
+							"terminal": ""
+						},
+						"city": {
+							"name": "Jakarta"
+						},
+						"country": {
+							"code": "ID",
+							"name": "Indonesia"
+						}
+					},
+					"destination": {
+						"airport": {
+							"code": "SIN",
+							"name": "Changi International Airport",
+							"terminal": ""
+						},
+						"city": {
+							"name": "Singapore"
+						},
+						"country": {
+							"code": "SG",
+							"name": "Singapore"
+						}
+					},
+					"platingCarrier": {
+						"code": "TR",
+						"flightNumber": "1407",
+						"name": "Scoot",
+						"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/TR-mail.png"
+					},
+					"arrivesNextDay": false,
+					"transitCount": 0,
+					"travelTime": "01:30:00",
+					"classes": [
+						{
+							"uniqueId": "MDFKV1dDWVpEOENIWDQxSkpRMVlTNFdINTdfQ0dLU0lOIzAjMA==_vxef6mj",
+							"cabinClass": "E1 - Economy",
+							"bookingClass": "E1",
+							"seatCount": "1",
+							"fare": {
+								"currency": "IDR",
+								"total": 1500000,
+								"paxFares": [
+									{
+										"base": {
+											"category": "BASE_FARE",
+											"code": "base_fare",
+											"currency": "IDR",
+											"total": 1500000
+										},
+										"fareBasis": "ABCD",
+										"paxCount": 1,
+										"paxType": "Adult",
+										"total": 1500000,
+										"equivalent": null,
+										"taxes": [
+											{
+												"category": "TAX",
+												"code": "tax",
+												"currency": "IDR",
+												"total": 500000
+											}
+										]
+									}
+								]
+							},
+							"fareType": null,
+							"promoCode": null
+						}
+					],
+					"segments": [
+						{
+							"uniqueId": "MDFKV1dDWVpEODZQU0oyRENZU1NFUDFUNU5fQ0dLU0lOIzAjMA==",
+							"departureDateTime": {
+								"year": 2025,
+								"month": 6,
+								"day": 4,
+								"hour": 17,
+								"minute": 30
+							},
+							"arrivalDateTime": {
+								"year": 2025,
+								"month": 6,
+								"day": 4,
+								"hour": 18,
+								"minute": 30
+							},
+							"origin": {
+								"airport": {
+									"code": "CGK",
+									"name": "Soekarno Hatta International Airport",
+									"terminal": ""
+								},
+								"city": {
+									"name": "Jakarta"
+								},
+								"country": {
+									"code": "ID",
+									"name": "Indonesia"
+								}
+							},
+							"destination": {
+								"airport": {
+									"code": "SIN",
+									"name": "Changi International Airport",
+									"terminal": ""
+								},
+								"city": {
+									"name": "Singapore"
+								},
+								"country": {
+									"code": "SG",
+									"name": "Singapore"
+								}
+							},
+							"marketingCarrier": {
+								"code": "TR",
+								"flightNumber": "1407",
+								"name": "Scoot",
+								"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/TR-mail.png"
+							},
+							"operatingCarrier": null,
+							"flightTime": "01:00:00",
+							"transitTime": null,
+							"openJaw": false,
+							"classes": [],
+							"aircraft": {
+								"code": "73S",
+								"shortName": "Boeing 737",
+								"longName": "Boeing 737 Advanced All Series"
+							},
+							"facilities": [],
+							"legs": []
+						}
+					],
+					"key": "Citilink_asfoji5-0-1"
+				},
+				{
+					"provider": "Scoot",
+					"tripType": "Pair",
+					"departureDateTime": {
+						"year": 2025,
+						"month": 6,
+						"day": 4,
+						"hour": 17,
+						"minute": 30
+					},
+					"arrivalDateTime": {
+						"year": 2025,
+						"month": 6,
+						"day": 4,
+						"hour": 21,
+						"minute": 30
+					},
+					"origin": {
+						"airport": {
+							"code": "CGK",
+							"name": "Soekarno Hatta International Airport",
+							"terminal": ""
+						},
+						"city": {
+							"name": "Jakarta"
+						},
+						"country": {
+							"code": "ID",
+							"name": "Indonesia"
+						}
+					},
+					"destination": {
+						"airport": {
+							"code": "SIN",
+							"name": "Changi International Airport",
+							"terminal": ""
+						},
+						"city": {
+							"name": "Singapore"
+						},
+						"country": {
+							"code": "SG",
+							"name": "Singapore"
+						}
+					},
+					"platingCarrier": {
+						"code": "TR",
+						"flightNumber": "1407",
+						"name": "Scoot",
+						"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/TR-mail.png"
+					},
+					"arrivesNextDay": false,
+					"transitCount": 1,
+					"travelTime": "04:00:00",
+					"classes": [
+						{
+							"uniqueId": "MDFKV1dDWVpEOENIWDQxSkpRMVlTNFdINTdfQ0dLU0lOIzAjMA==_vxef6mj",
+							"cabinClass": "E1 - Economy",
+							"bookingClass": "E1",
+							"seatCount": "1",
+							"fare": {
+								"currency": "IDR",
+								"total": 1250000,
+								"paxFares": [
+									{
+										"base": {
+											"category": "BASE_FARE",
+											"code": "base_fare",
+											"currency": "IDR",
+											"total": 1500000
+										},
+										"fareBasis": "ABCD",
+										"paxCount": 1,
+										"paxType": "Adult",
+										"total": 1250000,
+										"equivalent": null,
+										"taxes": [
+											{
+												"category": "TAX",
+												"code": "tax",
+												"currency": "IDR",
+												"total": 500000
+											}
+										]
+									}
+								]
+							},
+							"fareType": null,
+							"promoCode": null
+						}
+					],
+					"segments": [
+						{
+							"uniqueId": "segment1",
+							"departureDateTime": {
+								"year": 2025,
+								"month": 6,
+								"day": 4,
+								"hour": 17,
+								"minute": 30
+							},
+							"arrivalDateTime": {
+								"year": 2025,
+								"month": 6,
+								"day": 4,
+								"hour": 19,
+								"minute": 0
+							},
+							"origin": {
+								"airport": {
+									"code": "CGK",
+									"name": "Soekarno Hatta International Airport",
+									"terminal": ""
+								},
+								"city": {
+									"name": "Jakarta"
+								},
+								"country": {
+									"code": "ID",
+									"name": "Indonesia"
+								}
+							},
+							"destination": {
+								"airport": {
+									"code": "SUB",
+									"name": "Juanda International Airport",
+									"terminal": ""
+								},
+								"city": {
+									"name": "Surabaya"
+								},
+								"country": {
+									"code": "ID",
+									"name": "Indonesia"
+								}
+							},
+							"marketingCarrier": {
+								"code": "TR",
+								"flightNumber": "1407",
+								"name": "Scoot",
+								"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/TR-mail.png"
+							},
+							"operatingCarrier": null,
+							"flightTime": "01:30:00",
+							"transitTime": null,
+							"openJaw": false,
+							"classes": [],
+							"aircraft": {
+								"code": "73S",
+								"shortName": "Boeing 737",
+								"longName": "Boeing 737 Advanced All Series"
+							},
+							"facilities": [],
+							"legs": []
+						},
+						{
+							"uniqueId": "segment2",
+							"departureDateTime": {
+								"year": 2025,
+								"month": 6,
+								"day": 4,
+								"hour": 20,
+								"minute": 0
+							},
+							"arrivalDateTime": {
+								"year": 2025,
+								"month": 6,
+								"day": 4,
+								"hour": 21,
+								"minute": 30
+							},
+							"origin": {
+								"airport": {
+									"code": "SUB",
+									"name": "Juanda International Airport",
+									"terminal": ""
+								},
+								"city": {
+									"name": "Surabaya"
+								},
+								"country": {
+									"code": "ID",
+									"name": "Indonesia"
+								}
+							},
+							"destination": {
+								"airport": {
+									"code": "SIN",
+									"name": "Changi International Airport",
+									"terminal": ""
+								},
+								"city": {
+									"name": "Singapore"
+								},
+								"country": {
+									"code": "SG",
+									"name": "Singapore"
+								}
+							},
+							"marketingCarrier": {
+								"code": "TR",
+								"flightNumber": "1456",
+								"name": "Scoot",
+								"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/TR-mail.png"
+							},
+							"operatingCarrier": null,
+							"flightTime": "01:30:00",
+							"transitTime": "01:00:00",
+							"openJaw": false,
+							"classes": [],
+							"aircraft": {
+								"code": "73S",
+								"shortName": "Boeing 737",
+								"longName": "Boeing 737 Advanced All Series"
+							},
+							"facilities": [],
+							"legs": []
+						}
+					],
+					"key": "Citilink_connecting_asfoji5-0-1"
+				}
+			]
+		},
+		{
+			"nextPageToken": "01JWWCYZD8YDKVSS98GY2KHXXX",
+			"trips": [
+				{
+					"provider": "Scoot",
+					"tripType": "Pair",
+					"departureDateTime": {
+						"year": 2025,
+						"month": 6,
+						"day": 4,
+						"hour": 9,
+						"minute": 30
+					},
+					"arrivalDateTime": {
+						"year": 2025,
+						"month": 6,
+						"day": 4,
+						"hour": 10,
+						"minute": 30
+					},
+					"origin": {
+						"airport": {
+							"code": "SIN",
+							"name": "Changi International Airport",
+							"terminal": ""
+						},
+						"city": {
+							"name": "Singapore"
+						},
+						"country": {
+							"code": "SG",
+							"name": "Singapore"
+						}
+					},
+					"destination": {
+						"airport": {
+							"code": "CGK",
+							"name": "Soekarno Hatta International Airport",
+							"terminal": ""
+						},
+						"city": {
+							"name": "Jakarta"
+						},
+						"country": {
+							"code": "ID",
+							"name": "Indonesia"
+						}
+					},
+					"platingCarrier": {
+						"code": "TR",
+						"flightNumber": "960",
+						"name": "Scoot",
+						"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/TR-mail.png"
+					},
+					"arrivesNextDay": false,
+					"transitCount": 0,
+					"travelTime": "01:30:00",
+					"classes": [
+						{
+							"uniqueId": "MDFKV1dDWVpEOE02QjQ0MkdNNTJYOEFRSzJfU0lOQ0dLIzAjMA==_uaqy6to",
+							"cabinClass": "E1 - Economy",
+							"bookingClass": "E1",
+							"seatCount": "1",
+							"fare": {
+								"currency": "IDR",
+								"total": 2400000,
+								"paxFares": [
+									{
+										"base": {
+											"category": "BASE_FARE",
+											"code": "base_fare",
+											"currency": "IDR",
+											"total": 1500000
+										},
+										"fareBasis": "ABCD",
+										"paxCount": 1,
+										"paxType": "Adult",
+										"total": 2400000,
+										"equivalent": null,
+										"taxes": [
+											{
+												"category": "TAX",
+												"code": "tax",
+												"currency": "IDR",
+												"total": 500000
+											}
+										]
+									}
+								]
+							},
+							"fareType": null,
+							"promoCode": null
+						}
+					],
+					"segments": [
+						{
+							"uniqueId": "MDFKV1dDWVpEOFRXSFY2RzNCNTVTVllFRUdfU0lOQ0dLIzAjMA==",
+							"departureDateTime": {
+								"year": 2025,
+								"month": 6,
+								"day": 4,
+								"hour": 9,
+								"minute": 30
+							},
+							"arrivalDateTime": {
+								"year": 2025,
+								"month": 6,
+								"day": 4,
+								"hour": 10,
+								"minute": 30
+							},
+							"origin": {
+								"airport": {
+									"code": "SIN",
+									"name": "Changi International Airport",
+									"terminal": ""
+								},
+								"city": {
+									"name": "Singapore"
+								},
+								"country": {
+									"code": "SG",
+									"name": "Singapore"
+								}
+							},
+							"destination": {
+								"airport": {
+									"code": "CGK",
+									"name": "Soekarno Hatta International Airport",
+									"terminal": ""
+								},
+								"city": {
+									"name": "Jakarta"
+								},
+								"country": {
+									"code": "ID",
+									"name": "Indonesia"
+								}
+							},
+							"marketingCarrier": {
+								"code": "TR",
+								"flightNumber": "960",
+								"name": "Scoot",
+								"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/TR-mail.png"
+							},
+							"operatingCarrier": null,
+							"flightTime": "01:00:00",
+							"transitTime": null,
+							"openJaw": false,
+							"classes": [],
+							"aircraft": {
+								"code": "73S",
+								"shortName": "Boeing 737",
+								"longName": "Boeing 737 Advanced All Series"
+							},
+							"facilities": [],
+							"legs": []
+						}
+					],
+					"key": "Citilink_8ai892e-1-0"
+				},
+				{
+					"provider": "Scoot",
+					"tripType": "Pair",
+					"departureDateTime": {
+						"year": 2025,
+						"month": 6,
+						"day": 4,
+						"hour": 9,
+						"minute": 30
+					},
+					"arrivalDateTime": {
+						"year": 2025,
+						"month": 6,
+						"day": 4,
+						"hour": 10,
+						"minute": 30
+					},
+					"origin": {
+						"airport": {
+							"code": "SIN",
+							"name": "Changi International Airport",
+							"terminal": ""
+						},
+						"city": {
+							"name": "Singapore"
+						},
+						"country": {
+							"code": "SG",
+							"name": "Singapore"
+						}
+					},
+					"destination": {
+						"airport": {
+							"code": "CGK",
+							"name": "Soekarno Hatta International Airport",
+							"terminal": ""
+						},
+						"city": {
+							"name": "Jakarta"
+						},
+						"country": {
+							"code": "ID",
+							"name": "Indonesia"
+						}
+					},
+					"platingCarrier": {
+						"code": "TR",
+						"flightNumber": "960",
+						"name": "Scoot",
+						"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/TR-mail.png"
+					},
+					"arrivesNextDay": false,
+					"transitCount": 0,
+					"travelTime": "01:30:00",
+					"classes": [
+						{
+							"uniqueId": "MDFKV1dDWVpEOFFYWUFYWkdETUs4RE5aNENfU0lOQ0dLIzAjMA==_dx6ah0c",
+							"cabinClass": "E1 - Economy",
+							"bookingClass": "E1",
+							"seatCount": "1",
+							"fare": {
+								"currency": "IDR",
+								"total": 2000000,
+								"paxFares": [
+									{
+										"base": {
+											"category": "BASE_FARE",
+											"code": "base_fare",
+											"currency": "IDR",
+											"total": 1500000
+										},
+										"fareBasis": "ABCD",
+										"paxCount": 1,
+										"paxType": "Adult",
+										"total": 2000000,
+										"equivalent": null,
+										"taxes": [
+											{
+												"category": "TAX",
+												"code": "tax",
+												"currency": "IDR",
+												"total": 500000
+											}
+										]
+									}
+								]
+							},
+							"fareType": null,
+							"promoCode": null
+						}
+					],
+					"segments": [
+						{
+							"uniqueId": "MDFKV1dDWVpEOFpCODJTMjJKV1gwU1ZOTTZfU0lOQ0dLIzAjMA==",
+							"departureDateTime": {
+								"year": 2025,
+								"month": 6,
+								"day": 4,
+								"hour": 9,
+								"minute": 30
+							},
+							"arrivalDateTime": {
+								"year": 2025,
+								"month": 6,
+								"day": 4,
+								"hour": 10,
+								"minute": 30
+							},
+							"origin": {
+								"airport": {
+									"code": "SIN",
+									"name": "Changi International Airport",
+									"terminal": ""
+								},
+								"city": {
+									"name": "Singapore"
+								},
+								"country": {
+									"code": "SG",
+									"name": "Singapore"
+								}
+							},
+							"destination": {
+								"airport": {
+									"code": "CGK",
+									"name": "Soekarno Hatta International Airport",
+									"terminal": ""
+								},
+								"city": {
+									"name": "Jakarta"
+								},
+								"country": {
+									"code": "ID",
+									"name": "Indonesia"
+								}
+							},
+							"marketingCarrier": {
+								"code": "TR",
+								"flightNumber": "960",
+								"name": "Scoot",
+								"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/TR-mail.png"
+							},
+							"operatingCarrier": null,
+							"flightTime": "01:00:00",
+							"transitTime": null,
+							"openJaw": false,
+							"classes": [],
+							"aircraft": {
+								"code": "73S",
+								"shortName": "Boeing 737",
+								"longName": "Boeing 737 Advanced All Series"
+							},
+							"facilities": [],
+							"legs": []
+						}
+					],
+					"key": "Citilink_r5uuso3-1-1"
+				}
+			]
+		}
+	],
+	"hasSchedule": true
+}

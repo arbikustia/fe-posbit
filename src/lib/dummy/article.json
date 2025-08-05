@@ -1,0 +1,30 @@
+{
+  "title": "LoremLorem ipsum dolor sit amet consectetur adipisicing elit.",
+  "updatedAt": "01 Jul",
+  "readCount": 0,
+  "content": "\n  <img src=\"https://www.opsigo.com/wp-content/uploads/2021/09/corporate-2-blog-img-1.jpg\" alt=\"Akses Toko Kapital\" class=\"w-full h-[400px] object-cover\" />\n  <p>\n    <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Cras eget fringilla lectus. \n    Sed blandit odio at luctus tempor. Pellentesque et turpis nec justo interdum pulvinar. \n    Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; \n    Sed euismod risus a nulla convallis, et egestas nunc fermentum.\n  </p>\n  <p>\n    Integer at odio nec nunc posuere laoreet. Ut vehicula leo non turpis tincidunt, \n    vel finibus nisl placerat. Nulla non tincidunt libero, a viverra tortor. \n    Suspendisse potenti. Sed eu lorem eu nunc gravida porttitor nec sed nisi. \n    Nullam sit amet congue purus. Etiam convallis ante ut elit sodales, a posuere erat tincidunt.\n  </p>\n  <p>\n    In bibendum nunc in elit sagittis, non lobortis nulla varius. Donec id diam ac orci \n    hendrerit efficitur. Pellentesque habitant morbi tristique senectus et netus et malesuada \n    fames ac turpis egestas. Vivamus ultricies massa nec ligula eleifend, et iaculis leo \n    laoreet. Suspendisse nec tincidunt nisl, nec scelerisque arcu.\n  </p>\n  <p>\n    Integer at odio nec nunc posuere laoreet. Ut vehicula leo non turpis tincidunt, \n    vel finibus nisl placerat. Nulla non tincidunt libero, a viverra tortor. \n    Suspendisse potenti. Sed eu lorem eu nunc gravida porttitor nec sed nisi. \n    Nullam sit amet congue purus. Etiam convallis ante ut elit sodales, a posuere erat tincidunt.\n  </p>\n  <p>\n    In bibendum nunc in elit sagittis, non lobortis nulla varius. Donec id diam ac orci \n    hendrerit efficitur. Pellentesque habitant morbi tristique senectus et netus et malesuada \n    fames ac turpis egestas. Vivamus ultricies massa nec ligula eleifend, et iaculis leo \n    laoreet. Suspendisse nec tincidunt nisl, nec scelerisque arcu.\n  </p>\n",
+  "tags": "Liburan, Hotel Murah",
+  "related_articles": [
+    {
+      "title": "Collar brings back coffee brewing ritual",
+      "image": "https://www.opsigo.com/wp-content/uploads/2021/09/corporate-2-blog-img-3.jpg",
+      "category": "News & Inspiration",
+      "updatedAt": "01 Jul",
+      "readCount": 0
+    },
+    {
+      "title": "Creative water features and exterior",
+      "image": "https://www.opsigo.com/wp-content/uploads/2021/09/corporate-2-blog-img-5.jpg",
+      "category": "News & Inspiration",
+      "updatedAt": "30 Des",
+      "readCount": 2
+    },
+    {
+      "title": "Minimalist Japanese-inspired furniture",
+      "image": "https://www.opsigo.com/wp-content/uploads/2021/09/corporate-2-blog-img-9.jpg",
+      "category": "News & Inspiration",
+      "updatedAt": "15 Nov",
+      "readCount": 1
+    }
+  ]
+}

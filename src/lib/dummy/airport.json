@@ -1,0 +1,92 @@
+[
+	{
+		"airportCode": "CGK",
+		"airportName": "Soekarno-Hatta International Airport",
+		"cityName": "Jakarta",
+		"countryName": "Indonesia"
+	},
+	{
+		"airportCode": "DPS",
+		"airportName": "Ngurah Rai International Airport",
+		"cityName": "Denpasar",
+		"countryName": "Indonesia"
+	},
+	{
+		"airportCode": "SIN",
+		"airportName": "Changi Airport",
+		"cityName": "Singapore",
+		"countryName": "Singapore"
+	},
+	{
+		"airportCode": "KUL",
+		"airportName": "Kuala Lumpur International Airport",
+		"cityName": "Kuala Lumpur",
+		"countryName": "Malaysia"
+	},
+	{
+		"airportCode": "BKK",
+		"airportName": "Suvarnabhumi Airport",
+		"cityName": "Bangkok",
+		"countryName": "Thailand"
+	},
+	{
+		"airportCode": "DMK",
+		"airportName": "Don Mueang International Airport",
+		"cityName": "Bangkok",
+		"countryName": "Thailand"
+	},
+	{
+		"airportCode": "MNL",
+		"airportName": "Ninoy Aquino International Airport",
+		"cityName": "Manila",
+		"countryName": "Philippines"
+	},
+	{
+		"airportCode": "CEB",
+		"airportName": "Mactan-Cebu International Airport",
+		"cityName": "Cebu",
+		"countryName": "Philippines"
+	},
+	{
+		"airportCode": "SGN",
+		"airportName": "Tan Son Nhat International Airport",
+		"cityName": "Ho Chi Minh City",
+		"countryName": "Vietnam"
+	},
+	{
+		"airportCode": "HAN",
+		"airportName": "Noi Bai International Airport",
+		"cityName": "Hanoi",
+		"countryName": "Vietnam"
+	},
+	{
+		"airportCode": "PNH",
+		"airportName": "Phnom Penh International Airport",
+		"cityName": "Phnom Penh",
+		"countryName": "Cambodia"
+	},
+	{
+		"airportCode": "REP",
+		"airportName": "Siem Reap International Airport",
+		"cityName": "Siem Reap",
+		"countryName": "Cambodia"
+	},
+	{
+		"airportCode": "VTE",
+		"airportName": "Wattay International Airport",
+		"cityName": "Vientiane",
+		"countryName": "Laos"
+	},
+	{
+		"airportCode": "RGN",
+		"airportName": "Yangon International Airport",
+		"cityName": "Yangon",
+		"countryName": "Myanmar"
+	},
+	{
+		"airportCode": "BWN",
+		"airportName": "Brunei International Airport",
+		"cityName": "Bandar Seri Begawan",
+		"countryName": "Brunei"
+	}
+]

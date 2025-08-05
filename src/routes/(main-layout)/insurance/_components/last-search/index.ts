@@ -1,0 +1,1 @@
+export {default as LastSearchInsurance} from "./last-search.svelte"

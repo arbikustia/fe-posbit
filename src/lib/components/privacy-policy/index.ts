@@ -1,0 +1,1 @@
+export { default as OSGPrivacyPolicy } from "./privacy-policy.svelte"

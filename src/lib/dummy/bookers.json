@@ -1,0 +1,182 @@
+[
+    {
+      "no": 1,
+      "userId": "1001",
+      "name": "Andre",
+      "dailyAvgTicket": 4,
+      "dailyAvgGMV": "IDR 8.200.000",
+      "monthlyAvgTicket": 45,
+      "monthlyAvgGMV": "IDR 66.000.000"
+    },
+    {
+      "no": 2,
+      "userId": "1002",
+      "name": "Jaka",
+      "dailyAvgTicket": 5,
+      "dailyAvgGMV": "IDR 9.250.000",
+      "monthlyAvgTicket": 53,
+      "monthlyAvgGMV": "IDR 69.000.000"
+    },
+    {
+      "no": 3,
+      "userId": "1003",
+      "name": "Firman",
+      "dailyAvgTicket": 7,
+      "dailyAvgGMV": "IDR 12.000.000",
+      "monthlyAvgTicket": 41,
+      "monthlyAvgGMV": "IDR 54.000.000"
+    },
+    {
+      "no": 4,
+      "userId": "1004",
+      "name": "Tantan",
+      "dailyAvgTicket": 8,
+      "dailyAvgGMV": "IDR 4.900.000",
+      "monthlyAvgTicket": 33,
+      "monthlyAvgGMV": "IDR 33.000.000"
+    },
+    {
+      "no": 5,
+      "userId": "1005",
+      "name": "Rudy",
+      "dailyAvgTicket": 4,
+      "dailyAvgGMV": "IDR 3.200.000",
+      "monthlyAvgTicket": 12,
+      "monthlyAvgGMV": "IDR 27.000.000"
+    },
+    {
+      "no": 6,
+      "userId": "1006",
+      "name": "Lina",
+      "dailyAvgTicket": 6,
+      "dailyAvgGMV": "IDR 10.500.000",
+      "monthlyAvgTicket": 60,
+      "monthlyAvgGMV": "IDR 75.000.000"
+    },
+    {
+      "no": 7,
+      "userId": "1007",
+      "name": "Budi",
+      "dailyAvgTicket": 3,
+      "dailyAvgGMV": "IDR 2.500.000",
+      "monthlyAvgTicket": 20,
+      "monthlyAvgGMV": "IDR 15.000.000"
+    },
+    {
+      "no": 8,
+      "userId": "1008",
+      "name": "Siti",
+      "dailyAvgTicket": 9,
+      "dailyAvgGMV": "IDR 11.500.000",
+      "monthlyAvgTicket": 75,
+      "monthlyAvgGMV": "IDR 80.000.000"
+    },
+    {
+      "no": 9,
+      "userId": "1009",
+      "name": "Rian",
+      "dailyAvgTicket": 2,
+      "dailyAvgGMV": "IDR 1.800.000",
+      "monthlyAvgTicket": 15,
+      "monthlyAvgGMV": "IDR 12.000.000"
+    },
+    {
+      "no": 10,
+      "userId": "1010",
+      "name": "Dina",
+      "dailyAvgTicket": 5,
+      "dailyAvgGMV": "IDR 7.000.000",
+      "monthlyAvgTicket": 48,
+      "monthlyAvgGMV": "IDR 58.000.000"
+    },
+    {
+      "no": 11,
+      "userId": "1011",
+      "name": "Zaki",
+      "dailyAvgTicket": 6,
+      "dailyAvgGMV": "IDR 9.000.000",
+      "monthlyAvgTicket": 55,
+      "monthlyAvgGMV": "IDR 62.000.000"
+    },
+    {
+      "no": 12,
+      "userId": "1012",
+      "name": "Lutfi",
+      "dailyAvgTicket": 4,
+      "dailyAvgGMV": "IDR 6.000.000",
+      "monthlyAvgTicket": 42,
+      "monthlyAvgGMV": "IDR 48.000.000"
+    },
+    {
+      "no": 13,
+      "userId": "1013",
+      "name": "Nina",
+      "dailyAvgTicket": 7,
+      "dailyAvgGMV": "IDR 10.000.000",
+      "monthlyAvgTicket": 65,
+      "monthlyAvgGMV": "IDR 70.000.000"
+    },
+    {
+      "no": 14,
+      "userId": "1014",
+      "name": "Hendra",
+      "dailyAvgTicket": 5,
+      "dailyAvgGMV": "IDR 5.500.000",
+      "monthlyAvgTicket": 39,
+      "monthlyAvgGMV": "IDR 43.000.000"
+    },
+    {
+      "no": 15,
+      "userId": "1015",
+      "name": "Sari",
+      "dailyAvgTicket": 8,
+      "dailyAvgGMV": "IDR 13.000.000",
+      "monthlyAvgTicket": 68,
+      "monthlyAvgGMV": "IDR 85.000.000"
+    },
+    {
+      "no": 16,
+      "userId": "1016",
+      "name": "Raka",
+      "dailyAvgTicket": 3,
+      "dailyAvgGMV": "IDR 4.200.000",
+      "monthlyAvgTicket": 25,
+      "monthlyAvgGMV": "IDR 28.000.000"
+    },
+    {
+      "no": 17,
+      "userId": "1017",
+      "name": "Reno",
+      "dailyAvgTicket": 5,
+      "dailyAvgGMV": "IDR 8.000.000",
+      "monthlyAvgTicket": 50,
+      "monthlyAvgGMV": "IDR 60.000.000"
+    },
+    {
+      "no": 18,
+      "userId": "1018",
+      "name": "Putri",
+      "dailyAvgTicket": 6,
+      "dailyAvgGMV": "IDR 9.800.000",
+      "monthlyAvgTicket": 58,
+      "monthlyAvgGMV": "IDR 73.000.000"
+    },
+    {
+      "no": 19,
+      "userId": "1019",
+      "name": "Eka",
+      "dailyAvgTicket": 2,
+      "dailyAvgGMV": "IDR 3.000.000",
+      "monthlyAvgTicket": 18,
+      "monthlyAvgGMV": "IDR 20.000.000"
+    },
+    {
+      "no": 20,
+      "userId": "1020",
+      "name": "Gilang",
+      "dailyAvgTicket": 9,
+      "dailyAvgGMV": "IDR 14.000.000",
+      "monthlyAvgTicket": 78,
+      "monthlyAvgGMV": "IDR 90.000.000"
+    }
+]

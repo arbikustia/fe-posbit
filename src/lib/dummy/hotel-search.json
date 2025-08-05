@@ -1,0 +1,39 @@
+{
+    "hotel_result": [
+        {
+            "name": "Four Points by Sheraton",
+            "location": "Bandung Wetan",
+            "price": 1452000,
+            "rating": 4,
+            "address": "Jl. Ir. H. Juanda No. 33, Bandung"
+        },
+        {
+            "name": "ibis Styles Bandung Grand Central",
+            "location": "Bandung Wetan",
+            "price": 562464,
+            "rating": 3,
+            "address": "Jl. Diponegoro No. 27, Bandung"
+        },
+        {
+            "name": "Tama Boutique Hotel",
+            "location": "Pasirkaliki, Bandung",
+            "price": 696795,
+            "rating": 5,
+            "address": "Jl. Dr. Rum No. 1, Bandung"
+        },
+        {
+            "name": "Tama Boutique Hotel1",
+            "location": "Pasirkaliki, Bandung",
+            "price": 696795,
+            "rating": 5,
+            "address": "Jl. Dr. Rum No. 1, Bandung"
+        },
+        {
+            "name": "Tama Boutique Hote2",
+            "location": "Pasirkaliki, Bandung",
+            "price": 696795,
+            "rating": 5,
+            "address": "Jl. Dr. Rum No. 1, Bandung"
+        }
+    ]
+}

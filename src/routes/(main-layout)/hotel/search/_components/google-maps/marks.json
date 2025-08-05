@@ -1,0 +1,28 @@
+{
+  "hotels_marks": [
+    {
+      "id": 1,
+      "name": "Hotel Grand Hyatt",
+      "lat": -6.2278,
+      "lng": 106.8087
+    },
+    {
+      "id": 2,
+      "name": "Hotel Indonesia Kempinski",
+      "lat": -6.1955,
+      "lng": 106.8229
+    },
+    {
+      "id": 3,
+      "name": "The Ritz-Carlton Jakarta",
+      "lat": -6.2248,
+      "lng": 106.8086
+    },
+    {
+      "id": 4,
+      "name": "Mandarin Oriental Jakarta",
+      "lat": -6.1866,
+      "lng": 106.8343
+    }
+  ]
+}

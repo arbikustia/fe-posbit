@@ -1,0 +1,55 @@
+Air Asia QZ 200,    CGK (05:00)  -  KUL (08:05),    2h and 5m,    O(3) - 1,359,000
+
+Trans Nusa 8B 675,    CGK (05:15)  -  KUL (08:10),    1h and 55m,    H(4) - 1,049,000
+
+Malindo Air OD 329,    CGK (05:15)  -  KUL (08:30),    2h and 15m,    N(5) -  - 1,415,750
+
+Air Asia QZ 202,    CGK (06:25)  -  KUL (09:35),    2h and 10m,    E(1) -  - 1,209,000
+
+Air Asia AK 381,    CGK (08:35)  -  KUL (11:45),    2h and 10m,    E(3) -  - 1,209,000
+
+Malindo Air OD 319,    CGK (09:15)  -  KUL (12:30),    2h and 15m,    Q(9) -  - 1,238,750
+
+Batik Air ID 7282,    CGK (09:55)  -  KUL (13:05),    2h and 10m,    N(9) -  - 1,577,600
+
+Air Asia QZ 204,    CGK (10:05)  -  KUL (13:15),    2h and 10m,    E(6) -  - 1,209,000
+
+Trans Nusa 8B 673,    CGK (11:00)  -  KUL (14:10),    2h and 10m,    O(4) -  - 889,000
+
+Malindo Air OD 315,    CGK (12:30)  -  KUL (15:45),    2h and 15m,    I(1) -  - 2,847,750
+
+Air Asia AK 352,    CGK (12:40)  -  KUL (15:50),    2h and 10m,    K(2) -  - 1,029,000
+
+Air Asia AK 385,    CGK (14:35)  -  KUL (17:50),    2h and 15m,    E(1) -  - 1,209,000
+
+Malindo Air OD 349,    CGK (16:30)  -  KUL (19:45),    2h and 15m,    N(2) -  - 1,415,750
+
+Malindo Air OD 311,    CGK (16:45)  -  KUL (20:00),    2h and 15m,    Q(8) -  - 1,238,750
+
+Trans Nusa 8B 679,    CGK (17:10)  -  KUL (20:05),    1h and 55m,    O(4) -  - 889,000
+
+Air Asia QZ 210,    CGK (17:50)  -  KUL (21:00),    2h and 10m,    K(9) -  - 1,029,000
+
+Malindo Air OD 313,    CGK (20:10)  -  KUL (23:25),    2h and 15m,    Q(9) -  - 1,238,750
+
+Air Asia AK 387,    CGK (20:30)  -  KUL (23:45),    2h and 15m,    K(7) -  - 1,029,000
+
+Malindo Air OD 347,    CGK (20:40)  -  KUL (23:55),    2h and 15m,    Q(9) -  - 1,238,750
+
+Air Asia AK 354,    CGK (21:15)  -  KUL (00:25),    2h and 10m,    E(7) -  - 1,209,000
+
+Batik Air ID 6370,    CGK (04:40)  -  SUB (06:05),    1h and 25m,    B(9) - 2,679,730
+Malindo Air OD 353,    SUB (08:40)  -  KUL (12:20),    2h and 40m,    N(9)
+
+Batik Air ID 6370,    CGK (04:40)  -  SUB (06:05),    1h and 25m,    B(9) - 2,679,730
+Malindo Air OD 351,    SUB (11:40)  -  KUL (15:20),    2h and 40m,    N(9)
+
+Batik Air ID 6572,    CGK (06:15)  -  SUB (07:40),    1h and 25m,    B(9) - 2,679,730
+Malindo Air OD 353,    SUB (08:40)  -  KUL (12:20),    2h and 40m,    N(9)
+
+Batik Air ID 6572,    CGK (06:15)  -  SUB (07:40),    1h and 25m,    B(9) - 2,679,730
+Malindo Air OD 351,    SUB (11:40)  -  KUL (15:20),    2h and 40m,    N(9)
+
+Batik Air ID 6584,    CGK (08:10)  -  SUB (09:35),    1h and 25m,    B(9) - 2,679,730
+Malindo Air OD 351,    SUB (11:40)  -  KUL (15:20),    2h and 40m,    N(9)
+

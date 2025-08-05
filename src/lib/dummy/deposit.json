@@ -1,0 +1,63 @@
+{
+  "balance": 200000,
+  "transactions": [
+    {
+      "date": "2025-07-08",
+      "type": "debit",
+      "title": "Payment Citilink",
+      "subtitle": "CGK-SUB • 12 May 2025 • 2 pax",
+      "code": "DHJSGW",
+      "icon": "lucide:plane",
+      "amount": -1400000,
+      "time": "13:30"
+    },
+    {
+      "date": "2025-07-08",
+      "type": "debit",
+      "title": "Payment Fave Hotel Wahid Hasyim",
+      "subtitle": "Jakarta • 12 May 2025 • 2 nights",
+      "code": "DDSAJSHFU",
+      "icon": "material-symbols:hotel-outline",
+      "amount": -1400000,
+      "time": "13:28"
+    },
+    {
+      "date": "2025-07-07",
+      "type": "credit",
+      "title": "Top-up",
+      "subtitle": "Via BCA Virtual Account",
+      "amount": 2400000,
+      "icon": "uil:money-bill",
+      "time": "13:28"
+    }
+  ],
+  "dcData": {
+    "company": "PT. Reka Sinergi Pratama",
+    "currency": "IDR",
+    "startingBalance": 230000,
+    "endingBalance": 1230000,
+    "transactions": [
+      {
+        "date": "2025-07-07",
+        "time": "13:30",
+        "title": "Payment Citilink",
+        "subtitle": "CGK-SUB • 12 May 2025 • 2 pax",
+        "code": "DHJSGW",
+        "icon": "lucide:plane",
+        "type": "debit",
+        "amount": 1400000,
+        "balance": 21400000
+      },
+      {
+        "date": "2025-07-07",
+        "time": "13:30",
+        "title": "Top-up",
+        "subtitle": "BCA Virtual Account",
+        "icon": "uil:money-bill",
+        "type": "credit",
+        "amount": 1400000,
+        "balance": 200000
+      }
+    ]
+  }
+}

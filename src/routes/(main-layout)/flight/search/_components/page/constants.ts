@@ -1,0 +1,1 @@
+export const SELECTED_FLIGHT_SEARCH_PARAMS_KEY = 'fid';

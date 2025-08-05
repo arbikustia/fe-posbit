@@ -1,0 +1,1 @@
+export {default as PrivacyPolicyDialog} from "./dialog-privacy-policy.svelte"

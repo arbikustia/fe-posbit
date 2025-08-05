@@ -1,0 +1,1 @@
+export {default as SelectLocationHotel} from './select-location.svelte'

@@ -1,0 +1,116 @@
+{
+    "data": [
+        {
+            "type": "City",
+            "locationName": "Jakarta",
+            "countryName": ""
+        },
+        {
+            "type": "Country",
+            "locationName": "Singapore",
+            "countryName": ""
+        },
+        {
+            "type": "Hotel",
+            "locationName": "HARRIS Hotel & Convention Kelapa Gading",
+            "countryName": "Jakarta, Indonesia"
+        },
+        {
+            "type": "City",
+            "locationName": "Kuala Lumpur",
+            "countryName": ""
+        },
+        {
+            "type": "Hotel",
+            "locationName": "Hotel Indonesia Kempinski",
+            "countryName": "Jakarta, Indonesia"
+        },
+        {
+            "type": "City",
+            "locationName": "Bandung",
+            "countryName": ""
+        },
+        {
+            "type": "Hotel",
+            "locationName": "Grand Hyatt",
+            "countryName": ""
+        },
+        {
+            "type": "City",
+            "locationName": "Surabaya",
+            "countryName": "Indonesia"
+        },
+        {
+            "type": "Hotel",
+            "locationName": "The Ritz-Carlton",
+            "countryName": "Kuala Lumpur, Malaysia"
+        },
+        {
+            "type": "City",
+            "locationName": "Yogyakarta",
+            "countryName": "Indonesia"
+        },
+        {
+            "type": "Hotel",
+            "locationName": "Hotel Tentrem",
+            "countryName": "Yogyakarta, Indonesia"
+        },
+        {
+            "type": "City",
+            "locationName": "Medan",
+            "countryName": "Indonesia"
+        },
+        {
+            "type": "Hotel",
+            "locationName": "JW Marriott Medan",
+            "countryName": "Medan, Indonesia"
+        },
+        {
+            "type": "City",
+            "locationName": "Denpasar",
+            "countryName": "Indonesia"
+        },
+        {
+            "type": "Hotel",
+            "locationName": "Hyatt Regency Bali",
+            "countryName": "Denpasar, Indonesia"
+        },
+        {
+            "type": "City",
+            "locationName": "Tokyo",
+            "countryName": "Japan"
+        },
+        {
+            "type": "Hotel",
+            "locationName": "Park Hyatt Tokyo",
+            "countryName": "Tokyo, Japan"
+        },
+        {
+            "type": "City",
+            "locationName": "Bangkok",
+            "countryName": "Thailand"
+        },
+        {
+            "type": "Hotel",
+            "locationName": "Mandarin Oriental Bangkok",
+            "countryName": "Bangkok, Thailand"
+        }
+    ],
+    "nationality": [
+        {
+            "id": 1,
+            "countryName": "Indonesia",
+            "icon": "emojione-v1:flag-for-indonesia"
+        },
+        {
+            "id": 2,
+            "countryName": "Singapore",
+            "icon": "emojione-v1:flag-for-singapore"
+        },
+        {
+            "id": 3,
+            "countryName": "Malaysia",
+            "icon": "emojione-v1:flag-for-malaysia"
+        }
+    ]
+}

@@ -1,0 +1,1 @@
+export {default as SelectNationality} from './select-nationality.svelte'

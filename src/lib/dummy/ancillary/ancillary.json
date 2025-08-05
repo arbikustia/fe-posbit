@@ -1,0 +1,206 @@
+{
+	"Baggages": [
+		{
+			"TripIndex": 0,
+			"SegmentIndex": 0,
+			"Origin": "CGK",
+			"Destination": "SUB",
+			"Items": [
+				{
+					"Amount": 120000.0,
+					"Code": "0CW",
+					"CurrencyCode": "IDR",
+					"Quantity": "5Kg"
+				},
+				{
+					"Amount": 240000.0,
+					"Code": "0CZ",
+					"CurrencyCode": "IDR",
+					"Quantity": "10Kg"
+				},
+				{
+					"Amount": 360000.0,
+					"Code": "0C1",
+					"CurrencyCode": "IDR",
+					"Quantity": "15Kg"
+				},
+				{
+					"Amount": 480000.0,
+					"Code": "0C2",
+					"CurrencyCode": "IDR",
+					"Quantity": "20Kg"
+				},
+				{
+					"Amount": 600000.0,
+					"Code": "0C4",
+					"CurrencyCode": "IDR",
+					"Quantity": "25Kg"
+				}
+			]
+		},
+		{
+			"TripIndex": 0,
+			"SegmentIndex": 1,
+			"Origin": "SUB",
+			"Destination": "DPS",
+			"Items": [
+				{
+					"Amount": 120000.0,
+					"Code": "0CW",
+					"CurrencyCode": "IDR",
+					"Quantity": "5Kg"
+				},
+				{
+					"Amount": 240000.0,
+					"Code": "0CZ",
+					"CurrencyCode": "IDR",
+					"Quantity": "10Kg"
+				},
+				{
+					"Amount": 360000.0,
+					"Code": "0C1",
+					"CurrencyCode": "IDR",
+					"Quantity": "15Kg"
+				},
+				{
+					"Amount": 480000.0,
+					"Code": "0C2",
+					"CurrencyCode": "IDR",
+					"Quantity": "20Kg"
+				},
+				{
+					"Amount": 600000.0,
+					"Code": "0C4",
+					"CurrencyCode": "IDR",
+					"Quantity": "25Kg"
+				}
+			]
+		},
+		{
+			"TripIndex": 1,
+			"SegmentIndex": 0,
+			"Origin": "DPS",
+			"Destination": "CGK",
+			"Items": [
+				{
+					"Amount": 120000.0,
+					"Code": "0CW",
+					"CurrencyCode": "IDR",
+					"Quantity": "5Kg"
+				},
+				{
+					"Amount": 240000.0,
+					"Code": "0CZ",
+					"CurrencyCode": "IDR",
+					"Quantity": "10Kg"
+				},
+				{
+					"Amount": 360000.0,
+					"Code": "0C1",
+					"CurrencyCode": "IDR",
+					"Quantity": "15Kg"
+				},
+				{
+					"Amount": 480000.0,
+					"Code": "0C2",
+					"CurrencyCode": "IDR",
+					"Quantity": "20Kg"
+				},
+				{
+					"Amount": 600000.0,
+					"Code": "0C4",
+					"CurrencyCode": "IDR",
+					"Quantity": "25Kg"
+				}
+			]
+		}
+	],
+	"Meals": [
+		{
+			"TripIndex": 0,
+			"SegmentIndex": 0,
+			"Origin": "CGK",
+			"Destination": "SUB",
+			"Items": [
+				{
+					"Price": 120000.0,
+					"Code": "0CW",
+					"CurrencyCode": "IDR",
+					"Name": "TERIYAKI CHICKEN",
+					"Image": "https://cms-cdn.batikair.com/66472e6388f4647bd5f90f87/assets/be/ourmeals/teriyakichicken.jpeg"
+				},
+				{
+					"Price": 240000.0,
+					"Code": "0CZ",
+					"CurrencyCode": "IDR",
+					"Name": "FRIED RICE WITH CHICKEN SATAY",
+					"Image": "https://cms-cdn.batikair.com/66472e6388f4647bd5f90f87/assets/be/ourmeals/friedricewithchickensatay.jpeg"
+				},
+				{
+					"Price": 360000.0,
+					"Code": "0C1",
+					"CurrencyCode": "IDR",
+					"Name": "CHICKEN BRIYANI",
+					"Image": "http://cms-cdn.batikair.com/66472e6388f4647bd5f90f87/assets/be/ourmeals/chickenbriyani.jpeg"
+				},
+				{
+					"Price": 480000.0,
+					"Code": "0C2",
+					"CurrencyCode": "IDR",
+					"Name": "LAMB BRIYANI",
+					"Image": "https://cms-cdn.batikair.com/66472e6388f4647bd5f90f87/assets/be/ourmeals/lambbriyani.jpeg"
+				},
+				{
+					"Price": 600000.0,
+					"Code": "0C4",
+					"CurrencyCode": "IDR",
+					"Name": "NASI LEMAK AYAM",
+					"Image": "https://cms-cdn.batikair.com/66472e6388f4647bd5f90f87/assets/be/ourmeals/nasilemakayamrendang.jpeg"
+				}
+			]
+		},
+		{
+			"TripIndex": 1,
+			"SegmentIndex": 0,
+			"Origin": "CGK",
+			"Destination": "SUB",
+			"Items": [
+				{
+					"Price": 120000.0,
+					"Code": "0CW",
+					"CurrencyCode": "IDR",
+					"Name": "TERIYAKI CHICKEN",
+					"Image": "https://cms-cdn.batikair.com/66472e6388f4647bd5f90f87/assets/be/ourmeals/teriyakichicken.jpeg"
+				},
+				{
+					"Price": 240000.0,
+					"Code": "0CZ",
+					"CurrencyCode": "IDR",
+					"Name": "FRIED RICE WITH CHICKEN SATAY",
+					"Image": "https://cms-cdn.batikair.com/66472e6388f4647bd5f90f87/assets/be/ourmeals/friedricewithchickensatay.jpeg"
+				},
+				{
+					"Price": 360000.0,
+					"Code": "0C1",
+					"CurrencyCode": "IDR",
+					"Name": "CHICKEN BRIYANI",
+					"Image": "http://cms-cdn.batikair.com/66472e6388f4647bd5f90f87/assets/be/ourmeals/chickenbriyani.jpeg"
+				},
+				{
+					"Price": 480000.0,
+					"Code": "0C2",
+					"CurrencyCode": "IDR",
+					"Name": "LAMB BRIYANI",
+					"Image": "https://cms-cdn.batikair.com/66472e6388f4647bd5f90f87/assets/be/ourmeals/lambbriyani.jpeg"
+				},
+				{
+					"Price": 600000.0,
+					"Code": "0C4",
+					"CurrencyCode": "IDR",
+					"Name": "NASI LEMAK AYAM",
+					"Image": "https://cms-cdn.batikair.com/66472e6388f4647bd5f90f87/assets/be/ourmeals/nasilemakayamrendang.jpeg"
+				}
+			]
+		}
+	]
+}

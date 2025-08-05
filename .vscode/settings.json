@@ -1,0 +1,5 @@
+{
+	"appService.defaultWebAppToDeploy": "/subscriptions/03c4800a-e442-41aa-b45f-a873cb15ec27/resourceGroups/aab/providers/Microsoft.Web/sites/vnext-ui",
+	"appService.deploySubpath": ".",
+	"appService.zipIgnorePattern": ["node_modules{,/**}", ".vscode{,/**}"]
+}

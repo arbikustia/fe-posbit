@@ -1,0 +1,1 @@
+export {default as TotalPayment} from "./total-payment.svelte"

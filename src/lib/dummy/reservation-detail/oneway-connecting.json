@@ -1,0 +1,368 @@
+{
+	"bookingId": "1",
+	"customer": {
+		"name": "PT. Reka Sinergi Pratama",
+		"code": "COM0432"
+	},
+	"bookingBy": {
+		"userName": "john.doe@mail.com",
+		"name": "John Doe",
+		"companyName": "PT. Reka Sinergi Pratama"
+	},
+	"createdDateTime": {
+		"year": 2025,
+		"month": 5,
+		"day": 20,
+		"hour": 15,
+		"minute": 50,
+		"utcOffset": 7
+	},
+	"bookingDateTime": {
+		"year": 2025,
+		"month": 5,
+		"day": 20,
+		"hour": 15,
+		"minute": 51,
+		"utcOffset": 7
+	},
+	"issuedDate": null,
+	"remarks": [],
+	"bookingContact": {
+		"name": "John Doe",
+		"email": "contactjohn@mail.com",
+		"phone": "62123123123"
+	},
+	"passengers": [
+		{
+			"index": 1,
+			"fullName": "Mr. Adam Subagja Sunandar Abdan",
+			"type": "Adult",
+			"phone": "0857123123",
+			"membership": {
+				"number": "FIT000000000040",
+				"type": "VVIP"
+			},
+			"passport": {
+				"number": "X23425345",
+				"issuedDate": "2027-06-12",
+				"expiryDate": "2027-06-12"
+			},
+			"dateOfBirth": "1994-05-01",
+			"ticketNumber": "2348736458734534534",
+			"flightAncillaries": [
+				{
+					"flightIndex": 0,
+					"origin": "CGK",
+					"destination": "DPS",
+					"segments": [
+						{
+							"segmentIndex": 0,
+							"origin": "CGK",
+							"destination": "SUB",
+							"ancillaries": [
+								{
+									"code": "MEAL",
+									"name": "Meal",
+									"amount": 50000,
+									"currency": "IDR",
+									"currencySymbol": "Rp"
+								},
+								{
+									"code": "BAGGAGE",
+									"name": "Baggage",
+									"amount": 100000,
+									"currency": "IDR",
+									"currencySymbol": "Rp"
+								},
+								{
+									"code": "SEAT",
+									"name": "Seat",
+									"amount": 0,
+									"currency": "IDR",
+									"currencySymbol": "Rp",
+									"seatNumber": "4D"
+								}
+							]
+						},
+						{
+							"segmentIndex": 0,
+							"origin": "SUB",
+							"destination": "DPS",
+							"ancillaries": [
+								{
+									"code": "MEAL",
+									"name": "Meal",
+									"amount": 50000,
+									"currency": "IDR",
+									"currencySymbol": "Rp"
+								},
+								{
+									"code": "BAGGAGE",
+									"name": "Baggage",
+									"amount": 100000,
+									"currency": "IDR",
+									"currencySymbol": "Rp"
+								},
+								{
+									"code": "SEAT",
+									"name": "Seat",
+									"amount": 0,
+									"currency": "IDR",
+									"currencySymbol": "Rp",
+									"seatNumber": "4D"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"price": {
+		"fareDetails": [
+			{
+				"code": "BASE_FARE",
+				"label": "Base Fare",
+				"amount": 1500000
+			},
+			{
+				"code": "TAX",
+				"label": "Tax",
+				"amount": 500000
+			},
+			{
+				"code": "SF",
+				"label": "Service Fee",
+				"amount": 50000
+			}
+		],
+		"total": 2050000,
+		"currencySymbol": "Rp",
+		"currency": "IDR"
+	},
+
+	"attachments": [],
+	"histories": [
+		{
+			"dateTime": {
+				"year": 2025,
+				"month": 5,
+				"day": 20,
+				"hour": 15,
+				"minute": 51,
+				"utcOffset": 7
+			},
+			"title": "Create",
+			"actor": {
+				"name": "John Doe",
+				"companyName": "PT. Reka Sinergi Pratama"
+			},
+			"description": "Booking created"
+		},
+		{
+			"dateTime": {
+				"year": 2025,
+				"month": 5,
+				"day": 20,
+				"hour": 15,
+				"minute": 52,
+				"utcOffset": 7
+			},
+			"title": "Reserve",
+			"actor": {
+				"name": "John Doe",
+				"companyName": "PT. Reka Sinergi Pratama"
+			},
+			"description": "Booking submitted to provider"
+		}
+	],
+	"pnrs": [
+		{
+			"pnrCode": "XJ29FD",
+			"provider": "AirAsia",
+			"providerImage": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/QZ-mail.png",
+			"timeLimit": {
+				"year": 2025,
+				"month": 5,
+				"day": 20,
+				"hour": 18,
+				"minute": 0,
+				"utcOffset": 7
+			},
+			"tripType": "Pair",
+			"flightType": "OneWay",
+			"flights": [
+				{
+					"index": 0,
+					"departureDateTime": {
+						"year": 2025,
+						"month": 8,
+						"day": 10,
+						"hour": 6,
+						"minute": 30
+					},
+					"arrivalDateTime": {
+						"year": 2025,
+						"month": 8,
+						"day": 10,
+						"hour": 12,
+						"minute": 10
+					},
+					"origin": {
+						"airport": {
+							"code": "CGK",
+							"name": "Soekarno Hatta International Airport",
+							"terminal": "1A"
+						},
+						"city": {
+							"name": "Jakarta"
+						},
+						"country": {
+							"code": "ID",
+							"name": "Indonesia"
+						}
+					},
+					"destination": {
+						"airport": {
+							"code": "DPS",
+							"name": "Ngurah Rai International Airport",
+							"terminal": "Domestic"
+						},
+						"city": {
+							"name": "Denpasar"
+						},
+						"country": {
+							"code": "ID",
+							"name": "Indonesia"
+						}
+					},
+					"travelTime": "05:40:00",
+					"segments": [
+						{
+							"uniqueId": "CGK-SUB-01",
+							"aircraft": {
+								"code": "320",
+								"shortName": "Airbus A320",
+								"longName": "Airbus A320-200"
+							},
+							"facilities": [],
+							"departureDateTime": {
+								"year": 2025,
+								"month": 8,
+								"day": 10,
+								"hour": 6,
+								"minute": 30,
+								"utcOffset": 7
+							},
+							"arrivalDateTime": {
+								"year": 2025,
+								"month": 8,
+								"day": 10,
+								"hour": 8,
+								"minute": 0,
+								"utcOffset": 7
+							},
+							"origin": {
+								"airport": {
+									"code": "CGK",
+									"name": "Soekarno Hatta International Airport",
+									"terminal": "1A"
+								},
+								"city": {
+									"name": "Jakarta"
+								},
+								"country": {
+									"code": "ID",
+									"name": "Indonesia"
+								}
+							},
+							"destination": {
+								"airport": {
+									"code": "SUB",
+									"name": "Juanda International Airport",
+									"terminal": "Domestic"
+								},
+								"city": {
+									"name": "Surabaya"
+								},
+								"country": {
+									"code": "ID",
+									"name": "Indonesia"
+								}
+							},
+							"marketingCarrier": {
+								"code": "QZ",
+								"flightNumber": "7612",
+								"name": "Indonesia AirAsia",
+								"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/QZ-mail.png"
+							},
+							"operatingCarrier": null,
+							"flightTime": "01:30:00"
+						},
+						{
+							"uniqueId": "SUB-DPS-01",
+							"aircraft": {
+								"code": "320",
+								"shortName": "Airbus A320",
+								"longName": "Airbus A320-200"
+							},
+							"facilities": [],
+							"departureDateTime": {
+								"year": 2025,
+								"month": 8,
+								"day": 10,
+								"hour": 9,
+								"minute": 20,
+								"utcOffset": 7
+							},
+							"arrivalDateTime": {
+								"year": 2025,
+								"month": 8,
+								"day": 10,
+								"hour": 12,
+								"minute": 10,
+								"utcOffset": 7
+							},
+							"origin": {
+								"airport": {
+									"code": "SUB",
+									"name": "Juanda International Airport",
+									"terminal": "Domestic"
+								},
+								"city": {
+									"name": "Surabaya"
+								},
+								"country": {
+									"code": "ID",
+									"name": "Indonesia"
+								}
+							},
+							"destination": {
+								"airport": {
+									"code": "DPS",
+									"name": "Ngurah Rai International Airport",
+									"terminal": "Domestic"
+								},
+								"city": {
+									"name": "Denpasar"
+								},
+								"country": {
+									"code": "ID",
+									"name": "Indonesia"
+								}
+							},
+							"marketingCarrier": {
+								"code": "QZ",
+								"flightNumber": "7533",
+								"name": "Indonesia AirAsia",
+								"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/QZ-mail.png"
+							},
+							"operatingCarrier": null,
+							"flightTime": "01:50:00"
+						}
+					]
+				}
+			]
+		}
+	]
+}

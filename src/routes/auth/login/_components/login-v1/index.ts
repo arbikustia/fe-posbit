@@ -1,0 +1,1 @@
+export {default as OSGLoginV1} from "./main.svelte"

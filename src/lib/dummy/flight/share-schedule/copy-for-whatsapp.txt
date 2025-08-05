@@ -1,0 +1,73 @@
+*Flight Schedule* 
+Jakarta (CGK) - Surabaya (SUB)
+Departure : Mon, 4 Jul 2025
+
+_13 flights found_
+
+*Option #1*
+Garuda Indonesia GA 102  
+CGK (10:00) - SUB (11:30) • _1h 30m_  
+Economy (S) = *120,000 IDR*
+
+*Option #2*
+Garuda Indonesia GA 103  
+CGK (11:00) - SUB (12:30) • _1h 30m_  
+Economy (S) = *135,000 IDR*
+
+*Option #3* (_1 stop_)  
+Garuda Indonesia GA 104  
+CGK (08:00) - JOG (09:30) • _1h 30m_
+```--- Transit``` _1h 15m_
+Garuda Indonesia GA 204  
+JOG (10:45) - SUB (12:15) • _1h 30m_  
+Economy (S) = *140,000 IDR*
+
+*Option #4*
+Citilink QG 230  
+CGK (05:30) - SUB (07:00) • _1h 30m_  
+Economy (O) = *100,000 IDR*
+
+*Option #5*
+Lion Air JT 560  
+CGK (06:45) - SUB (08:15) • _1h 30m_  
+Economy (L) = *95,000 IDR*
+
+*Option #6*
+AirAsia QZ 7520  
+CGK (09:20) - SUB (10:50) • _1h 30m_  
+Economy (Q) = *110,000 IDR*
+
+*Option #7*
+Batik Air ID 6342  
+CGK (13:00) - SUB (14:30) • _1h 30m_  
+Economy (B) = *125,000 IDR*
+
+*Option #8*
+Garuda Indonesia GA 106  
+CGK (15:45) - SUB (17:15) • _1h 30m_  
+Economy (S) = *150,000 IDR*
+
+*Option #9*
+Sriwijaya Air SJ 272  
+CGK (17:00) - SUB (18:30) • _1h 30m_  
+Economy (S) = *105,000 IDR*
+
+*Option #10*
+Super Air Jet IU 808  
+CGK (18:30) - SUB (20:00) • _1h 30m_  
+Economy (U) = *98,000 IDR*
+
+*Option #11*
+Pelita Air IP 110  
+CGK (19:45) - SUB (21:15) • _1h 30m_  
+Economy (P) = *115,000 IDR*
+
+*Option #12*
+Garuda Indonesia GA 108  
+CGK (21:00) - SUB (22:30) • _1h 30m_  
+Economy (S) = *130,000 IDR*
+
+*Option #13*
+Lion Air JT 562  
+CGK (22:45) - SUB (00:15) • _1h 30m_  
+Economy (L) = *99,000 IDR*

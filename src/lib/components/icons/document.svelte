@@ -1,0 +1,19 @@
+<script lang="ts">
+	import type { WithElementRef } from '$lib/utils';
+	import type { SVGAttributes } from 'svelte/elements';
+
+	let { ...props }: WithElementRef<SVGAttributes<SVGElement>> = $props();
+</script>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" {...props}>
+	<g
+		fill="none"
+		stroke="currentColor"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+		stroke-width="1.5"
+	>
+		<rect width="15" height="18.5" x="4.5" y="2.75" rx="3.5" />
+		<path d="M8.5 6.755h7m-7 4h7m-7 4H12" />
+	</g>
+</svg>

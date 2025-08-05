@@ -1,0 +1,1 @@
+export {default as ListOfDeposit} from "./list-of-deposit.svelte"

@@ -1,0 +1,31 @@
+{
+	"$schema": "https://inlang.com/schema/inlang-message-format",
+	"hello_world": "Hello, {name} from en!",
+	"flight": "Flight",
+	"one_way": "One way",
+	"round_trip": "Round trip",
+	"multi_city": "Multi city",
+
+	"train": "Train",
+	"insurance": "Insurance",
+
+	"booking_flight": "Flight Booking",
+	"bookings": "Bookings",
+
+	"help_center": "Help Center",
+	"term_condition": "Term & Condition",
+	"privacy_policy": "Privacy Policy",
+	"home": "Home",
+	"my_profile": "My Profile",
+	"security_and_otp": "Security and OTP",
+	"Company": "Company",
+	"traveler_profile": "Traveler Profile",
+	"disclaimer": "Disclaimer",
+	
+	"language": "Language",
+	"theme": "Theme",
+	"notification": "Notification",
+
+	"about_us": "About US",
+	"logout": "Logout"
+}

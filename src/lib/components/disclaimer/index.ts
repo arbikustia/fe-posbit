@@ -1,0 +1,1 @@
+export {default as OSGDisclaimer} from "./disclaimer.svelte"

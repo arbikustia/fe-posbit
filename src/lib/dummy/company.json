@@ -1,0 +1,1202 @@
+[
+	{
+		"City": null,
+		"Name": "SALES KRISTINGO",
+		"Code": "COM00003",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "JAYA CUSTOMER",
+		"Code": "COM00032",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "SINARMAS MINING",
+		"Code": "COM00072",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "REKA CUSTOMER",
+		"Code": "COM00087",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "OPSIGO",
+		"Code": "COM00095",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "DIEBOLDTEST",
+		"Code": "COM00097",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "TEST COMPANY CUSTOMER",
+		"Code": "COM00099",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "COBA COMPANY",
+		"Code": "COM00101",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "TESTADDD",
+		"Code": "COM00106",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TEST BANK INDONESIA",
+		"Code": "COM00161",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "INI COMPANY TEST",
+		"Code": "COM00162",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GLODEN CUSTOMER",
+		"Code": "COM00165",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GLODEN CUSTOMER2",
+		"Code": "COM00166",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GLODEN CUSTOMER3",
+		"Code": "COM00167",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GLODEN CUSTOMER4",
+		"Code": "COM00168",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GLODEN CUSTOMER5",
+		"Code": "COM00169",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GLODEN BO",
+		"Code": "COM00170",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GLODEN BO1",
+		"Code": "COM00171",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "OPSIGO TRAINING, PT",
+		"Code": "COM00176",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "IWAN HAS9",
+		"Code": "COM00178",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "BANK DANAMON TEST",
+		"Code": "COM00179",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "INITEST",
+		"Code": "COM00181",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TECHNIP INDONESIA, PT",
+		"Code": "COM00183",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TEST BARU BARU",
+		"Code": "COM00184",
+		"Type": "Customer"
+	},
+	{
+		"City": "",
+		"Name": "AIRSERVE MARINE LTD",
+		"Code": "COM00206",
+		"Type": "Customer"
+	},
+	{
+		"City": "",
+		"Name": "ALISAN PT",
+		"Code": "COM00207",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "ANUGRAH CIPTA KARYA TAMA,PT",
+		"Code": "COM00208",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "AON HEWITT INDONESIA PT",
+		"Code": "COM00209",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "ARGHA KARYA PRIMA INDUSTRI TBK., PT",
+		"Code": "COM00210",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "ARTA BEVIMDO MANDIRI, PT",
+		"Code": "COM00211",
+		"Type": "Customer"
+	},
+	{
+		"City": "",
+		"Name": "ASDEP PENGEMBANGAN DESTINASI WISATA ALAM",
+		"Code": "COM00213",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "AMAR COMPANY",
+		"Code": "COM00221",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "BPJS TEST",
+		"Code": "COM00223",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "REKA SINERGI PRATAMA",
+		"Code": "COM00353",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "SASA",
+		"Code": "COM00358",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "KEMENTRIAN KELAUTAN",
+		"Code": "COM00370",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "JAKARTA ABADI, PT",
+		"Code": "COM00373",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "AGUNG PODOMORO, PT",
+		"Code": "COM00374",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "WIRA PAMUNGKAS PARIWARA (KANTAR MILLWARD BROWN), PT",
+		"Code": "COM00377",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "NUSA HALMAHERA MINERALS, PT",
+		"Code": "COM00411",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TRAINING CORP 09",
+		"Code": "COM00432",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TRAINING CORP 10",
+		"Code": "COM00433",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "UAT KAI",
+		"Code": "COM00529",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "REVI FOUNDATION, PT",
+		"Code": "COM00571",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "ANTAVAYA TEST 1",
+		"Code": "COM03216",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "BAKER HUGHES INDONESIA CTA",
+		"Code": "COM10680",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "ORICA MINING SERVICES (R&R TRAVELS)",
+		"Code": "COM10681",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "PT AKUTAU",
+		"Code": "COM10682",
+		"Type": "Customer"
+	},
+	{
+		"City": "LOMBOK",
+		"Name": "ANDIKA-SUB1",
+		"Code": "COM10685",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "OPSICORP CIMAHI",
+		"Code": "COM10688",
+		"Type": "Customer"
+	},
+	{
+		"City": "",
+		"Name": "POSTPOSTAN",
+		"Code": "COM10707",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPORATE A",
+		"Code": "COM10709",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPORATE B",
+		"Code": "COM10713",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPORATE C",
+		"Code": "COM10714",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPORATE D",
+		"Code": "COM10715",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPORATE E",
+		"Code": "COM10716",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPORATE F",
+		"Code": "COM10717",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "A. D TRADE",
+		"Code": "COM10719",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPORATE G",
+		"Code": "COM10721",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPORATE H",
+		"Code": "COM10722",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "ARBURG",
+		"Code": "COM10723",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPORATE H",
+		"Code": "COM10724",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPORATE I",
+		"Code": "COM10725",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "UNILEVER",
+		"Code": "COM10726",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPORATE J",
+		"Code": "COM10727",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "AIG INSURANCE INDONESIA",
+		"Code": "COM10730",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "AIG INSURANCE INDONESIA",
+		"Code": "COM10731",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "AIG INSURANCE INDONESIA",
+		"Code": "COM10732",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "ANTARTIKA TOURISM",
+		"Code": "COM10734",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "AIR LIQUIDE INDONESIA",
+		"Code": "COM10735",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "AIR LIQUIDE INDONESIA",
+		"Code": "COM10736",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "AIR LIQUIDE INDONESIA",
+		"Code": "COM10737",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "AIR LIQUIDE INDONESIA",
+		"Code": "COM10738",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "UNITED NATIONS DEVELOPMENT PROGRAMME",
+		"Code": "COM10740",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "FIN CORP 1",
+		"Code": "COM10741",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TEST_DINAMIC_TOUR_CODE",
+		"Code": "COM10744",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TEST QA VAYA",
+		"Code": "COM10745",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "HARMONI",
+		"Code": "COM10765",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "HARMONI-3",
+		"Code": "COM10768",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPS A",
+		"Code": "COM10772",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "JAKARTA RIOT CITY",
+		"Code": "COM10776",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPS B",
+		"Code": "COM10777",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CORPS C",
+		"Code": "COM10778",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "HARMONI 6",
+		"Code": "COM10785",
+		"Type": "Customer"
+	},
+	{
+		"City": "TANGERANG",
+		"Name": "HARMONI 7",
+		"Code": "COM10789",
+		"Type": "Customer"
+	},
+	{
+		"City": "CILACAP",
+		"Name": "HARMONI -8",
+		"Code": "COM10793",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAMBI",
+		"Name": "HARMONI 9",
+		"Code": "COM10794",
+		"Type": "Customer"
+	},
+	{
+		"City": "CILACAP",
+		"Name": "DEVELOPMENT",
+		"Code": "COM10797",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "EKO COMPANY EDIT",
+		"Code": "COM10798",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "DEVELOPMENT 2",
+		"Code": "COM10799",
+		"Type": "Customer"
+	},
+	{
+		"City": "YOGYAKARTA",
+		"Name": "DEVELOPMENT 3",
+		"Code": "COM10800",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAMBI",
+		"Name": "DEVELOPMENT 4",
+		"Code": "COM10804",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAMBI",
+		"Name": "DEVELOPMENT 5",
+		"Code": "COM10805",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "DEVELOPMENT 7",
+		"Code": "COM10807",
+		"Type": "Customer"
+	},
+	{
+		"City": "CIREBON",
+		"Name": "DEVELOPMENT 9",
+		"Code": "COM10809",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "COMPANY EKO 1",
+		"Code": "COM10810",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAMBI",
+		"Name": "GRAHA 1",
+		"Code": "COM10811",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "GRAHA 2",
+		"Code": "COM10813",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GRAHA 3",
+		"Code": "COM10817",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "INDONUSA",
+		"Code": "COM10821",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "INDONUSA 1",
+		"Code": "COM10822",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "INDONUSA 2",
+		"Code": "COM10823",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "INDONUSA 3",
+		"Code": "COM10824",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "INDONUSA 4",
+		"Code": "COM10825",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "INDONUSA 5",
+		"Code": "COM10826",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "OPSIFIN KOMPLIT",
+		"Code": "COM10827",
+		"Type": "Customer"
+	},
+	{
+		"City": "CHITOSE / TOMAKOMAI",
+		"Name": "COMPANY EKO 6 EDIT EDIT",
+		"Code": "COM10830",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GALILEO 1",
+		"Code": "COM10831",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GALILEO 2",
+		"Code": "COM10832",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GRAHA 4",
+		"Code": "COM10833",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GRAHA 6",
+		"Code": "COM10835",
+		"Type": "Customer"
+	},
+	{
+		"City": "AMBON",
+		"Name": "GRAHA 7",
+		"Code": "COM10836",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "PAKDECOMPANY",
+		"Code": "COM10837",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GRAHA 8",
+		"Code": "COM10838",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "COMPANY TEST 1",
+		"Code": "COM10839",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GRAHA 10",
+		"Code": "COM10842",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "HASFARM-TEST",
+		"Code": "COM10843",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GRAHA 11",
+		"Code": "COM10844",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GRAHA12",
+		"Code": "COM10845",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GRAHA13",
+		"Code": "COM10848",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GRAH14",
+		"Code": "COM10850",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GRAH15",
+		"Code": "COM10851",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "SAINT GOBAIN CONSTRUCTION PRODUCTS INDONESIAS",
+		"Code": "COM10878",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "PIGIJO",
+		"Code": "COM10894",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "FIRMENICH INDONESIA, PT",
+		"Code": "COM10896",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TUV SUD INDONESIA, PT",
+		"Code": "COM10899",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "FINTECH 88",
+		"Code": "COM10900",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "V3 JOBS PT",
+		"Code": "COM10901",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CITA CORP",
+		"Code": "COM10905",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "MENCOBA UPLOAD COMPANY",
+		"Code": "COM10908",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "ITX CLIENT",
+		"Code": "COM10909",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "COMPANY FANY",
+		"Code": "COM10910",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "RESTA SUB AGENT",
+		"Code": "COM10915",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "OPSIFIN 2",
+		"Code": "COM10922",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "BCD CORP",
+		"Code": "COM10925",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TEST3",
+		"Code": "COM10926",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TEST LEMPARAN OPSIFIN",
+		"Code": "COM10929",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CITA DELETE",
+		"Code": "COM10933",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "AKAN DI DELETE PT",
+		"Code": "COM10940",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "OPSIFIN CONTROL TEST",
+		"Code": "COM10941",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "PURPOSE",
+		"Code": "COM10943",
+		"Type": "Customer"
+	},
+	{
+		"City": "",
+		"Name": "FIN TEST 99",
+		"Code": "COM10944",
+		"Type": "Customer"
+	},
+	{
+		"City": "",
+		"Name": "FIN TEST 98",
+		"Code": "COM10945",
+		"Type": "Customer"
+	},
+	{
+		"City": "",
+		"Name": "FIN TEST88",
+		"Code": "COM10946",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "ICI SUB AGENT",
+		"Code": "COM10990",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "HEAD OFFICE - SUDIRMAN",
+		"Code": "COM10994",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "FWD LIFE INSURANCE CORPORATION",
+		"Code": "COM10996",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CUSTOMERCUST",
+		"Code": "COM11000",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "CUSTOMER CUST2",
+		"Code": "COM11001",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TEST23",
+		"Code": "COM11002",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "SAS INSTITUTE, PT",
+		"Code": "COM11003",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TEST VALID",
+		"Code": "COM11011",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TEST VALID 2",
+		"Code": "COM11012",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TEST VALID 3",
+		"Code": "COM11013",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "AGENT EKO 2",
+		"Code": "COM11018",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "EKO TOUR",
+		"Code": "COM11020",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "POST DATA COMPANY",
+		"Code": "COM11024",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "CIHUY SENTOSA, PT",
+		"Code": "COM11038",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "CIHUY SENTOSA, PT",
+		"Code": "COM11039",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "CIHUY SENTOSA, PT",
+		"Code": "COM11042",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "CIHUY SALAWASNA, PT",
+		"Code": "COM11043",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "CIHUY AGAIN, PT",
+		"Code": "COM11060",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "KAPAL SHIP",
+		"Code": "COM14171",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TEST DEPOSIT AMAR",
+		"Code": "COM14255",
+		"Type": "Customer"
+	},
+	{
+		"City": "MANILA",
+		"Name": "DC_INC_MANILA",
+		"Code": "COM14256",
+		"Type": "Customer"
+	},
+	{
+		"City": "MADINAH",
+		"Name": "TEST DEPOSIT UEA SEJAK PERTAMA CREATE",
+		"Code": "COM14259",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "AMUBA DEV",
+		"Code": "COM14260",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "TESTCOMPANYWONDERIN2",
+		"Code": "COM14261",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "SALAWASNA TOURS OKAYSSSSS4",
+		"Code": "COM14262",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "CUAN SALAWASNA TOURSATU",
+		"Code": "COM14263",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "TESTCOMPANY",
+		"Code": "COM14264",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "RANSAM",
+		"Code": "COM14265",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "COMPANY UAT SCOOT",
+		"Code": "COM14266",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TOUR COMPANY EKO 1",
+		"Code": "COM14273",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TOUR COMPANY EKO 1",
+		"Code": "COM14274",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TOUR COMPANY EKO 1",
+		"Code": "COM14275",
+		"Type": "Customer"
+	},
+	{
+		"City": null,
+		"Name": "RIO COMPANY",
+		"Code": "COM14280",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "SINARMAS",
+		"Code": "COM14283",
+		"Type": "Customer"
+	},
+	{
+		"City": "TOKYO",
+		"Name": "PT ADHIS",
+		"Code": "COM14284",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "Hit Postman 1",
+		"Code": "COM14288",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "metranet",
+		"Code": "COM14289",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "mencretnet",
+		"Code": "COM14290",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "metranet2",
+		"Code": "COM14291",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "metranet3",
+		"Code": "COM14292",
+		"Type": "Customer"
+	},
+	{
+		"City": "3275",
+		"Name": "halooooo testing",
+		"Code": "COM14293",
+		"Type": "Customer"
+	},
+	{
+		"City": "3275",
+		"Name": "haloooooo testing",
+		"Code": "COM14294",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "DEV OPSITOOLS COMPANY",
+		"Code": "COM14295",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "JENDELA TOURS",
+		"Code": "COM14300",
+		"Type": "Customer"
+	},
+	{
+		"City": "BANDUNG",
+		"Name": "THIS COMPANY",
+		"Code": "COM14306",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "PT MAJU MUNDUR",
+		"Code": "COM14308",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "HIS TRAVEL",
+		"Code": "COM14312",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "ASTRINDO DEMO",
+		"Code": "COM14315",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "GNAPIDEV",
+		"Code": "COM14316",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "RSP CUSTOMER",
+		"Code": "COM14346",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "PT. KRISTINGO",
+		"Code": "COM14347",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "UNITED NATIONS CHILDREN'S FUND (UNICEF2)",
+		"Code": "COM14349",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "BAF ASTRINDO HO",
+		"Code": "COM14350",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TOMI TRAVEL",
+		"Code": "COM14354",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "SUBAGENTTEST",
+		"Code": "COM14355",
+		"Type": "Customer"
+	},
+	{
+		"City": "JAKARTA",
+		"Name": "TANBOS, PT",
+		"Code": "COM14356",
+		"Type": "Customer"
+	}
+]

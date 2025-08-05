@@ -1,0 +1,1 @@
+export {default as TooltipInfo} from './tooltip-info.svelte';

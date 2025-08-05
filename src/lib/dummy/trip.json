@@ -1,0 +1,207 @@
+{
+	"provider": "Lion",
+	"tripType": "Pair",
+	"departureDateTime": {
+		"year": 2025,
+		"month": 3,
+		"day": 15,
+		"hour": 7,
+		"minute": 30
+	},
+	"arrivalDateTime": {
+		"year": 2025,
+		"month": 3,
+		"day": 15,
+		"hour": 10,
+		"minute": 30
+	},
+	"origin": {
+		"airport": {
+			"code": "CGK",
+			"name": "Soekarno Hatta International Airport",
+			"terminal": ""
+		},
+		"city": {
+			"name": "Jakarta"
+		},
+		"country": {
+			"code": "ID",
+			"name": "Indonesia"
+		}
+	},
+	"destination": {
+		"airport": {
+			"code": "DPS",
+			"name": "Ngurah Rai International Airport",
+			"terminal": ""
+		},
+		"city": {
+			"name": "Denpasar"
+		},
+		"country": {
+			"code": "ID",
+			"name": "Indonesia"
+		}
+	},
+	"platingCarrier": {
+		"code": "JT",
+		"flightNumber": "682",
+		"name": "Lion Air",
+		"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/JT-mail.png"
+	},
+	"arrivesNextDay": false,
+	"transitCount": 0,
+	"travelTime": "02:00:00",
+	"classes": [
+		{
+			"uniqueId": "MDFKOEpGVDg4TVpQTVhDQzVTWDlRRjhQM0dfQ0dLRFBTRFBTQ0dLIzEjMQ==",
+			"cabinClass": null,
+			"bookingClass": "O",
+			"seatCount": "9",
+			"fare": {
+				"currency": "IDR",
+				"total": 466000,
+				"paxFares": [
+					{
+						"base": {
+							"category": "BASE_FARE",
+							"code": "Base Fare",
+							"currency": "IDR",
+							"total": 466000
+						},
+						"fareBasis": "O",
+						"paxCount": 1,
+						"paxType": "Adult",
+						"total": 466000,
+						"equivalent": null,
+						"taxes": []
+					}
+				]
+			},
+			"fareType": null,
+			"promoCode": "Api_ISTA"
+		},
+		{
+			"uniqueId": "MDFKOEpGVDg4TVpQTVhDQzVTWDlRRjhQM0dfQ0dLRFBTRFBTQ0dLIzEjMg==",
+			"cabinClass": null,
+			"bookingClass": "M",
+			"seatCount": "9",
+			"fare": {
+				"currency": "IDR",
+				"total": 556000,
+				"paxFares": [
+					{
+						"base": {
+							"category": "BASE_FARE",
+							"code": "Base Fare",
+							"currency": "IDR",
+							"total": 556000
+						},
+						"fareBasis": "M",
+						"paxCount": 1,
+						"paxType": "Adult",
+						"total": 556000,
+						"equivalent": null,
+						"taxes": []
+					}
+				]
+			},
+			"fareType": null,
+			"promoCode": "Api_ISTA"
+		},
+		{
+			"uniqueId": "MDFKOEpGVDg4TVpQTVhDQzVTWDlRRjhQM0dfQ0dLRFBTRFBTQ0dLIzEjOQ==",
+			"cabinClass": null,
+			"bookingClass": "B",
+			"seatCount": "9",
+			"fare": {
+				"currency": "IDR",
+				"total": 1136000,
+				"paxFares": [
+					{
+						"base": {
+							"category": "BASE_FARE",
+							"code": "Base Fare",
+							"currency": "IDR",
+							"total": 1136000
+						},
+						"fareBasis": "B",
+						"paxCount": 1,
+						"paxType": "Adult",
+						"total": 1136000,
+						"equivalent": null,
+						"taxes": []
+					}
+				]
+			},
+			"fareType": null,
+			"promoCode": "Api_ISTA"
+		}
+	],
+	"segments": [
+		{
+			"uniqueId": "MDFKOEpGVDg4TVpQTVhDQzVTWDlRRjhQM0dfQ0dLRFBTRFBTQ0dLIzEjMQ==",
+			"departureDateTime": {
+				"year": 2025,
+				"month": 3,
+				"day": 15,
+				"hour": 7,
+				"minute": 30
+			},
+			"arrivalDateTime": {
+				"year": 2025,
+				"month": 3,
+				"day": 15,
+				"hour": 10,
+				"minute": 30
+			},
+			"origin": {
+				"airport": {
+					"code": "CGK",
+					"name": "Soekarno Hatta International Airport",
+					"terminal": ""
+				},
+				"city": {
+					"name": "Jakarta"
+				},
+				"country": {
+					"code": "ID",
+					"name": "Indonesia"
+				}
+			},
+			"destination": {
+				"airport": {
+					"code": "DPS",
+					"name": "Ngurah Rai International Airport",
+					"terminal": ""
+				},
+				"city": {
+					"name": "Denpasar"
+				},
+				"country": {
+					"code": "ID",
+					"name": "Indonesia"
+				}
+			},
+			"marketingCarrier": {
+				"code": "JT",
+				"flightNumber": "682",
+				"name": "Lion Air",
+				"image": "https://portalvhds11000v9mfhk0k.blob.core.windows.net/airline/JT-mail.png"
+			},
+			"operatingCarrier": null,
+			"flightTime": "02:00:00",
+			"transitTime": "00:00:00",
+			"openJaw": false,
+			"classes": [],
+			"aircraft": {
+				"code": "320",
+				"shortName": "Airbus A320",
+				"longName": "Airbus Industrie A320-100/200"
+			},
+			"facilities": [],
+			"legs": []
+		}
+	],
+	"key": "Lion_[object Object]--[object Object]-0-0"
+}
