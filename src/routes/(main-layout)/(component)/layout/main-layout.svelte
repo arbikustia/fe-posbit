@@ -25,7 +25,7 @@
 			<div
 				class="absolute bottom-0 left-0 right-0 mt-4 flex items-center justify-between px-4 py-4"
 			>
-				<p>&copy; {new Date().getFullYear()} Opsigo All rights reserved.</p>
+				<p>&copy; {new Date().getFullYear()} Bantuit All rights reserved.</p>
 				<p class="text-gray-400">v.{APP_VERSION}</p>
 			</div>
 		</div>

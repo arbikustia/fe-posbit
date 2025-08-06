@@ -102,7 +102,7 @@
 	>
 		<div class="mx-auto w-full max-w-sm lg:w-96">
 			<div>
-				<img class="h-12 w-auto" src="/images/opsigo-logo.png" alt="Your Company" />
+				<img class="h-12 w-auto" src="/images/logo-bantuit-text.png" alt="Your Company" />
 				<h2 class="mt-8 text-2xl/9 font-bold tracking-tight text-gray-900">
 					Sign in to your account
 				</h2>
@@ -150,7 +150,7 @@
 								Login
 							{/if}
 						</Button>
-						<div class="mt-2 text-sm text-neutral-500">
+						<!-- <div class="mt-2 text-sm text-neutral-500">
 							By continuing, you're confirming that you've read our
 							<span>
 								<Button variant="link" class="p-0" onclick={() => (currentTab = 'disclaimer')}>
@@ -163,7 +163,7 @@
 									<PrivacyPolicyDialog />
 								</Button>
 							</span>
-						</div>
+						</div> -->
 					</form>
 				</div>
 			</div>

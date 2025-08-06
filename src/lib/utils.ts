@@ -49,8 +49,8 @@ export function updateTheme(activeTheme: ThemeConfig) {
 }
 
 export function themeSrcLogo(logoType: string) {
-	if (logoType === 'white') return '/images/opsigo-white.png';
-	return '/images/opsigo-logo.png';
+	if (logoType === 'white') return '/images/logo-bantuit-square.png';
+	return '/images/logo-bantuit-text.png';
 }
 
 export function copyToClipboard(text: string) {

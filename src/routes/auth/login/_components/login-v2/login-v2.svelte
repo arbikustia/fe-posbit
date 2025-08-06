@@ -44,7 +44,7 @@
 	<div class="relative flex min-h-screen items-center justify-center px-4 py-5 sm:px-6 lg:px-8">
 		<div class="w-full max-w-md space-y-8 rounded-lg bg-white py-5 shadow-md">
 			<div class="text-center">
-				<img class="mx-auto h-12 w-auto" src="/images/opsigo-logo.png" alt="Your Company" />
+				<img class="mx-auto h-12 w-auto" src="/images/logo-bantuit-text.png" alt="Your Company" />
 				<h2 class="mt-6 text-3xl font-bold tracking-tight text-black">Sign in to your account</h2>
 			</div>
 

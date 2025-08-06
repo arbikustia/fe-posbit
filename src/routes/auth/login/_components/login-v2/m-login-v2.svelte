@@ -33,17 +33,14 @@
 
 <div class="relative min-h-screen bg-white">
 	<div class="absolute inset-0">
-
-		<div class="absolute inset-0 "></div>
+		<div class="absolute inset-0"></div>
 	</div>
 
-	<div class="relative flex min-h-screen  items-center justify-center px-4 py-5 sm:px-6 lg:px-8">
-		<div class="w-full max-w-md space-y-8 py-5 bg-white rounded-lg">
+	<div class="relative flex min-h-screen items-center justify-center px-4 py-5 sm:px-6 lg:px-8">
+		<div class="w-full max-w-md space-y-8 rounded-lg bg-white py-5">
 			<div class="text-center">
-				<img class="mx-auto h-12 w-auto" src="/images/opsigo-logo.png" alt="Your Company" />
-				<h2 class="mt-6 text-3xl font-bold tracking-tight text-black">
-					Sign in to your account
-				</h2>
+				<img class="mx-auto h-12 w-auto" src="/images/logo-bantuit-text.png" alt="Your Company" />
+				<h2 class="mt-6 text-3xl font-bold tracking-tight text-black">Sign in to your account</h2>
 			</div>
 
 			<div class=" px-8 py-8">
@@ -56,7 +53,7 @@
 						</Alert.Root>
 					</div>
 				{/if}
-				
+
 				<form method="post" use:enhance class="space-y-1">
 					<Form.Field {form} name="username">
 						<Form.Control>
@@ -67,7 +64,7 @@
 						</Form.Control>
 						<Form.FieldErrors />
 					</Form.Field>
-					
+
 					<Form.Field {form} name="password">
 						<Form.Control>
 							{#snippet children({ props })}
@@ -82,7 +79,7 @@
 						</Form.Control>
 						<Form.FieldErrors />
 					</Form.Field>
-					
+
 					<Button type="submit" size="lg" class="w-full" disabled={$submitting}>
 						{#if $submitting}
 							<LoaderCircle class="animate-spin" />

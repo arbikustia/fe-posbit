@@ -10,6 +10,7 @@
 	import { themeSrcLogo } from '$lib/utils';
 	import { CardBalance } from '../card-balance';
 
+
 	let { ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 
 	const logoSrc = $derived(themeSrcLogo($themeConfigStore.logoType));
@@ -32,10 +33,8 @@
 		</Sidebar.Menu>
 	</Sidebar.Header>
 	<Sidebar.Content>
-		<CardBalance className="!p-3" />
 		<SidebarNavMain />
 		<SidebarNavMaster />
-		<SidebarNavSetting />
 		<SidebarNavOther />
 	</Sidebar.Content>
 	<Sidebar.Footer>

@@ -6,7 +6,6 @@
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 	import { goto } from '$app/navigation';
-	import { CardBalance } from '../card-balance';
 	let { userInfo }: { userInfo: UserInfo | undefined } = $props();
 
 	const logout: SubmitFunction = () => {
@@ -26,11 +25,6 @@
 				'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground relative flex h-full items-center rounded-none '
 		})}
 	>
-		<!-- <Avatar.Root class="h-8 w-8">
-			<Avatar.Image src="/avatars/01.png" alt="@shadcn" />
-			<Avatar.Fallback>SC</Avatar.Fallback>
-		</Avatar.Root> -->
-
 		<svg
 			class="size-7!"
 			xmlns="http://www.w3.org/2000/svg"
@@ -61,14 +55,8 @@
 				<p class="text-md text-muted-foreground leading-none">{userInfo?.email}</p>
 			</div>
 		</DropdownMenu.Label>
-		<DropdownMenu.Item class="hover:!bg-transparent p-0 block">
-			<CardBalance />
-		</DropdownMenu.Item>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Group>
-			<DropdownMenu.Item onclick={() => goto('/dashboard')}>Dashboard</DropdownMenu.Item>
-			<DropdownMenu.Item onclick={() => goto('/master/article')}>Master Article</DropdownMenu.Item>
-			<DropdownMenu.Item onclick={() => goto('/transactional-report')}>Transactions Report</DropdownMenu.Item>
 			<DropdownMenu.Item onclick={() => goto('/profile')}>Profile</DropdownMenu.Item>
 			<DropdownMenu.Item>Settings</DropdownMenu.Item>
 		</DropdownMenu.Group>

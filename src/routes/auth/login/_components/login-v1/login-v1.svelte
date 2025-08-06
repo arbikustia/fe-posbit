@@ -163,7 +163,7 @@
 					</div>
 
 					<button
-						class="group absolute left-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-white/20 p-2 opacity-80 backdrop-blur-xs transition-all duration-200 hover:bg-white/30 hover:opacity-100"
+						class="group absolute top-1/2 left-4 z-10 -translate-y-1/2 transform rounded-full bg-white/20 p-2 opacity-80 backdrop-blur-xs transition-all duration-200 hover:bg-white/30 hover:opacity-100"
 						onclick={goToPrev}
 					>
 						<Icon
@@ -176,7 +176,7 @@
 					</button>
 
 					<button
-						class="group absolute right-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-white/20 p-2 opacity-80 backdrop-blur-xs transition-all duration-200 hover:bg-white/30 hover:opacity-100"
+						class="group absolute top-1/2 right-4 z-10 -translate-y-1/2 transform rounded-full bg-white/20 p-2 opacity-80 backdrop-blur-xs transition-all duration-200 hover:bg-white/30 hover:opacity-100"
 						onclick={goToNext}
 					>
 						<Icon icon="weui:arrow-filled" width="12" height="24" style="color: #242424" />
@@ -194,8 +194,8 @@
 		class="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24"
 	>
 		<div class="mx-auto w-full max-w-sm lg:w-96">
-			<div>
-				<img class="h-12 w-auto" src="/images/opsigo-logo.png" alt="Your Company" />
+			<div class="flex w-full flex-col items-center justify-center">
+				<img class="h-20 w-auto" src="/images/logo-bantuit-text.png" alt="Your Company" />
 				<h2 class="mt-8 text-2xl/9 font-bold tracking-tight text-gray-900">
 					Sign in to your account
 				</h2>
@@ -244,7 +244,7 @@
 							{/if}
 						</Button>
 					</form>
-					<div class="mt-2 text-sm text-neutral-500">
+					<!-- <div class="mt-2 text-sm text-neutral-500">
 						By continuing, you're confirming that you've read our
 						<span>
 							<Button
@@ -266,7 +266,7 @@
 								Privacy Policy
 							</Button>
 						</span>
-					</div>
+					</div> -->
 				</div>
 			</div>
 		</div>

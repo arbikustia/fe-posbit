@@ -7,16 +7,6 @@
 
 	const newBookingItems = [
 		{
-			name: 'Traveler Profile',
-			href: '/master/traveler-profile',
-			icon: People
-		},
-		{
-			name: 'Company',
-			href: '/master/company',
-			icon: Building
-		},
-		{
 			name: 'Article',
 			href: '/master/article',
 			icon: Newspaper
