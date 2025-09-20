@@ -17,19 +17,19 @@ export function decodeJwt(token: string): { [key: string]: unknown } | null {
 }
 
 export function setAuthCookie(event: RequestEvent, response: any): void {
-	const { token, refreshToken, user, tokenExpirationInstant } = response;
+	const { accessToken, refreshToken } = response;
 
-	if (!token || !user || !tokenExpirationInstant) {
+	if (!accessToken ) {
 		throw new Error('Auth Failed, please contact Administrator');
 	}
 
 	// Simpan access token ke cookie (JWT)
-	event.cookies.set(authTokenCookieKey, token, {
+	event.cookies.set(authTokenCookieKey, accessToken, {
 		httpOnly: true,
 		path: '/',
 		secure: true,
 		sameSite: 'lax',
-		expires: new Date(tokenExpirationInstant)
+		// expires: new Date(tokenExpirationInstant)
 	});
 
 	// Simpan refresh token ke cookie
@@ -42,9 +42,9 @@ export function setAuthCookie(event: RequestEvent, response: any): void {
 	});
 
 	const userInfo: UserInfo = {
-		fullName: response?.user?.fullName,
-		email: response.user.email,
-		username: response.user.username
+		fullName: 'superadmin',
+		email: 'superadmin@bantuit.com',
+		username: 'superadmin'
 	};
 
 	// Simpan user info ke cookie dalam format JSON string
@@ -53,7 +53,7 @@ export function setAuthCookie(event: RequestEvent, response: any): void {
 		secure: true,
 		path: '/',
 		sameSite: 'lax',
-		expires: new Date(tokenExpirationInstant)
+		// expires: new Date(tokenExpirationInstant)
 	});
 }
 
@@ -64,18 +64,14 @@ export function deleteAuthCookie(event: RequestEvent): void {
 }
 
 export async function login(event: RequestEvent, username: string, password: string) {
-	const res = await fetch('https://dev-fusionauth.opsinfra.net/api/login', {
+	const res = await fetch('https://hellomo.server-backend.cloud/api/Authentication', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
-			'X-FusionAuth-TenantId': 'cf1ffd7a-f1b4-44a9-8a26-9efb443c3976',
-			Authorization: 'ChOg7otfBPUl9rncuautOwSJ7_9x6FzIeNocBX08rkUi4qn1hZXlZ_Bd'
 		},
 		body: JSON.stringify({
-			loginId: username,
+			username: username,
 			password: password,
-			applicationId: 'e0cef9f7-5978-4f52-b4f1-30af50969c6f',
-			noJWT: false
 		})
 	});
 
@@ -84,7 +80,7 @@ export async function login(event: RequestEvent, username: string, password: str
 	}
 
 	const data = await res.json();
-	setAuthCookie(event, data);
+	setAuthCookie(event, data.data);
 }
 
 export function logout(event: RequestEvent) {

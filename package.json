@@ -18,11 +18,13 @@
 		"@eslint/compat": "^1.2.3",
 		"@fontsource/fira-mono": "^5.0.0",
 		"@iconify/svelte": "^4.1.0",
+		"@inlang/paraglide-js": "2.2.0",
 		"@internationalized/date": "^3.8.2",
 		"@lucide/svelte": "^0.515.0",
 		"@neoconfetti/svelte": "^2.0.0",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/adapter-netlify": "^4.4.0",
+		"@sveltejs/adapter-static": "^3.0.9",
 		"@sveltejs/adapter-vercel": "^5.7.0",
 		"@sveltejs/kit": "^2.21.5",
 		"@sveltejs/vite-plugin-svelte": "^5.1.0",
@@ -56,8 +58,7 @@
 		"typescript-eslint": "^8.0.0",
 		"vaul-svelte": "1.0.0-next.7",
 		"vite": "^6.3.5",
-		"zod": "^3.25.64",
-		"@inlang/paraglide-js": "2.2.0"
+		"zod": "^3.25.64"
 	},
 	"dependencies": {
 		"@googlemaps/js-api-loader": "^1.16.10",
