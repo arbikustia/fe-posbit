@@ -36,6 +36,7 @@ import ExcecutionIcon from './execution.svelte'
 import FindingsIcon from './findings.svelte';
 import CapaIcon from './capa.svelte';
 import ReportIcon from './report.svelte'
+import TransactionIcon from './transaction.svelte';
 
 export {
 	Home,
@@ -75,5 +76,6 @@ export {
 	ExcecutionIcon,
 	FindingsIcon,
 	CapaIcon,
-	ReportIcon
+	ReportIcon,
+	TransactionIcon
 };

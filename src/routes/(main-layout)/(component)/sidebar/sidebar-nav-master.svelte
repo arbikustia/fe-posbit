@@ -17,20 +17,10 @@
 			icon: Newspaper
 		},
 		{
-			name: 'Department',
-			href: '/master/department',
+			name: 'User',
+			href: '/master/user',
 			icon: Newspaper
-		},
-		{
-			name: 'Participant',
-			href: '/master/participant',
-			icon: Newspaper
-		},
-		{
-			name: 'Tamplate',
-			href: '/master/template',
-			icon: Newspaper
-		},
+		}
 	];
 </script>
 
