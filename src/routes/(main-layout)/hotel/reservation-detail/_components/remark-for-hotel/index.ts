@@ -1,1 +1,0 @@
-export {default as RemarkForHotel} from "./remark-for-hotel.svelte"

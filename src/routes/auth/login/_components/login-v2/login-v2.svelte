@@ -10,10 +10,12 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import { CircleAlert } from '@lucide/svelte';
 	import { fly, slide } from 'svelte/transition';
+	import Icon from '@iconify/svelte';
 
 	let { data }: { data: PageData } = $props();
 
 	let errorMsg = $state<string>();
+	let showPassword = $state(false); // State untuk toggle visibility password
 
 	const form = superForm(data.form, {
 		validators: zod(loginSchema),
@@ -42,10 +44,11 @@
 	</div>
 
 	<div class="relative flex min-h-screen items-center justify-center px-4 py-5 sm:px-6 lg:px-8">
-		<div class="w-full max-w-md space-y-8 rounded-lg bg-white py-5 shadow-md">
+		<div class="w-full max-w-md space-y-8 rounded-xl bg-white py-5 shadow-md">
 			<div class="text-center">
 				<img class="mx-auto h-12 w-auto" src="/images/logo-bantuit-text.png" alt="Your Company" />
-				<h2 class="mt-6 text-3xl font-bold tracking-tight text-black">Sign in to your account</h2>
+				<h2 class="mt-6 text-2xl font-bold tracking-tight text-black">AUDIT MANAGEMENT SYSTEM</h2>
+				<h2 class="text-lg text-gray-500 tracking-tight">Sign in to your account</h2>
 			</div>
 
 			<div class=" px-8 py-8">
@@ -74,12 +77,26 @@
 						<Form.Control>
 							{#snippet children({ props })}
 								<Form.Label>Password</Form.Label>
-								<Input
-									type="password"
-									placeholder="Password"
-									{...props}
-									bind:value={$formData.password}
-								/>
+								<div class="relative">
+									<Input
+										type={showPassword ? 'text' : 'password'}
+										placeholder="Password"
+										{...props}
+										bind:value={$formData.password}
+										class="pr-10"
+									/>
+									<button
+										type="button"
+										class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+										onclick={() => showPassword = !showPassword}
+									>
+										{#if showPassword}
+											<Icon icon="lucide:eye-off" class="size-5" />
+										{:else}
+											<Icon icon="lucide:eye" class="size-5" />
+										{/if}
+									</button>
+								</div>
 							{/snippet}
 						</Form.Control>
 						<Form.FieldErrors />

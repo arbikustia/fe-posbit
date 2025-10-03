@@ -1,8 +1,10 @@
 //import adapter from '@sveltejs/adapter-auto';
-//import adapter from '@sveltejs/adapter-netlify';
-//import adapter from '@sveltejs/adapter-vercel';
-import adapter from '@sveltejs/adapter-node';
+// import adapter from '@sveltejs/adapter-netlify';
+import adapter from '@sveltejs/adapter-vercel';
+// import adapter from '@sveltejs/adapter-node';
+// import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+// import adapter from '@sveltejs/adapter-static';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -17,10 +19,13 @@ const config = {
 		adapter: adapter({
 			pages: 'build',
 			assets: 'build',
-			fallback: undefined,
+			fallback: null,
 			precompress: false,
 			strict: true
 		}),
+		paths: {
+			base: '',
+		},
 		alias: {
 			'@/*': './path/to/lib/*',
 			$appCss: 'src/app.css',

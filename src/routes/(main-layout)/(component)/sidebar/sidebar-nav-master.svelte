@@ -7,10 +7,30 @@
 
 	const newBookingItems = [
 		{
-			name: 'Article',
-			href: '/master/article',
+			name: 'Location',
+			href: '/master/location',
 			icon: Newspaper
-		}
+		},
+		{
+			name: 'Category',
+			href: '/master/category',
+			icon: Newspaper
+		},
+		{
+			name: 'Department',
+			href: '/master/department',
+			icon: Newspaper
+		},
+		{
+			name: 'Participant',
+			href: '/master/participant',
+			icon: Newspaper
+		},
+		{
+			name: 'Tamplate',
+			href: '/master/template',
+			icon: Newspaper
+		},
 	];
 </script>
 

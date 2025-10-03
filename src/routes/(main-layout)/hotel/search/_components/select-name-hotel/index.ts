@@ -1,1 +1,0 @@
-export {default as SelectNameHotel} from "./select-name-hotel.svelte"

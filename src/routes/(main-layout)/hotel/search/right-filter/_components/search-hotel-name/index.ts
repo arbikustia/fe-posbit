@@ -1,1 +1,0 @@
-export {default as SearchHotelName} from "./search-hotel-name.svelte"

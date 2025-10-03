@@ -31,6 +31,11 @@ import FilePdf from './file-pdf.svelte';
 import Trash from './trash.svelte';
 import Cut from './cut.svelte';
 import Forbidden from './forbidden.svelte';
+import PlanningIcon from  './planning.svelte'
+import ExcecutionIcon from './execution.svelte'
+import FindingsIcon from './findings.svelte';
+import CapaIcon from './capa.svelte';
+import ReportIcon from './report.svelte'
 
 export {
 	Home,
@@ -65,5 +70,10 @@ export {
 	FilePdf,
 	Trash,
 	Cut,
-	Forbidden
+	Forbidden,
+	PlanningIcon,
+	ExcecutionIcon,
+	FindingsIcon,
+	CapaIcon,
+	ReportIcon
 };

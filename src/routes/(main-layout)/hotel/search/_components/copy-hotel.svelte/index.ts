@@ -1,1 +1,0 @@
-export { default as ShareDialog } from "./copy-hotel.svelte"

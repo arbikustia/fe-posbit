@@ -10,10 +10,12 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import { CircleAlert } from '@lucide/svelte';
 	import { fly, slide } from 'svelte/transition';
+	import Icon from '@iconify/svelte';
 
 	let { data }: { data: PageData } = $props();
 
 	let errorMsg = $state<string>();
+	let showPassword = $state(false); // State untuk toggle visibility password
 
 	const form = superForm(data.form, {
 		validators: zod(loginSchema),
@@ -69,12 +71,26 @@
 						<Form.Control>
 							{#snippet children({ props })}
 								<Form.Label>Password</Form.Label>
-								<Input
-									type="password"
-									placeholder="Password"
-									{...props}
-									bind:value={$formData.password}
-								/>
+								<div class="relative">
+									<Input
+										type={showPassword ? 'text' : 'password'}
+										placeholder="Password"
+										{...props}
+										bind:value={$formData.password}
+										class="pr-10"
+									/>
+									<button
+										type="button"
+										class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+										onclick={() => showPassword = !showPassword}
+									>
+										{#if showPassword}
+											<Icon icon="lucide:eye-off" class="size-5" />
+										{:else}
+											<Icon icon="lucide:eye" class="size-5" />
+										{/if}
+									</button>
+								</div>
 							{/snippet}
 						</Form.Control>
 						<Form.FieldErrors />

@@ -1,1 +1,0 @@
-export {default as International} from "./international.svelte"

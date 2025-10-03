@@ -1,1 +1,0 @@
-export {default as HeaderDetailHotel} from "./header.svelte"

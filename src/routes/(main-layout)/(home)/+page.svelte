@@ -6,7 +6,9 @@
 </script>
 
 {#if isMobile}
-	<MHomeLayout />
+	<!-- <MHomeLayout /> -->
+	 	 <div>HomeLayout</div>
 {:else}
-	<HomeLayout />
+	<!-- <HomeLayout /> -->
+	 <div>HomeLayout</div>
 {/if}

@@ -1,1 +1,0 @@
-export {default as RightFilter} from "./right-filter.svelte"
