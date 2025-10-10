@@ -6,7 +6,7 @@ export const defaultThemeConfig: ThemeConfig = {
 	color: 'default',
 	radius: 0.5,
 	navbar: 1,
-	navigation: 'navbar',
+	navigation: 'sidebar',
 	sidebar: 1,
 	font: 'Default',
 	navigationColor: 'default',
