@@ -17,6 +17,11 @@
 			icon: Newspaper
 		},
 		{
+			name: 'Product',
+			href: '/master/product',
+			icon: Newspaper
+		},
+		{
 			name: 'User',
 			href: '/master/user',
 			icon: Newspaper

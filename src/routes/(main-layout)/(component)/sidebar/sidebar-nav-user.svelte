@@ -68,10 +68,10 @@
 				</DropdownMenu.Label>
 				<DropdownMenu.Separator />
 				<DropdownMenu.Group>
-					<DropdownMenu.Item onclick={() => goto('/profile')}>
+					<!-- <DropdownMenu.Item onclick={() => goto('/profile')}>
 						<User />
 						Profile
-					</DropdownMenu.Item>
+					</DropdownMenu.Item> -->
 					<DropdownMenu.Item>
 						<Settings />
 						Settings

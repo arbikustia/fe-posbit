@@ -8,9 +8,8 @@
 		Hotel,
 		PlanningIcon,
 		ReportIcon,
-
+		Home,
 		TransactionIcon
-
 	} from '$lib/components/icons';
 	import { currentPage } from '$lib/helpers/page-helper';
 	import { ChevronDown, ChevronRight } from '@lucide/svelte';
@@ -30,13 +29,10 @@
 
 	const menuItems = [
 		{
-			name: 'Planning',
-			href: '/planning',
-			icon: PlanningIcon,
-			children: [
-				{ name: 'Audit Plan', href: '/planning/audit-plan' },
-				{ name: 'Audit Schedule', href: '/planning/audit-schedule' }
-			]
+			name: 'Dashboard',
+			href: '/dashboard',
+			icon: Home,
+			children: []
 		},
 		{
 			name: 'Transaction',
@@ -86,13 +82,13 @@
 						{/if}
 					</button>
 
-					{#if isOpen}
+					<!-- {#if isOpen}
 						<div class="mt-1 mb-1 ml-6 overflow-hidden border-l border-gray-200 pl-2">
 							<div class="animate-fade-in flex flex-col gap-1">
 								{#each item.children as child (child.name)}
 									{@const isChildActive = currentPage(page.url.pathname) === child.href}
 									<a
-										href={child.href}
+										href={child?.href}
 										class="flex items-center rounded-md px-4 py-2 text-sm transition-colors duration-200
 											{isChildActive
 											? 'bg-primary/10 text-primary font-medium'
@@ -104,7 +100,7 @@
 								{/each}
 							</div>
 						</div>
-					{/if}
+					{/if} -->
 				{:else}
 					<a
 						href={item.href}

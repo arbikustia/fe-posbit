@@ -4,6 +4,9 @@
 
 	const { isMobile } = getDeviceContext();
 </script>
+<svelte:head>
+	<title>Home | Bantuit</title>
+</svelte:head>
 
 {#if isMobile}
 	<!-- <MHomeLayout /> -->

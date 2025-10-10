@@ -57,7 +57,7 @@
 		</DropdownMenu.Label>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Group>
-			<DropdownMenu.Item onclick={() => goto('/profile')}>Profile</DropdownMenu.Item>
+			<!-- <DropdownMenu.Item onclick={() => goto('/profile')}>Profile</DropdownMenu.Item> -->
 			<DropdownMenu.Item>Settings</DropdownMenu.Item>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />

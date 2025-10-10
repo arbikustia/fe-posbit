@@ -19,6 +19,6 @@
 {:else if searchParam.id == 'v3'}
 	<LoginV3 {data} />
 {:else}
-	<!-- <OSGLoginV1 {data} /> -->
+	<!-- <LoginV2Left {data} /> -->
 	 <LoginV2 {data} />
 {/if}

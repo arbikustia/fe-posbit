@@ -18,7 +18,7 @@
 </script>
 
 <svelte:head>
-	<title>Opsigo</title>
+	<title>Bantuit</title>
 </svelte:head>
 
 {#if isMobile}

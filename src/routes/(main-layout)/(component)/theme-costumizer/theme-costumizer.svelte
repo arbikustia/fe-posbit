@@ -113,7 +113,7 @@
 
 <div class="flex w-full items-center space-x-2">
 	<div class="w-full">
-		<Wrapper.Root bind:open>
+		<Wrapper.Root bind:open >
 			{#if trigger}
 				{@render trigger()}
 			{:else}
@@ -152,7 +152,7 @@
 			<Wrapper.Content
 				class={cn('z-60! bg-white dark:bg-zinc-950', {
 					'h-fit w-full p-0': isMobile,
-					'max-h-screen w-[430px] p-6': !isMobile
+					'max-h-screen w-screen p-6': !isMobile
 				})}
 				fullscreen
 			>
@@ -362,48 +362,6 @@
 							</div>
 						</div>
 
-						{#if !isMobile}
-							<Separator />
-							<div class="font-semibold">Flight</div>
-							<div class="space-y-1.5">
-								<Label class="text-xs">Search Form Type</Label>
-								{@render searchFormTypeConfig('flight')}
-							</div>
-							<div class="space-y-1.5">
-								<Label class="text-xs">Search Form Banner Style</Label>
-								{@render searchFormBannerConfig('flight')}
-							</div>
-							<Separator />
-							<div class="font-semibold">Hotel</div>
-							<div class="space-y-1.5">
-								<Label class="text-xs">Search Form Type</Label>
-								{@render searchFormTypeConfig('hotel')}
-							</div>
-							<div class="space-y-1.5">
-								<Label class="text-xs">Search Form Banner Style</Label>
-								{@render searchFormBannerConfig('hotel')}
-							</div>
-							<Separator />
-							<div class="font-semibold">Train</div>
-							<div class="space-y-1.5">
-								<Label class="text-xs">Search Form Type</Label>
-								{@render searchFormTypeConfig('train')}
-							</div>
-							<div class="space-y-1.5">
-								<Label class="text-xs">Search Form Banner Style</Label>
-								{@render searchFormBannerConfig('train')}
-							</div>
-							<Separator />
-							<div class="font-semibold">Insurance</div>
-							<div class="space-y-1.5">
-								<Label class="text-xs">Search Form Type</Label>
-								{@render searchFormTypeConfig('insurance')}
-							</div>
-							<div class="space-y-1.5">
-								<Label class="text-xs">Search Form Banner Style</Label>
-								{@render searchFormBannerConfig('insurance')}
-							</div>
-						{/if}
 					</div>
 				</div>
 			</Wrapper.Content>

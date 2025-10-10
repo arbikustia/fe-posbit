@@ -47,7 +47,7 @@
 		<div class="w-full max-w-md space-y-8 rounded-xl bg-white py-5 shadow-md">
 			<div class="text-center">
 				<img class="mx-auto h-12 w-auto" src="/images/logo-bantuit-text.png" alt="Your Company" />
-				<h2 class="mt-6 text-2xl font-bold tracking-tight text-black">AUDIT MANAGEMENT SYSTEM</h2>
+				<!-- <h2 class="mt-6 text-2xl font-bold tracking-tight text-black">AUDIT MANAGEMENT SYSTEM</h2> -->
 				<h2 class="text-lg text-gray-500 tracking-tight">Sign in to your account</h2>
 			</div>
 

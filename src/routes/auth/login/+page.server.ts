@@ -35,7 +35,7 @@ export const actions: Actions = {
 		}
 
 		if (success) {
-			return redirect(302, '/');
+			return redirect(302, '/dashboard');
 		}
 	}
 };

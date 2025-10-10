@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>Home | Opsigo</title>
+	<title>Home | Bantuit</title>
 </svelte:head>
 
 <section>
