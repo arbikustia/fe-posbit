@@ -12,6 +12,7 @@
 	import Icon from '@iconify/svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { LoaderCircle } from '@lucide/svelte';
+	import { goto } from '$app/navigation';
 
 	const df = new DateFormatter('en-US', {
 		dateStyle: 'long'
@@ -22,7 +23,7 @@
 
 {#if variant === 'sticky'}
 	{#snippet searchButton()}
-		<Button class={cn('h-10 w-[120px] flex-none text-lg', {})} size="lg">
+		<Button onclick={() => goto('/invoice')} class={cn('h-10 w-[120px] flex-none text-lg', {})} size="lg">
 			<span class="ml-1">Purchase</span>
 		</Button>
 	{/snippet}
@@ -86,6 +87,7 @@
 			class={cn('h-[46px] w-[120px] flex-none text-lg', {
 				'min-h-11': variant === 'default'
 			})}
+			onclick={() => goto('/invoice')}
 			size="lg"
 		>
 			<span class="ml-1">Purchase</span>
