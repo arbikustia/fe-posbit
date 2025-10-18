@@ -16,7 +16,7 @@
 			<path fill="currentColor" d="M3 13h8V3H3zm0 8h8v-6H3zm10 0h8V11h-8zm0-18v6h8V3z" />
 		</svg>
 	</LayoutNavBarMenuItem>
-	<LayoutNavBarMenuItem href="/transaction" label={'Transaction'}>
+	<!-- <LayoutNavBarMenuItem href="/transaction" label={'Transaction'}>
 		<svg
 			class="size-5!"
 			slot="icon"
@@ -87,5 +87,5 @@
 		>
 			<path fill="currentColor" d="M3 13h8V3H3zm0 8h8v-6H3zm10 0h8V11h-8zm0-18v6h8V3z" />
 		</svg>
-	</LayoutNavBarMenuItem>
+	</LayoutNavBarMenuItem> -->
 </nav>

@@ -10,8 +10,8 @@
 		<div class="flex items-center">
 			<div class="text-center">
 				<div class="flex items-center gap-x-4">
-					<LanguageSwitch />
-					<ThemeCostumizer />
+					<!-- <LanguageSwitch />
+					<ThemeCostumizer /> -->
 				</div>
 			</div>
 
