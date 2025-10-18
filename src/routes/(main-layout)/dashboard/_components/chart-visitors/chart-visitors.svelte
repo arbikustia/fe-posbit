@@ -161,21 +161,7 @@
 							label: 'Total Penjualan',
 							color: chartConfig.flight.color
 						},
-						// {
-						// 	key: 'hotel',
-						// 	label: 'Celana',
-						// 	color: chartConfig.hotel.color
-						// },
-						// {
-						// 	key: 'train',
-						// 	label: 'Jaket',
-						// 	color: chartConfig.train.color
-						// },
-						// {
-						// 	key: 'insurance',
-						// 	label: 'Sepatu',
-						// 	color: chartConfig.insurance.color
-						// }
+						
 					]}
 					seriesLayout="stack"
 					props={{

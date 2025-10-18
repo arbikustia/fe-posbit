@@ -8,7 +8,7 @@ export const defaultThemeConfig: ThemeConfig = {
 	navbar: 1,
 	navigation: 'navbar',
 	sidebar: 1,
-	font: 'Default',
+	font: 'Inter',
 	navigationColor: 'default',
 	logoType: 'default',
 	flight: {

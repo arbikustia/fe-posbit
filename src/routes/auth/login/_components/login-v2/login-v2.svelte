@@ -37,7 +37,7 @@
 	<div class="absolute inset-0">
 		<img
 			class="size-full object-cover"
-			src="https://images.unsplash.com/photo-1496917756835-20cb06e75b4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80"
+			src="/images/login-image.jpg"
 			alt=""
 		/>
 		<div class="absolute inset-0"></div>
