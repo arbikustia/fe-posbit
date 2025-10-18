@@ -1,0 +1,18 @@
+
+
+<script lang="ts">
+	import { getDeviceContext } from '$lib/context/device';
+	import { SalesPage, MSalesPage } from './_components/page';
+
+	const { isMobile } = getDeviceContext();
+</script>
+
+{#if isMobile}
+<div class="p-5">
+	<MSalesPage />
+</div>
+{:else}
+<div class="container space-y-5">
+	<SalesPage />
+</div>
+{/if}

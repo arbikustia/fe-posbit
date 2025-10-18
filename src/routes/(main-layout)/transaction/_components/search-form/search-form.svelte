@@ -13,6 +13,8 @@
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { LoaderCircle } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
+	import * as Select from '$lib/components/ui/select/index.js';
+	import dayjs from 'dayjs';
 
 	const df = new DateFormatter('en-US', {
 		dateStyle: 'long'
@@ -23,45 +25,43 @@
 
 {#if variant === 'sticky'}
 	{#snippet searchButton()}
-		<Button onclick={() => goto('/invoice')} class={cn('h-10 w-[120px] flex-none text-lg', {})} size="lg">
+		<Button
+			onclick={() => goto('/invoice')}
+			class={cn('h-10 w-full flex-none text-lg', {})}
+			size="lg"
+		>
 			<span class="ml-1">Purchase</span>
 		</Button>
 	{/snippet}
 	<section class="bg-card sticky top-0 z-31 border-y shadow-sm">
-		<div class="mx-auto max-w-6xl space-y-4 px-4 pt-2 pb-2">
-			<div class="flex items-start justify-start gap-2">
-				<div class="bg-primary/10 text-primary flex items-center gap-1 px-2 text-sm rounded-md font-medium">
-					<Icon icon="solar:user-linear" width="14" height="14" class="text-primary" />
-					superadmin
-				</div>
-			</div>
-			<div class="flex w-full flex-row items-end justify-start gap-2">
-				<Popover.Root>
-					<div class="flex w-[20%] flex-col items-start justify-start gap-1">
-						<div class="h-auto w-full rounded-lg border border-gray-200">
-							<Popover.Trigger class="flex h-10 w-full items-center  justify-start border-none">
-								{#snippet child({ props })}
-									<Button
-										variant="outline"
-										disabled
-										class={cn(
-											'w-full justify-start text-left text-sm font-normal',
-											!value && 'text-muted-foreground'
-										)}
-										{...props}
-									>
-										<CalendarIcon class="mr-2 size-4" />
-										{value ? df.format(value.toDate(getLocalTimeZone())) : '05/10/2025'}
-									</Button>
-								{/snippet}
-							</Popover.Trigger>
+		<div class="mx-auto max-w-6xl space-y-2 px-4 pt-2 pb-2">
+			<div class="flex w-full flex-1 grid-cols-5 flex-row items-end justify-start gap-5">
+					<div class="flex flex-col items-start justify-start gap-1">
+						<div
+							class="text-primary bg-primary/10 h-auto w-fit rounded-md p-1 px-4 text-sm font-medium"
+						>
+							<div>{dayjs().format('DD-MM-YYYY')}</div>
 						</div>
 					</div>
-					<Popover.Content class="w-auto p-0">
-						<Calendar bind:value type="single" initialFocus />
-					</Popover.Content>
-				</Popover.Root>
-				<div class="flex w-[20%] flex-col items-start justify-start gap-1">
+					<div class="flex flex-col items-start justify-start gap-1">
+						<div
+							class="text-primary bg-primary/10 flex h-auto w-fit cursor-pointer items-center space-x-2 rounded-md p-1 px-4 text-sm font-medium"
+						>
+							<Select.Root type="single">
+								<div class="">Cash</div>
+								<Select.Content>
+									<Select.Item value="light">Debit</Select.Item>
+									<Select.Item value="dark">Cash</Select.Item>
+								</Select.Content>
+							</Select.Root>
+							<Icon icon="octicon:chevron-down-16" width="16" height="16" />
+						</div>
+					</div>
+				</div>
+			<div class="grid w-full grid-cols-5 flex-row items-end justify-start gap-2">
+
+				<!-- Customer Name -->
+				<div class="flex flex-col items-start justify-start gap-1">
 					<div class="h-auto w-full rounded-lg border border-gray-200">
 						<Input
 							placeholder="Customer Name"
@@ -69,7 +69,20 @@
 						/>
 					</div>
 				</div>
-				<div class="flex w-[20%] flex-col items-start justify-start gap-1">
+
+				<!-- Phone Number -->
+				<div class="flex flex-col items-start justify-start gap-1">
+					<div class="h-auto w-full rounded-lg border border-gray-200">
+						<Input
+							type="tel"
+							placeholder="Phone Number"
+							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
+						/>
+					</div>
+				</div>
+
+				<!-- Search Product -->
+				<div class="flex flex-col items-start justify-start gap-1">
 					<div class="h-auto w-full rounded-lg border border-gray-200">
 						<Input
 							placeholder="Search Product"
@@ -77,6 +90,15 @@
 						/>
 					</div>
 				</div>
+				<div class="flex flex-col items-start justify-start gap-1">
+					<div class="h-auto w-full rounded-lg border border-gray-200">
+						<Input
+							placeholder="Amount Received"
+							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
+						/>
+					</div>
+				</div>
+
 				{@render searchButton()}
 			</div>
 		</div>
@@ -84,7 +106,7 @@
 {:else if variant === 'default'}
 	{#snippet searchButton()}
 		<Button
-			class={cn('h-[46px] w-[120px] flex-none text-lg', {
+			class={cn('h-12 w-full flex-none text-lg', {
 				'min-h-11': variant === 'default'
 			})}
 			onclick={() => goto('/invoice')}
@@ -95,57 +117,69 @@
 	{/snippet}
 	<section class="w-full">
 		<Card.Root>
-			<Card.Content class="flex w-full flex-col items-start ">
-				<div class="bg-primary/10 mb-3 flex items-center gap-2 rounded-lg px-3 py-1 text-start">
-					<div class="text-primary flex items-center gap-1 text-sm font-medium">
-						<Icon icon="solar:user-linear" width="14" height="14" class="text-primary" />
-						superadmin
+			<Card.Content class="flex w-full flex-col items-start space-y-2">
+				<div class="flex w-full flex-1 grid-cols-5 flex-row items-end justify-start gap-5">
+					<div class="flex flex-col items-start justify-start gap-1">
+						<div
+							class="text-primary bg-primary/10 h-auto w-fit rounded-md p-1 px-4 text-sm font-medium"
+						>
+							<div>{dayjs().format('DD-MM-YYYY')}</div>
+						</div>
+					</div>
+					<div class="flex flex-col items-start justify-start gap-1">
+						<div
+							class="text-primary bg-primary/10 flex h-auto w-fit cursor-pointer items-center space-x-2 rounded-md p-1 px-4 text-sm font-medium"
+						>
+							<Select.Root type="single">
+								<div class="">Cash</div>
+								<Select.Content>
+									<Select.Item value="light">Debit</Select.Item>
+									<Select.Item value="dark">Cash</Select.Item>
+								</Select.Content>
+							</Select.Root>
+							<Icon icon="octicon:chevron-down-16" width="16" height="16" />
+						</div>
 					</div>
 				</div>
-
-				<div class="flex w-full flex-1 flex-row items-end justify-start gap-5">
-					<Popover.Root>
-						<div class="flex w-[20%] flex-col items-start justify-start gap-1">
-							<div class="text-sm font-medium text-gray-500">Date</div>
-							<div class="h-auto w-full rounded-lg border border-gray-200 p-1">
-								<Popover.Trigger class="flex h-10 w-full items-center  justify-start border-none">
-									{#snippet child({ props })}
-										<Button
-											variant="outline"
-											disabled
-											class={cn(
-												'w-full justify-start text-left text-sm font-normal',
-												!value && 'text-muted-foreground'
-											)}
-											{...props}
-										>
-											<CalendarIcon class="mr-2 size-4" />
-											{value ? df.format(value.toDate(getLocalTimeZone())) : '05/10/2025'}
-										</Button>
-									{/snippet}
-								</Popover.Trigger>
-							</div>
-						</div>
-						<Popover.Content class="w-auto p-0">
-							<Calendar bind:value type="single" initialFocus />
-						</Popover.Content>
-					</Popover.Root>
-
-					<div class="flex w-[20%] flex-col items-start justify-start gap-1">
+				<div class="grid w-full flex-1 grid-cols-5 flex-row items-end justify-center gap-5">
+					<div class="flex flex-col items-start justify-start gap-1">
 						<div class="text-sm font-medium text-gray-500">Customer Name</div>
 						<div class="h-auto w-full rounded-lg border border-gray-200 p-1">
 							<Input
 								placeholder="Customer Name"
-								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
+								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
 							/>
 						</div>
 					</div>
-					<div class="flex w-[20%] flex-col items-start justify-start gap-1">
+
+					<!-- Phone Number -->
+					<div class="flex flex-col items-start justify-start gap-1">
+						<div class="text-sm font-medium text-gray-500">Phone Number</div>
+						<div class="h-auto w-full rounded-lg border border-gray-200 p-1">
+							<Input
+								type="tel"
+								placeholder="Phone Number"
+								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
+							/>
+						</div>
+					</div>
+
+					<!-- Search Product -->
+					<div class="flex flex-col items-start justify-start gap-1">
 						<div class="text-sm font-medium text-gray-500">Search Product</div>
 						<div class="h-auto w-full rounded-lg border border-gray-200 p-1">
 							<Input
 								placeholder="Search Product"
-								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
+								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
+							/>
+						</div>
+					</div>
+					<div class="flex flex-col items-start justify-start gap-1">
+						<div class="text-sm font-medium text-gray-500">Amount Received</div>
+						<div class="h-auto w-full rounded-lg border border-gray-200 p-1">
+							<Input
+								placeholder="Amount Received"
+								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
 							/>
 						</div>
 					</div>
@@ -156,3 +190,12 @@
 		</Card.Root>
 	</section>
 {/if}
+
+<style>
+	:global {
+		input:focus {
+			outline: none !important;
+			box-shadow: none !important;
+		}
+	}
+</style>

@@ -66,7 +66,7 @@
 
 	// Chart configuration with distinct colors
 	const chartConfig = {
-		flight: { label: 'baju', color: '#3b82f6' }, // Blue
+		flight: { label: 'Total Penjualan', color: '#3b82f6' }, // Blue
 		hotel: { label: 'celana', color: '#10b981' }, // Emerald
 		train: { label: 'jaket', color: '#f59e0b' }, // Amber
 		insurance: { label: 'sepatu', color: '#ef4444' } // Red
@@ -120,7 +120,7 @@
 				</div>
 
 				<!-- Desktop Toggle Group -->
-				<ToggleGroup.Root
+				<!-- <ToggleGroup.Root
 					type="single"
 					bind:value={timeRange}
 					variant="outline"
@@ -131,7 +131,7 @@
 							{item.title}
 						</ToggleGroup.Item>
 					{/each}
-				</ToggleGroup.Root>
+				</ToggleGroup.Root> -->
 
 				<!-- Mobile Select -->
 				<div class="@[767px]/card:hidden">
@@ -149,7 +149,7 @@
 			</div>
 		</Card.Header>
 
-		<Card.Content class="px-2 pt-4 sm:px-6 sm:pt-6">
+		<Card.Content class="px-5 pt-4 sm:px-10 sm:pt-6">
 			<Chart.Container config={chartConfig} class="aspect-auto h-[300px] w-full">
 				<AreaChart
 					legend
@@ -158,24 +158,24 @@
 					series={[
 						{
 							key: 'flight',
-							label: 'Baju',
+							label: 'Total Penjualan',
 							color: chartConfig.flight.color
 						},
-						{
-							key: 'hotel',
-							label: 'Celana',
-							color: chartConfig.hotel.color
-						},
-						{
-							key: 'train',
-							label: 'Jaket',
-							color: chartConfig.train.color
-						},
-						{
-							key: 'insurance',
-							label: 'Sepatu',
-							color: chartConfig.insurance.color
-						}
+						// {
+						// 	key: 'hotel',
+						// 	label: 'Celana',
+						// 	color: chartConfig.hotel.color
+						// },
+						// {
+						// 	key: 'train',
+						// 	label: 'Jaket',
+						// 	color: chartConfig.train.color
+						// },
+						// {
+						// 	key: 'insurance',
+						// 	label: 'Sepatu',
+						// 	color: chartConfig.insurance.color
+						// }
 					]}
 					seriesLayout="stack"
 					props={{
@@ -197,7 +197,7 @@
 						},
 						yAxis: {
 							label: 'Jumlah Penjualan', // 🟢 Tambahkan label vertikal di kiri sini
-							format: (v) => v, // tampilkan nilai numerik di axis
+							format: (v) => `${v}K`, // tampilkan nilai numerik di axis
 							ticks: 5
 						}
 					}}
@@ -243,7 +243,7 @@
 									day: 'numeric'
 								});
 							}}
-							valueFormatter={(value) => `IDR ${value.toLocaleString()}`}
+							valueFormatter={(value) => ` ${value.toLocaleString()}`}
 							indicator="line"
 							class="min-w-[160px]"
 						/>

@@ -6,6 +6,7 @@
 	import { themeConfigStore } from '$lib/stores/themeConfigStore';
 	export let href = '';
 	export let label = '';
+	export let extendClass = '';
 
 	$: isActive = currentPage($page.url.pathname) === href;
 </script>
@@ -18,7 +19,8 @@
 		isActive && 'bg-accent/50 text-primary hover:text-sidebar-accent-foreground',
 		isActive &&
 			$themeConfigStore.navigationColor !== 'default' &&
-			'bg-accent/30 text-sidebar-accent-foreground'
+			'bg-accent/30 text-sidebar-accent-foreground',
+		extendClass
 	)}
 >
 	<div class="wrap flex items-center gap-x-3">

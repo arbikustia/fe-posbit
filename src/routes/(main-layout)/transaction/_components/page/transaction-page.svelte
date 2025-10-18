@@ -11,6 +11,7 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import SearchForm from '../search-form/search-form.svelte';
 	import { cn } from '$lib/utils';
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
 	let showSearch = false;
 	let searchEl: HTMLInputElement | null = null;
@@ -87,7 +88,7 @@
 			type: 'Penjualan',
 			items: [
 				{
-					name: 'Cincin Emas 22K',
+					name: 'Cincin Emas 22K asdas asdasd asdasd adsd',
 					weight: 2,
 					price_per_gram: 950000,
 					total: 1900000
@@ -109,7 +110,7 @@
 					weight: 1.5,
 					price_per_gram: 980000,
 					total: 1470000
-				},
+				}
 			]
 		}
 	];
@@ -143,264 +144,156 @@
 	}
 </script>
 
-<Tabs.Root value="list" class="">
-	<!-- <header class="mb-8">
-	
-		<div class=" mt-6 flex w-full flex-row justify-between gap-4 rounded-full">
+<div class="flex gap-4">
+	<div class="w-[65%]">
+		<table class="w-full overflow-hidden rounded-lg border border-gray-200">
+			<thead class="bg-primary/10">
+				<tr class="text-left text-sm font-medium text-gray-700">
+					<th class="px-4 py-3">No</th>
+					<th class="px-4 py-3">Category</th>
+					<th class="px-4 py-3">Product Name</th>
+					<th class="px-4 py-3">Price</th>
+					<th class="px-4 py-3">Image</th>
+					<th class="px-4 py-3 text-center">Action</th>
+				</tr>
+			</thead>
 
-			<div class="relative flex w-full flex-row items-center justify-end gap-1 rounded-full">
-				<div class="overflow-hidden">
-					{#if showSearch}
-						<input
-							in:fly={{ x: 120, duration: 250 }}
-							out:fly={{ x: 120, duration: 200 }}
-							placeholder="Search transaction..."
-							class="bg-primary/10 w-56 rounded-full border-none px-3 py-2 text-sm shadow-sm transition outline-none"
-						/>
-					{/if}
-				</div>
-
-				<button
-					type="button"
-					class="absolute right-0 rounded-full p-2 transition dark:hover:bg-gray-800"
-					on:click={toggleSearch}
-				>
-					<Icon icon="majesticons:search-line" width="22" height="22" class="text-gray-600" />
-				</button>
-			</div>
-			<Tabs.List>
-				<Tabs.Trigger value="list"
-					><Icon icon="tabler:table" width="24" height="24" style="color: #737373" /></Tabs.Trigger
-				>
-				<Tabs.Trigger value="card">
-					<Icon icon="la:list-ul" width="32" height="32" style="color: #737373" />
-				</Tabs.Trigger>
-			</Tabs.List>
-
-			<div class="flex w-full flex-row items-center justify-end gap-4">
-				<div class="relative">
-					<Select.Root type="single">
-						<Select.Trigger class="w-fit border-none shadow-none ">Status</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="light">Light</Select.Item>
-							<Select.Item value="dark">Dark</Select.Item>
-							<Select.Item value="system">System</Select.Item>
-						</Select.Content>
-					</Select.Root>
-				</div>
-				<div class="relative">
-					<Select.Root type="single">
-						<Select.Trigger class="w-fit border-none shadow-none ">Audit Plan</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="light">Light</Select.Item>
-							<Select.Item value="dark">Dark</Select.Item>
-							<Select.Item value="system">System</Select.Item>
-						</Select.Content>
-					</Select.Root>
-				</div>
-				<div class="relative">
-					<Select.Root type="single">
-						<Select.Trigger class="w-fit border-none shadow-none ">Location Audit</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="light">Light</Select.Item>
-							<Select.Item value="dark">Dark</Select.Item>
-							<Select.Item value="system">System</Select.Item>
-						</Select.Content>
-					</Select.Root>
-				</div>
-				<div class="relative">
-					<Select.Root type="single">
-						<Select.Trigger class="w-fit border-none shadow-none ">Department Audit</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="light">Light</Select.Item>
-							<Select.Item value="dark">Dark</Select.Item>
-							<Select.Item value="system">System</Select.Item>
-						</Select.Content>
-					</Select.Root>
-				</div>
-			</div>
-		</div>
-	</header> -->
-
-	<Tabs.Content value="list">
-		<div class="flex gap-4">
-			<div class="w-[65%]">
-				<table class="w-full overflow-hidden rounded-lg border border-gray-200">
-					<thead class="bg-gray-100">
-						<tr class="text-left text-sm font-medium text-gray-700">
-							<th class="px-4 py-3">No</th>
-							<th class="px-4 py-3">Category</th>
-							<th class="px-4 py-3">Product Name</th>
-							<th class="px-4 py-3">Price</th>
-							<th class="px-4 py-3">Image</th>
-							<th class="px-4 py-3 text-center">Action</th>
-						</tr>
-					</thead>
-
-					<tbody>
-						{#each rows as row, index}
-							<tr class="border-b border-gray-200 text-sm hover:bg-gray-50">
-								<td class="w-20 px-4 py-3 text-gray-500">{index + 1}</td>
-								<td class="px-4 py-3">{row.category}</td>
-								<td class="px-4 py-3">{row.productName}</td>
-								<td class="px-3 py-3 ">
-									<span class="bg-primary/10 p-1 px-2 rounded-sm text-primary font-medium">{formatPrice(row.price)}</span> </td>
-								<td class="px-4 py-3 text-blue-700">
-									<a href={row.image} target="_blank"> Image </a>
-								</td>
-								<td class="w-10 px-4 py-3 text-center">
-									{#if row.open}
-										<div class="flex items-center justify-center gap-2">
-											<Icon
-												icon="solar:cart-plus-bold"
-												width="24"
-												height="24"
-												class="cursor-pointer text-primary"
-											/>
-										</div>
-									{/if}
-								</td>
-							</tr>
+			<tbody>
+				{#each rows as row, index}
+					<tr class="border-b border-gray-200 text-sm hover:bg-gray-50">
+						<td class="w-20 px-4 py-3 text-gray-500">{index + 1}</td>
+						<td class="px-4 py-3">{row.category}</td>
+						<td class="px-4 py-3">{row.productName}</td>
+						<td class="px-3 py-3">
+							<span class="bg-primary/10 text-primary rounded-sm p-1 px-2 font-medium"
+								>{formatPrice(row.price)}</span
+							>
+						</td>
+						<td class="px-4 py-3 text-blue-700">
+							<a href={row.image} target="_blank"> Image </a>
+						</td>
+						<td class="w-10 px-4 py-3 text-center">
+							{#if row.open}
+								<div class="flex items-center justify-center gap-2">
+									<Icon
+										icon="solar:cart-plus-bold"
+										width="24"
+										height="24"
+										class="cursor-pointer text-green-500"
+									/>
+								</div>
+							{/if}
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+		<Pagination.Root count={100} perPage={10}>
+			{#snippet children({ pages, currentPage })}
+				<div class="flex w-full justify-end">
+					<Pagination.Content>
+						<Pagination.Item>
+							<Pagination.PrevButton />
+						</Pagination.Item>
+						{#each pages as page (page.key)}
+							{#if page.type === 'ellipsis'}
+								<Pagination.Item>
+									<Pagination.Ellipsis />
+								</Pagination.Item>
+							{:else}
+								<Pagination.Item>
+									<Pagination.Link {page} isActive={currentPage === page.value}>
+										{page.value}
+									</Pagination.Link>
+								</Pagination.Item>
+							{/if}
 						{/each}
-					</tbody>
-				</table>
-				<Pagination.Root count={100} perPage={10}>
-					{#snippet children({ pages, currentPage })}
-						<div class="flex w-full justify-end">
-							<Pagination.Content>
-								<Pagination.Item>
-									<Pagination.PrevButton />
-								</Pagination.Item>
-								{#each pages as page (page.key)}
-									{#if page.type === 'ellipsis'}
-										<Pagination.Item>
-											<Pagination.Ellipsis />
-										</Pagination.Item>
-									{:else}
-										<Pagination.Item>
-											<Pagination.Link {page} isActive={currentPage === page.value}>
-												{page.value}
-											</Pagination.Link>
-										</Pagination.Item>
-									{/if}
-								{/each}
-								<Pagination.Item>
-									<Pagination.NextButton />
-								</Pagination.Item>
-							</Pagination.Content>
-						</div>
-					{/snippet}
-				</Pagination.Root>
+						<Pagination.Item>
+							<Pagination.NextButton />
+						</Pagination.Item>
+					</Pagination.Content>
+				</div>
+			{/snippet}
+		</Pagination.Root>
+	</div>
+	<div class="w-[35%] rounded-lg border border-gray-100 bg-white p-3 shadow-sm">
+		<!-- Header -->
+		<div class="mb-4 flex items-start justify-between gap-2">
+			<div class="flex items-center gap-2">
+				<div class="bg-primary/10 rounded-md p-1.5">
+					<Icon icon="hugeicons:transaction-history" width="24" height="24" />
+				</div>
+				<h2 class="text-[15px] font-semibold text-gray-800">Detail Transaksi</h2>
 			</div>
-			<div class="w-[35%] rounded-lg border border-gray-100 bg-white p-3 shadow-sm">
-				<!-- Header -->
-				<div class="mb-4 flex items-center gap-2">
-					<div class="bg-primary/10 rounded-md p-1.5">
-						<Icon icon="hugeicons:transaction-history" width="24" height="24" />
-					</div>
-					<h2 class="text-[15px] font-semibold text-gray-800">Detail Transaksi</h2>
+
+			<!-- Total Semua -->
+			<div class=" text-right font-semibold">
+				<div>
+					<span class=" text-xs font-bold">Total</span>
+					<span class="ml-2 text-lg font-bold text-blue-600">{formatCurrency(totalAll)}</span>
 				</div>
-
-				<!-- Loop Transaksi -->
-				<div class="space-y-4">
-					{#each transactions as trx, i}
-						<div class="rounded-lg border border-gray-200 p-3">
-							<div class="flex justify-between text-sm text-gray-600">
-								<!-- <div class="flex items-center gap-2">
-									<span class="font-semibold text-gray-700">{i + 1}</span>
-								</div> -->
-							</div>
-							<!-- <div class="mt-1 text-sm text-primary">
-								 {trx.customer}
-							</div> -->
-
-							<div class="mt-2 rounded-md border border-gray-200">
-								<div class="mb-2 flex items-center justify-between rounded-md bg-primary/10">
-									<span class="font-semibold text-primary py-2 px-2 rounded-md">Products</span>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="1.5"
-										stroke="currentColor"
-										class="h-4 w-4 text-gray-600"
-									>
-										<path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
-									</svg>
-								</div>
-
-								<!-- Item Loop -->
-								<div class="space-y-1 text-[13px] text-gray-600 p-2">
-									{#each trx.items as item}
-										<div class="flex justify-between">
-											<span class="font-medium">{item.name}</span>
-											<span>{formatCurrency(item.total)}</span>
-										</div>
-										<div class="flex justify-between text-[12px] text-gray-500">
-											<span>{item.weight}gr × {formatCurrency(item.price_per_gram)}</span>
-											<span></span>
-										</div>
-									{/each}
-
-									<div
-										class="flex justify-between border-t border-gray-200 pt-1 font-semibold text-gray-800"
-									>
-										<span>Total Transaksi</span>
-										<span>
-											{formatCurrency(trx.items.reduce((sum, i) => sum + i.total, 0))}
-										</span>
-									</div>
-								</div>
-							</div>
-						</div>
-					{/each}
-				</div>
-
-				<!-- Total Semua -->
-				<div class="mt-4 border-t pt-2 text-right text-sm font-semibold">
-					<span class="text-gray-600">TOTAL</span>
-					<span class="ml-2 text-orange-600">{formatCurrency(totalAll)}</span>
-				</div>
-
-				<!-- payment -->
-				<div class="mb-4 flex items-center gap-2">
-					<div class="bg-primary/10 rounded-md p-1.5">
-						<Icon icon="fluent:payment-28-regular" width="24" height="24" style="color: #737373" />
-					</div>
-					<h2 class="text-[15px] font-semibold text-gray-800">Payment</h2>
-				</div>
-
-				<!-- Loop Transaksi -->
-				<div class="space-y-4">
-					<div class="flex items-center justify-between">
-						<div class="text-sm">Payment Method</div>
-						<Select.Root type="single">
-							<Select.Trigger class="w-[180px]">Cash</Select.Trigger>
-							<Select.Content>
-								<Select.Item value="light">Debit</Select.Item>
-								<Select.Item value="dark">Cash</Select.Item>
-							</Select.Content>
-						</Select.Root>
-					</div>
-					<div class="flex items-center justify-between">
-						<div class="text-sm">Amount Received</div>
-						<Input
-							type="text"
-							class="w-[180px] text-right"
-							placeholder="Rp 5.000.000"
-							onchange={handleInput}
-						/>
-					</div>
-				</div>
-
-				<!-- Total Semua -->
-				<div class="mt-4 border-t pt-2 text-right text-sm font-semibold">
-					<span class="text-gray-600">CHANGE</span>
-					<!-- <span class="ml-2 text-orange-600">{formatCurrency(totalAll)}</span> -->
-					<span class="ml-2 text-orange-600">Rp 1.630.000</span>
+				<div>
+					<span class=" text-xs font-bold">Change</span>
+					<span class="ml-2 text-sm font-medium text-orange-500">{formatCurrency(totalAll)}</span>
 				</div>
 			</div>
 		</div>
-	</Tabs.Content>
-	<Tabs.Content value="card">Change your card here.</Tabs.Content>
-</Tabs.Root>
+
+		<!-- Loop Transaksi -->
+		<div class="space-y-4">
+			{#each transactions as trx, i}
+				<div class="rounded-lg p-3">
+					<div class="flex justify-between text-sm text-gray-600"></div>
+
+					<div class="mt-2 rounded-md border border-gray-200">
+						<div
+							class="bg-primary/10 mb-2 flex items-center justify-between rounded-tl-md rounded-tr-md px-2"
+						>
+							<span class="text-primary rounded-md px-2 py-2 font-semibold">Products</span>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+								class="h-4 w-4 text-gray-600"
+							>
+								<path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+							</svg>
+						</div>
+
+						<!-- Item Loop -->
+						<div class="space-y-3 p-2 text-[13px] text-gray-600">
+							{#each trx.items as item}
+								<div class="flex justify-between">
+									<Tooltip.Provider>
+										<Tooltip.Root>
+											<Tooltip.Trigger class="max-w-28 truncate font-medium">
+												<span class="max-w-28 truncate font-medium">{item.name}</span>
+											</Tooltip.Trigger>
+											<Tooltip.Content>{item.name}</Tooltip.Content>
+										</Tooltip.Root>
+									</Tooltip.Provider>
+									<Tooltip.Provider>
+										<Tooltip.Root>
+											<Tooltip.Trigger class="max-w-28 truncate font-medium">
+												<span>{formatCurrency(item.total)}</span>
+											</Tooltip.Trigger>
+											<Tooltip.Content>{formatCurrency(item.total)}</Tooltip.Content>
+										</Tooltip.Root>
+									</Tooltip.Provider>
+
+									<span>
+										<Button class="h-5 w-1">-</Button>
+										<span class="text-md w-3 px-2 font-medium">5</span>
+										<Button class="h-5 w-1">+</Button>
+									</span>
+								</div>
+							{/each}
+						</div>
+					</div>
+				</div>
+			{/each}
+		</div>
+	</div>
+</div>
