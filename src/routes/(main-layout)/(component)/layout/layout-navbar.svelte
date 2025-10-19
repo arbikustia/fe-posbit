@@ -21,7 +21,7 @@
 >
 	<div class={`navbar-container navbar-${$themeConfigStore.navbar}`}>
 		<!-- NAV BAR LEFT -->
-		<a href="/"> <img class="block h-8 w-auto" src={logoSrc} alt="Bantuit" /></a>
+		<a href="/dashboard"> <img class="block h-8 w-auto" src={logoSrc} alt="Bantuit" /></a>
 
 		<!-- NAV BAR CENTER -->
 		<NavBarMenu />
