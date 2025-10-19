@@ -15,7 +15,7 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-2xl md:text-2xl lg:text-3xl font-semibold tabular-nums">
-				Rp 100.000.000
+				Rp 100.000
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
