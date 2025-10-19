@@ -2,45 +2,25 @@
 	import { page } from '$app/state';
 	import { cn } from '$lib/utils';
 	import { currentPage } from '$lib/helpers/page-helper';
-	import { Flight, Hotel, Train, Insurance, Home, User, Document } from '$lib/components/icons';
+	import { Flight, Hotel, Train, Insurance, Home, User, Document, DashboardIcon, PurchaseIcon } from '$lib/components/icons';
 	import * as m from '$lib/paraglide/messages.js';
 
 	const navbarItems = [
 		{
-			icon: Home,
-			label: m.home(),
-			href: '/'
+			icon: DashboardIcon,
+			label: "Dashboard",
+			href: '/dashboard'
 		},
 		{
-			icon: Document,
-			label: m.bookings(),
-			href: '/manage-booking'
+			icon: PurchaseIcon,
+			label: "Purchase",
+			href: '/purchase'
 		},
 		{
 			icon: User,
 			label: m.my_profile(),
-			href: '/profile/m-navigation-profile'
+			href: '/profile'
 		}
-		// {
-		// 	icon: Flight,
-		// 	label: m.flight(),
-		// 	href: '/flight'
-		// },
-		// {
-		// 	icon: Hotel,
-		// 	label: 'Hotel',
-		// 	href: '/hotel'
-		// },
-		// {
-		// 	icon: Train,
-		// 	label: m.train(),
-		// 	href: '/train'
-		// },
-		// {
-		// 	icon: Insurance,
-		// 	label: m.insurance(),
-		// 	href: '/insurance'
-		// }
 	];
 
 	const current = $derived(currentPage(page.url.pathname));

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import Input from '$lib/components/ui/input/input.svelte';
 	import { goto } from '$app/navigation';
 	import { fly } from 'svelte/transition';
 	import { cn } from '$lib/utils';
-	import { onMount, tick } from 'svelte';
+	import { tick } from 'svelte';
+	import * as Pagination from '$lib/components/ui/pagination/index.js';
 
 	let showSearch = false;
 	let searchEl: HTMLInputElement | null = null;
@@ -29,7 +29,7 @@
 		open?: boolean;
 	};
 
-	const customers: Customer[] = [
+	let customers: Customer[] = [
 		{
 			id: 1,
 			customer_name: 'Arbi Kustia',
@@ -67,123 +67,259 @@
 
 	function confirmDelete() {
 		if (selectedCustomer) {
-			const index = customers.findIndex((r) => r.id === selectedCustomer?.id);
-			if (index !== -1) customers.splice(index, 1);
+			customers = customers.filter((c) => c.id !== selectedCustomer?.id);
 			closeDeleteModal();
 		}
 	}
 </script>
 
-<header class="mb-8">
-	<div class="flex items-center justify-between">
-		<h1 class="text-2xl font-bold text-gray-900">Customer List</h1>
-	</div>
-
-	<div class="relative mt-6 flex w-full flex-row justify-between gap-4 rounded-full">
-		<Button
-			onclick={() => goto('/master/customer/create')}
-			class="flex items-center justify-center rounded-full px-4 py-2"
-		>
-			<Icon icon="ic:round-plus" width="24" height="24" />
-			New Customer
-		</Button>
-
-		<div class="flex w-fit flex-row items-center justify-end gap-1 rounded-full">
-			<div class="overflow-hidden">
-				{#if showSearch}
-					<input
-						bind:this={searchEl}
-						in:fly={{ x: 120, duration: 250 }}
-						out:fly={{ x: 120, duration: 200 }}
-						placeholder="Search customer..."
-						class="bg-primary/10 w-56 rounded-full border-none px-3 py-2 text-sm shadow-sm transition outline-none"
-					/>
-				{/if}
+<div class="w-full">
+	<div class="mx-auto max-w-7xl">
+		<!-- HEADER -->
+		<header class="mb-4 sm:mb-6 md:mb-8">
+			<div class="flex items-center justify-between">
+				<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">
+					Customer List
+				</h1>
 			</div>
 
-			<button
-				type="button"
-				class="absolute right-0 rounded-full p-2 transition dark:hover:bg-gray-800"
-				on:click={toggleSearch}
+			<div
+				class="mt-3 flex flex-row gap-3 sm:mt-4 sm:flex-row sm:items-center sm:justify-between md:mt-6"
 			>
-				<Icon icon="majesticons:search-line" width="22" height="22" class="text-gray-600" />
-			</button>
+				<!-- New Customer Button -->
+				<Button
+					onclick={() => goto('/master/customer/create')}
+					class="flex w-32 items-center justify-center gap-2 rounded-full px-3 py-2 text-xs sm:w-auto sm:px-4 md:w-fit md:text-sm"
+				>
+					<Icon icon="ic:round-plus" width="20" height="20" class="md:h-6 md:w-6" />
+					<span>New Customer</span>
+				</Button>
+
+				<!-- Search Container -->
+				<div class="relative flex w-full items-center justify-end sm:w-auto">
+					<div class="overflow-hidden">
+						{#if showSearch}
+							<input
+								bind:this={searchEl}
+								transition:fly={{ x: 120, duration: 250 }}
+								placeholder="Search customer..."
+								class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
+							/>
+						{/if}
+					</div>
+
+					<button
+						type="button"
+						class="absolute right-0 rounded-full p-2 transition hover:bg-gray-100 dark:hover:bg-gray-800"
+						onclick={toggleSearch}
+					>
+						<Icon
+							icon="majesticons:search-line"
+							width="20"
+							height="20"
+							class="text-gray-600 md:h-[22px] md:w-[22px]"
+						/>
+					</button>
+				</div>
+			</div>
+		</header>
+
+		<!-- TABLE - Horizontal Scroll Container -->
+		<div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+			<div class="inline-block min-w-full align-middle">
+				<div class="overflow-hidden">
+					<table class="min-w-full divide-y divide-gray-200">
+						<thead class="bg-gray-100">
+							<tr>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									No
+								</th>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Customer Name
+								</th>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Phone
+								</th>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Member
+								</th>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Member Code
+								</th>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Point
+								</th>
+								<th
+									class="px-3 py-2.5 text-center text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Action
+								</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-gray-200 bg-white">
+							{#each customers as c, index}
+								<tr class="transition hover:bg-gray-50">
+									<td
+										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm"
+									>
+										{index + 1}
+									</td>
+									<td
+										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
+										{c.customer_name}
+									</td>
+									<td class="px-3 py-2.5 whitespace-nowrap sm:px-4 sm:py-3 md:text-sm">{c.phone}</td
+									>
+									<td class="px-3 py-2.5 whitespace-nowrap sm:px-4 sm:py-3 md:text-sm">
+										<span
+											class={cn(
+												'inline-flex rounded-md px-2 py-0.5 text-xs font-medium md:py-1 md:text-sm',
+												c.is_member
+													? 'bg-green-500/10 text-green-700'
+													: 'bg-red-500/10 text-red-700'
+											)}
+										>
+											{c.is_member ? 'Yes' : 'No'}
+										</span>
+									</td>
+									<td class="px-3 py-2.5 whitespace-nowrap sm:px-4 sm:py-3 md:text-sm"
+										>{c.member_code || '-'}</td
+									>
+									<td class="px-3 py-2.5 whitespace-nowrap sm:px-4 sm:py-3 md:text-sm">{c.point}</td
+									>
+									<td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
+										{#if c.open}
+											<div class="flex items-center justify-center gap-2 md:gap-3">
+												<button
+													type="button"
+													onclick={() => openDeleteModal(c)}
+													class="rounded-full p-1.5 transition hover:scale-110 hover:bg-red-50 md:p-2"
+													aria-label="Delete customer"
+												>
+													<Icon
+														icon="material-symbols-light:delete-rounded"
+														width="18"
+														height="18"
+														class="md:h-5 md:w-5"
+														style="color: #ff0f22"
+													/>
+												</button>
+												<button
+													type="button"
+													class="rounded-full p-1.5 transition hover:scale-110 hover:bg-yellow-50 md:p-2"
+													aria-label="Edit customer"
+												>
+													<Icon
+														icon="lucide:edit"
+														width="16"
+														height="16"
+														class="md:h-[18px] md:w-[18px]"
+														style="color: #cea200"
+													/>
+												</button>
+											</div>
+										{/if}
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- PAGINATION -->
+		<div class="w-full">
+			<Pagination.Root count={100} perPage={10}>
+				{#snippet children({ pages, currentPage })}
+					<div class="mt-4 flex w-full justify-end">
+						<Pagination.Content>
+							<Pagination.Item class="hidden md:block"><Pagination.PrevButton /></Pagination.Item>
+							{#each pages as page (page.key)}
+								{#if page.type === 'ellipsis'}
+									<Pagination.Item><Pagination.Ellipsis /></Pagination.Item>
+								{:else}
+									<Pagination.Item>
+										<Pagination.Link {page} isActive={currentPage === page.value}>
+											{page.value}
+										</Pagination.Link>
+									</Pagination.Item>
+								{/if}
+							{/each}
+							<Pagination.Item class="hidden md:block"><Pagination.NextButton /></Pagination.Item>
+						</Pagination.Content>
+					</div>
+				{/snippet}
+			</Pagination.Root>
 		</div>
 	</div>
-</header>
-
-<div class="overflow-hidden rounded-lg border border-gray-200">
-	<table class="w-full">
-		<thead class="bg-gray-100">
-			<tr class="text-left text-sm font-medium text-gray-700">
-				<th class="px-4 py-3">No</th>
-				<th class="px-4 py-3">Customer Name</th>
-				<th class="px-4 py-3">Phone</th>
-				<th class="px-4 py-3">Member</th>
-				<th class="px-4 py-3">Member Code</th>
-				<th class="px-4 py-3">Point</th>
-				<th class="px-4 py-3 text-center">Action</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each customers as c, index}
-				<tr class="border-b border-gray-200 text-sm hover:bg-gray-50">
-					<td class="w-16 px-4 py-3 text-gray-500">{index + 1}</td>
-					<td class="px-4 py-3">{c.customer_name}</td>
-					<td class="px-4 py-3">{c.phone}</td>
-					<td class="px-4 py-3">
-						<span
-							class={cn(
-								'rounded-md px-2 py-1',
-								c.is_member
-									? 'bg-green-500/10 text-green-700'
-									: 'bg-red-500/10 text-red-700'
-							)}
-						>
-							{c.is_member ? 'Yes' : 'No'}
-						</span>
-					</td>
-					<td class="px-4 py-3">{c.member_code || '-'}</td>
-					<td class="px-4 py-3">{c.point}</td>
-					<td class="w-10 px-4 py-3">
-						<div class="flex items-center justify-center gap-3">
-							<Icon
-								icon="material-symbols-light:delete-rounded"
-								width="20"
-								height="20"
-								class="cursor-pointer transition hover:scale-110"
-								style="color: #ff0f22"
-								onclick={() => openDeleteModal(c)}
-							/>
-							<Icon
-								icon="lucide:edit"
-								class="cursor-pointer transition hover:scale-110"
-								width="16"
-								height="16"
-								style="color: #cea200"
-							/>
-						</div>
-					</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
 </div>
 
+<!-- 🧩 DELETE CONFIRM MODAL -->
 {#if showDeleteModal}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-		transition:fly={{ y: 20, duration: 200 }}
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm"
+		onclick={closeDeleteModal}
+		transition:fly={{ y: 10, duration: 250 }}
 	>
-		<div class="w-[90%] rounded-2xl bg-white p-6 shadow-lg sm:w-[360px]">
-			<h2 class="mb-3 text-lg font-semibold text-gray-800">Confirm Deletion</h2>
-			<p class="mb-6 text-sm text-gray-600">
-				Delete customer
-				<span class="font-semibold text-gray-800">{selectedCustomer?.customer_name}</span>?
+		<div
+			class="relative w-full max-w-[90%] rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl sm:max-w-md sm:p-6 dark:border-gray-700 dark:bg-gray-900"
+			onclick={(e) => e.stopPropagation()}
+			transition:fly={{ y: 15, duration: 200 }}
+		>
+			<div
+				class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600 sm:mb-4 sm:h-14 sm:w-14"
+			>
+				<Icon
+					icon="material-symbols:warning-rounded"
+					width="28"
+					height="28"
+					class="sm:h-8 sm:w-8"
+				/>
+			</div>
+
+			<h2
+				class="mb-2 text-center text-base font-semibold text-gray-800 sm:text-lg dark:text-gray-100"
+			>
+				Delete Confirmation
+			</h2>
+
+			<p class="mb-5 text-center text-sm text-gray-600 sm:mb-6 dark:text-gray-400">
+				Are you sure you want to delete
+				<span class="font-semibold text-gray-800 dark:text-gray-100"
+					>{selectedCustomer?.customer_name}</span
+				>?
+				<span class="block sm:inline">This action cannot be undone.</span>
 			</p>
-			<div class="flex justify-end gap-3">
-				<Button variant="outline" class="text-sm" onclick={closeDeleteModal}>Cancel</Button>
-				<Button class="bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700" onclick={confirmDelete}>
+
+			<div class="flex flex-col gap-2 sm:flex-row sm:justify-center sm:gap-3">
+				<Button
+					variant="outline"
+					class="w-full rounded-full px-4 py-2 text-sm transition hover:bg-gray-100 sm:w-auto dark:hover:bg-gray-800"
+					onclick={closeDeleteModal}
+				>
+					Cancel
+				</Button>
+
+				<Button
+					class="w-full rounded-full bg-red-600 px-4 py-2 text-sm text-white transition hover:bg-red-700 sm:w-auto"
+					onclick={confirmDelete}
+				>
 					Delete
 				</Button>
 			</div>

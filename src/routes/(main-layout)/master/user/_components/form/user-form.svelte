@@ -8,7 +8,6 @@
 	import type { userSchema } from './schema';
 	import { goto } from '$app/navigation';
 
-	// Props dari parent (misalnya di load function)
 	type UserFormProps = {
 		form: SuperForm<z.infer<typeof userSchema>>;
 		handleSubmit: () => void;
@@ -29,8 +28,13 @@
 	);
 </script>
 
-<form method="POST" use:enhance onsubmit={handleSubmit} class="mx-auto w-full max-w-md py-4">
-	<h2 class="mb-6 text-base font-bold">Create User Data</h2>
+<form
+	method="POST"
+	use:enhance
+	onsubmit={handleSubmit}
+	class="mx-auto w-full max-w-lg py-4 px-4 sm:px-6 md:px-8"
+>
+	<h2 class="mb-6 text-lg font-bold sm:text-xl md:text-2xl">Create User Data</h2>
 
 	<!-- USERNAME -->
 	<Form.Field {form} name="userName">
@@ -41,7 +45,7 @@
 			<Input
 				placeholder="Enter user name"
 				bind:value={$formData.userName}
-				class="mt-1 w-full pr-10 {$errors.userName ? 'border-red-500 focus:border-red-500' : ''}"
+				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.userName ? 'border-red-500 focus:border-red-500' : ''}"
 			/>
 		</Form.Control>
 		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
@@ -57,7 +61,7 @@
 				type="password"
 				placeholder="Enter password"
 				bind:value={$formData.password}
-				class="mt-1 w-full pr-10 {$errors.password ? 'border-red-500 focus:border-red-500' : ''}"
+				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.password ? 'border-red-500 focus:border-red-500' : ''}"
 			/>
 		</Form.Control>
 		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
@@ -70,7 +74,7 @@
 				Role <span class="text-red-500">*</span>
 			</Form.Label>
 			<Select.Root type="single" name="role" bind:value={$formData.role}>
-				<Select.Trigger class="mt-1 w-full rounded-md border px-3 py-2 text-sm">
+				<Select.Trigger class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base">
 					{triggerContent}
 				</Select.Trigger>
 				<Select.Content>
@@ -89,17 +93,20 @@
 	</Form.Field>
 
 	<!-- BUTTONS -->
-	<div class="flex items-center justify-end gap-4 pt-6">
+	<div class="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-end sm:items-center">
 		<Button
 			type="button"
 			variant="outline"
-			class="text-sm text-gray-500 hover:underline"
-			onclick={() => {
-				goto('/master/user');
-			}}
+			class="w-full rounded-full px-4 py-2 text-sm text-gray-500 hover:underline sm:w-auto"
+			onclick={() => goto('/master/user')}
 		>
 			Cancel
 		</Button>
-		<Button type="submit" class="px-4 py-2 text-sm">Save</Button>
+		<Button
+			type="submit"
+			class="w-full rounded-full bg-primary px-4 py-2 text-sm text-white transition hover:bg-primary-dark sm:w-auto"
+		>
+			Save
+		</Button>
 	</div>
 </form>

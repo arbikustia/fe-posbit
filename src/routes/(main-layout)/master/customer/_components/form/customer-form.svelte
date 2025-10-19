@@ -41,7 +41,7 @@
 
 	// Track previous value untuk avoid infinite loop
 	let previousIsMember = $state($formData.is_member);
-	
+
 	$effect(() => {
 		// Hanya reset jika is_member berubah dari true ke false
 		if (previousIsMember === true && $formData.is_member === false) {
@@ -62,8 +62,13 @@
 	});
 </script>
 
-<form method="POST" use:enhance onsubmit={handleSubmit} class="mx-auto w-full max-w-md py-4">
-	<h2 class="mb-6 text-base font-bold">Create Customer Data</h2>
+<form
+	method="POST"
+	use:enhance
+	onsubmit={handleSubmit}
+	class="mx-auto w-full max-w-md px-4 py-4 sm:px-6 md:px-8"
+>
+	<h2 class="mb-6 text-lg font-bold sm:text-xl md:text-2xl">Create Customer Data</h2>
 
 	<!-- CUSTOMER NAME -->
 	<Form.Field {form} name="customer_name">
@@ -72,7 +77,9 @@
 			<Input
 				placeholder="Enter customer name"
 				bind:value={$formData.customer_name}
-				class="mt-1 w-full pr-10 {$errors.customer_name ? 'border-red-500' : ''}"
+				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.customer_name
+					? 'border-red-500 focus:border-red-500'
+					: ''}"
 			/>
 		</Form.Control>
 		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
@@ -85,7 +92,9 @@
 			<Input
 				placeholder="Enter phone number"
 				bind:value={$formData.phone}
-				class="mt-1 w-full pr-10 {$errors.phone ? 'border-red-500' : ''}"
+				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.phone
+					? 'border-red-500 focus:border-red-500'
+					: ''}"
 			/>
 		</Form.Control>
 		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
@@ -97,7 +106,7 @@
 			<Form.Label class="text-sm font-medium text-gray-700">Is Member?</Form.Label>
 			<div class="flex items-center space-x-2">
 				<Switch id="is_member" bind:checked={$formData.is_member} />
-				<Label for="is_member" class="text-sm">{ $formData.is_member ? 'Yes' : 'No' }</Label>
+				<Label for="is_member" class="text-sm">{$formData.is_member ? 'Yes' : 'No'}</Label>
 			</div>
 		</Form.Control>
 		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
@@ -139,7 +148,9 @@
 				<Input
 					placeholder="Enter member code"
 					bind:value={$formData.member_code}
-					class="mt-1 w-full pr-10 {$errors.member_code ? 'border-red-500' : ''}"
+					class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.member_code
+						? 'border-red-500 focus:border-red-500'
+						: ''}"
 				/>
 			</Form.Control>
 			<Form.FieldErrors class="mt-1 text-sm text-red-600" />
@@ -153,22 +164,29 @@
 			<Input
 				type="number"
 				bind:value={$formData.point}
-				class="mt-1 w-full pr-10 {$errors.point ? 'border-red-500' : ''}"
+				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.point
+					? 'border-red-500 focus:border-red-500'
+					: ''}"
 			/>
 		</Form.Control>
 		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
 	</Form.Field>
 
-	<!-- BUTTON -->
-	<div class="flex items-center justify-end gap-4 pt-6">
+	<!-- BUTTONS -->
+	<div class="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
 		<Button
 			type="button"
 			variant="outline"
-			class="text-sm text-gray-500 hover:underline"
+			class="w-full rounded-full px-4 py-2 text-sm text-gray-500 hover:underline sm:w-auto"
 			onclick={() => goto('/master/customer')}
 		>
 			Cancel
 		</Button>
-		<Button type="submit" class="px-4 py-2 text-sm">Save</Button>
+		<Button
+			type="submit"
+			class="bg-primary hover:bg-primary-dark w-full rounded-full px-4 py-2 text-sm text-white transition sm:w-auto"
+		>
+			Save
+		</Button>
 	</div>
 </form>

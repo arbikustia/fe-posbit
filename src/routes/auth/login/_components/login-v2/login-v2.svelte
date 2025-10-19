@@ -33,25 +33,18 @@
 	const { form: formData, enhance, submitting } = form;
 </script>
 
-<div class="relative min-h-screen bg-white">
-	<div class="absolute inset-0">
-		<img
-			class="size-full object-cover"
-			src="/images/login-image.jpg"
-			alt=""
-		/>
-		<div class="absolute inset-0"></div>
-	</div>
-
+<div
+	class="relative min-h-screen bg-white bg-cover bg-center bg-no-repeat"
+	style="background-image: url('/images/login-image.jpg');"
+>
 	<div class="relative flex min-h-screen items-center justify-center px-4 py-5 sm:px-6 lg:px-8">
 		<div class="w-full max-w-md space-y-8 rounded-xl bg-white py-5 shadow-md">
 			<div class="text-center">
 				<img class="mx-auto h-12 w-auto" src="/images/logo-bantuit-text.png" alt="Your Company" />
-				<!-- <h2 class="mt-6 text-2xl font-bold tracking-tight text-black">AUDIT MANAGEMENT SYSTEM</h2> -->
-				<h2 class="text-lg text-gray-500 tracking-tight">Sign in to your account</h2>
+				<h2 class="text-lg tracking-tight text-gray-500">Sign in to your account</h2>
 			</div>
 
-			<div class=" px-8 py-8">
+			<div class="px-8 py-8">
 				{#if !!errorMsg}
 					<div class="mb-4" transition:fly>
 						<Alert.Root variant="destructive">
@@ -88,7 +81,7 @@
 									<button
 										type="button"
 										class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-										onclick={() => showPassword = !showPassword}
+										onclick={() => (showPassword = !showPassword)}
 									>
 										{#if showPassword}
 											<Icon icon="lucide:eye-off" class="size-5" />

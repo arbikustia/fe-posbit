@@ -1,13 +1,10 @@
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table/index.js';
 	import Icon from '@iconify/svelte';
-	import * as Pagination from '$lib/components/ui/pagination/index.js';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import Input from '$lib/components/ui/input/input.svelte';
+	import * as Pagination from '$lib/components/ui/pagination/index.js';
 	import { goto } from '$app/navigation';
-	import { onMount, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import { fly } from 'svelte/transition';
-	import { cn } from '$lib/utils';
 
 	let showSearch = false;
 	let searchEl: HTMLInputElement | null = null;
@@ -20,7 +17,6 @@
 		}
 	}
 
-	// 🔹 Struktur data sesuai gambar
 	type ItemRow = {
 		id: number;
 		item_name: string;
@@ -31,8 +27,7 @@
 		open?: boolean;
 	};
 
-	// 🔹 Data dummy
-	const rows: ItemRow[] = [
+	let rows: ItemRow[] = [
 		{
 			id: 1,
 			item_name: 'Kopi Kapal Api',
@@ -61,110 +56,102 @@
 			open: true
 		}
 	];
-
-	// 🔥 State untuk modal delete
-	let showDeleteModal = false;
-	let selectedItem: ItemRow | null = null;
-
-	function openDeleteModal(item: ItemRow) {
-		selectedItem = item;
-		showDeleteModal = true;
-	}
-
-	function closeDeleteModal() {
-		showDeleteModal = false;
-		selectedItem = null;
-	}
-
-	function confirmDelete() {
-		if (selectedItem) {
-			console.log('Deleting item:', selectedItem.item_name);
-			const index = rows.findIndex((r) => r.id === selectedItem?.id);
-			if (index !== -1) rows.splice(index, 1);
-			closeDeleteModal();
-		}
-	}
 </script>
 
-<!-- HEADER -->
-<header class="mb-8">
-	<div class="flex items-center justify-between">
-		<h1 class="text-2xl font-bold text-gray-900">Master Item</h1>
-	</div>
-
-	<div class="relative mt-6 flex w-full flex-row justify-between gap-4 rounded-full">
-		<div class="h-9"></div>
-		<div class="flex w-fit flex-row items-center justify-end gap-1 rounded-full">
-			<div class="overflow-hidden">
-				{#if showSearch}
-					<input
-						bind:this={searchEl}
-						in:fly={{ x: 120, duration: 250 }}
-						out:fly={{ x: 120, duration: 200 }}
-						placeholder="Search item..."
-						class="bg-primary/10 w-56 rounded-full border-none px-3 py-2 text-sm shadow-sm transition outline-none"
-					/>
-				{/if}
-			</div>
-
-			<button
-				type="button"
-				class="absolute right-0 rounded-full p-2 transition dark:hover:bg-gray-800"
-				on:click={toggleSearch}
+<div class="mx-auto w-full max-w-7xl">
+	<!-- HEADER -->
+	<header class="mb-4 sm:mb-6 md:mb-8">
+		<div class=" flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">
+			<!-- New Customer Button -->
+			<Button
+				variant="ghost"
+				class="flex w-28 cursor-default items-center justify-center gap-2 rounded-full bg-transparent px-0 py-2  text-xs hover:bg-transparent sm:w-auto  md:w-fit md:text-sm"
 			>
-				<Icon icon="majesticons:search-line" width="22" height="22" class="text-gray-600" />
-			</button>
-		</div>
-	</div>
-</header>
+				<div class="flex items-center justify-between">
+					<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">
+						Master Item
+					</h1>
+				</div>
+			</Button>
 
-<!-- TABLE -->
-<div class="overflow-hidden rounded-lg border border-gray-200">
-	<table class="w-full">
-		<thead class="bg-gray-100">
-			<tr class="text-left text-sm font-medium text-gray-700">
-				<th class="px-4 py-3">No</th>
-				<th class="px-4 py-3">Item Name</th>
-				<th class="px-4 py-3">Qty Stok Toko</th>
-				<th class="px-4 py-3">Harga Beli</th>
-				<th class="px-4 py-3">Harga Jual</th>
-				<th class="px-4 py-3">Qty</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each rows as row, index}
-				<tr class="border-b border-gray-200 text-sm hover:bg-gray-50">
-					<td class="w-16 px-4 py-3 text-gray-500">{index + 1}</td>
-					<td class="px-4 py-3 font-medium">{row.item_name}</td>
-					<td class="px-4 py-3">{row.qty_stok_toko}</td>
-					<td class="px-4 py-3">Rp {row.harga_beli.toLocaleString()}</td>
-					<td class="px-4 py-3">Rp {row.harga_jual.toLocaleString()}</td>
-					<td class="px-4 py-3">{row.qty}</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
-</div>
-
-<!-- PAGINATION -->
-<Pagination.Root count={100} perPage={10}>
-	{#snippet children({ pages, currentPage })}
-		<div class="mt-4 flex w-full justify-end">
-			<Pagination.Content>
-				<Pagination.Item><Pagination.PrevButton /></Pagination.Item>
-				{#each pages as page (page.key)}
-					{#if page.type === 'ellipsis'}
-						<Pagination.Item><Pagination.Ellipsis /></Pagination.Item>
-					{:else}
-						<Pagination.Item>
-							<Pagination.Link {page} isActive={currentPage === page.value}>
-								{page.value}
-							</Pagination.Link>
-						</Pagination.Item>
+			<!-- Search Container -->
+			<div class="relative flex w-full items-center justify-end sm:w-auto">
+				<div class="overflow-hidden">
+					{#if showSearch}
+						<input
+							bind:this={searchEl}
+							transition:fly={{ x: 120, duration: 250 }}
+							placeholder="Search customer..."
+							class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
+						/>
 					{/if}
-				{/each}
-				<Pagination.Item><Pagination.NextButton /></Pagination.Item>
-			</Pagination.Content>
+				</div>
+
+				<button
+					type="button"
+					class="absolute right-0 rounded-full p-2 transition hover:bg-gray-100 dark:hover:bg-gray-800"
+					onclick={toggleSearch}
+				>
+					<Icon
+						icon="majesticons:search-line"
+						width="20"
+						height="20"
+						class="text-gray-600 md:h-[22px] md:w-[22px]"
+					/>
+				</button>
+			</div>
 		</div>
-	{/snippet}
-</Pagination.Root>
+	</header>
+
+	<!-- TABLE -->
+	<div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+		<table class="min-w-full divide-y divide-gray-200">
+			<thead class="bg-gray-100">
+				<tr class="text-left text-sm font-medium text-gray-700">
+					<th class="px-4 py-3">No</th>
+					<th class="px-4 py-3">Item Name</th>
+					<th class="px-4 py-3">Qty Stok Toko</th>
+					<th class="px-4 py-3">Harga Beli</th>
+					<th class="px-4 py-3">Harga Jual</th>
+					<th class="px-4 py-3">Qty</th>
+				</tr>
+			</thead>
+			<tbody class="divide-y divide-gray-200 bg-white">
+				{#each rows as row, index}
+					<tr class="transition hover:bg-gray-50">
+						<td class="px-4 py-3 text-gray-500">{index + 1}</td>
+						<td class="px-4 py-3 font-medium">{row.item_name}</td>
+						<td class="px-4 py-3">{row.qty_stok_toko}</td>
+						<td class="px-4 py-3">Rp {row.harga_beli.toLocaleString()}</td>
+						<td class="px-4 py-3">Rp {row.harga_jual.toLocaleString()}</td>
+						<td class="px-4 py-3">{row.qty}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+	<!-- PAGINATION -->
+	<div class="w-full">
+		<Pagination.Root count={100} perPage={10}>
+			{#snippet children({ pages, currentPage })}
+				<div class="mt-4 flex w-full justify-end">
+					<Pagination.Content>
+						<Pagination.Item class="hidden md:block"><Pagination.PrevButton /></Pagination.Item>
+						{#each pages as page (page.key)}
+							{#if page.type === 'ellipsis'}
+								<Pagination.Item><Pagination.Ellipsis /></Pagination.Item>
+							{:else}
+								<Pagination.Item>
+									<Pagination.Link {page} isActive={currentPage === page.value}>
+										{page.value}
+									</Pagination.Link>
+								</Pagination.Item>
+							{/if}
+						{/each}
+						<Pagination.Item class="hidden md:block"><Pagination.NextButton /></Pagination.Item>
+					</Pagination.Content>
+				</div>
+			{/snippet}
+		</Pagination.Root>
+	</div>
+</div>

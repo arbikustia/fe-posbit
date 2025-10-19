@@ -37,6 +37,9 @@ import FindingsIcon from './findings.svelte';
 import CapaIcon from './capa.svelte';
 import ReportIcon from './report.svelte'
 import TransactionIcon from './transaction.svelte';
+import DashboardIcon from './dashboard-icon.svelte';
+import PurchaseIcon from './purchase-icon.svelte';
+import MasterIcon from './master-icon.svelte';
 
 export {
 	Home,
@@ -77,5 +80,8 @@ export {
 	FindingsIcon,
 	CapaIcon,
 	ReportIcon,
-	TransactionIcon
+	TransactionIcon,
+	DashboardIcon,
+	PurchaseIcon,
+	MasterIcon
 };

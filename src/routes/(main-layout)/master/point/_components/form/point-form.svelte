@@ -18,8 +18,8 @@
 	const { form: formData, enhance, errors } = form;
 </script>
 
-<form method="POST" use:enhance onsubmit={handleSubmit} class="mx-auto w-full max-w-md py-4">
-	<h2 class="mb-6 text-base font-bold">Create Point Data</h2>
+<form method="POST" use:enhance onsubmit={handleSubmit} class="mx-auto w-full max-w-md py-4 px-4 sm:px-6 md:px-8">
+	<h2 class="mb-6 text-lg font-bold sm:text-xl md:text-2xl">Create Point Data</h2>
 
 	<!-- POINT PER VALUE -->
 	<Form.Field {form} name="pointPerValue">
@@ -30,7 +30,7 @@
 			<Input
 				placeholder="Enter amount per point"
 				bind:value={$formData.pointPerValue}
-				class="mt-1 w-full pr-10 { $errors.pointPerValue ? 'border-red-500 focus:border-red-500' : '' }"
+				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.pointPerValue ? 'border-red-500 focus:border-red-500' : ''}"
 			/>
 		</Form.Control>
 		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
@@ -46,7 +46,7 @@
 				type="text"
 				placeholder="Enter point value"
 				bind:value={$formData.pointValue}
-				class="mt-1 w-full pr-10 { $errors.pointValue ? 'border-red-500 focus:border-red-500' : '' }"
+				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.pointValue ? 'border-red-500 focus:border-red-500' : ''}"
 			/>
 		</Form.Control>
 		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
@@ -67,15 +67,20 @@
 	</Form.Field>
 
 	<!-- BUTTONS -->
-	<div class="flex items-center justify-end gap-4 pt-6">
+	<div class="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-end sm:items-center">
 		<Button
 			type="button"
 			variant="outline"
-			class="text-sm text-gray-500 hover:underline"
+			class="w-full rounded-full px-4 py-2 text-sm text-gray-500 hover:underline sm:w-auto"
 			onclick={() => goto('/master/point')}
 		>
 			Cancel
 		</Button>
-		<Button type="submit" class="px-4 py-2 text-sm">Save</Button>
+		<Button
+			type="submit"
+			class="w-full rounded-full bg-primary px-4 py-2 text-sm text-white transition hover:bg-primary-dark sm:w-auto"
+		>
+			Save
+		</Button>
 	</div>
 </form>

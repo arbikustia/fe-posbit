@@ -28,43 +28,66 @@
 	);
 </script>
 
-<form method="POST" use:enhance onsubmit={handleSubmit} class="mx-auto w-full max-w-2xl py-4">
-	<h2 class="mb-6 text-base font-bold">Create Report Invoice</h2>
+<form
+	method="POST"
+	use:enhance
+	onsubmit={handleSubmit}
+	class="mx-auto w-full max-w-lg px-4 py-4 sm:px-6 md:px-8"
+>
+	<h2 class="mb-6 text-lg font-bold sm:text-xl md:text-2xl">Create Report Invoice</h2>
 
-	<div class="gap-4">
-		<!-- Invoice ID -->
-		<Form.Field {form} name="inv_id">
-			<Form.Control>
-				<Form.Label>Invoice</Form.Label>
-				<Select.Root type="single" name="item_id" bind:value={$formData.inv_id}>
-					<Select.Trigger class="w-full rounded-md border px-3 py-2 text-sm"
-						>Select Invoice</Select.Trigger
-					>
-					<Select.Content>
-						<Select.Group>
-							<Select.Label>Select Invoice</Select.Label>
-							{#each invoiceOptions as i (i.value)}
-								<Select.Item value={i.value} label={i.label}>{i.label}</Select.Item>
-							{/each}
-						</Select.Group>
-					</Select.Content>
-				</Select.Root>
-			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
+	<!-- INVOICE ID -->
+	<Form.Field {form} name="inv_id">
+		<Form.Control>
+			<Form.Label class="text-sm font-medium text-gray-700">
+				Invoice <span class="text-red-500">*</span>
+			</Form.Label>
+			<Select.Root type="single" name="inv_id" bind:value={$formData.inv_id}>
+				<Select.Trigger class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base">
+					{invoiceOptions.find((r) => r.value === $formData.inv_id)?.label ?? 'Select Invoice'}
+				</Select.Trigger>
+				<Select.Content>
+					<Select.Group>
+						<Select.Label>Select Invoice</Select.Label>
+						{#each invoiceOptions as i (i.value)}
+							<Select.Item value={i.value} label={i.label}>{i.label}</Select.Item>
+						{/each}
+					</Select.Group>
+				</Select.Content>
+			</Select.Root>
+		</Form.Control>
+		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
+	</Form.Field>
 
-		<!-- Description -->
-		<Form.Field {form} name="description">
-			<Form.Control>
-				<Form.Label>Description</Form.Label>
-				<Input type="text" placeholder="Enter description" bind:value={$formData.description} />
-			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
-	</div>
+	<!-- DESCRIPTION -->
+	<Form.Field {form} name="description" class="mt-4">
+		<Form.Control>
+			<Form.Label class="text-sm font-medium text-gray-700">Description</Form.Label>
+			<Input
+				type="text"
+				placeholder="Enter description"
+				bind:value={$formData.description}
+				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base"
+			/>
+		</Form.Control>
+		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
+	</Form.Field>
 
-	<div class="flex justify-end gap-4 pt-6">
-		<Button variant="outline" onclick={() => goto('/report/invoice')}>Cancel</Button>
-		<Button type="submit">Save</Button>
+	<!-- BUTTONS -->
+	<div class="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
+		<Button
+			type="button"
+			variant="outline"
+			class="w-full rounded-full px-4 py-2 text-sm text-gray-500 hover:underline sm:w-auto"
+			onclick={() => goto('/report/invoice')}
+		>
+			Cancel
+		</Button>
+		<Button
+			type="submit"
+			class="bg-primary hover:bg-primary-dark w-full rounded-full px-4 py-2 text-sm text-white transition sm:w-auto"
+		>
+			Save
+		</Button>
 	</div>
 </form>

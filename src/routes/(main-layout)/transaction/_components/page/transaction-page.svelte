@@ -151,7 +151,7 @@
 				<tr class="text-left text-sm font-medium text-gray-700">
 					<th class="px-4 py-3">No</th>
 					<th class="px-4 py-3">Category</th>
-					<th class="px-4 py-3">Product Name</th>
+					<th class="px-4 py-3">Item Name</th>
 					<th class="px-4 py-3">Price</th>
 					<th class="px-4 py-3">Image</th>
 					<th class="px-4 py-3 text-center">Action</th>
@@ -249,7 +249,7 @@
 						<div
 							class="bg-primary/10 mb-2 flex items-center justify-between rounded-tl-md rounded-tr-md px-2"
 						>
-							<span class="text-primary rounded-md px-2 py-2 font-semibold">Products</span>
+							<span class="text-primary rounded-md px-2 py-2 font-semibold">Items</span>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								fill="none"

@@ -10,72 +10,60 @@
 	import { cn, themeSrcLogo } from '$lib/utils';
 	import { userStore } from '$lib/stores/userStore';
 	import {
-		Home,
-		DocumentSearch,
-		Document,
-		Help,
-		Information,
 		Close,
-		Flight,
-		Hotel,
-		Train,
-		Insurance,
-		People,
-		Reset,
 		User,
-		History
+		DashboardIcon,
+		TransactionIcon,
+		PurchaseIcon,
+		MasterIcon
 	} from '$lib/components/icons';
-	import * as m from '$lib/paraglide/messages.js';
 	import MLanguageSwitch from '../language-switch/m-language-switch.svelte';
 	import { themeConfigStore } from '$lib/stores/themeConfigStore';
 
 	let { open = $bindable() } = $props();
 
+	// Sidebar items with subpages
 	const sidebarItems = [
 		{
 			icon: User,
-			label: m.my_profile(),
-			href: '/profile/m-navigation-profile'
+			label: 'My Profile',
+			href: '/profile'
 		},
 		{
-			icon: Home,
-			label: m.home(),
-			href: '/'
+			icon: DashboardIcon,
+			label: 'Dashboard',
+			href: '/dashboard'
 		},
 		{
-			icon: Flight,
-			label: m.flight(),
-			href: '/flight'
+			icon: MasterIcon,
+			label: 'Master',
+			href: '/master/user',
+			children: [
+				{ label: 'User', href: '/master/user' },
+				{ label: 'Point', href: '/master/point' },
+				{ label: 'Customer', href: '/master/customer' },
+				{ label: 'Item', href: '/master/item' }
+			]
 		},
 		{
-			icon: Hotel,
-			label: 'Hotel',
-			href: '/hotel'
+			icon: TransactionIcon,
+			label: 'Transaction',
+			href: '/transaction'
 		},
 		{
-			icon: Train,
-			label: m.train(),
-			href: '/train'
+			icon: PurchaseIcon,
+			label: 'Purchase',
+			href: '/purchase'
 		},
 		{
-			icon: Insurance,
-			label: m.insurance(),
-			href: '/insurance'
-		},
-		{
-			icon: DocumentSearch,
-			label: m.bookings(),
-			href: '/manage-booking'
-		},
-		{
-			icon: Document,
-			label: m.disclaimer(),
-			href: '/disclaimer'
-		},
-		{
-			icon: Information,
-			label: m.privacy_policy(),
-			href: '/privacy-policy'
+			icon: MasterIcon,
+			label: 'Report',
+			href: '/report/sales',
+			children: [
+				{ label: 'Sales', href: '/report/sales' },
+				{ label: 'Purchase', href: '/report/purchase' },
+				{ label: 'Invoice', href: '/report/invoice' }
+			]
 		}
 	];
 
@@ -110,8 +98,8 @@
 					<div class="flex justify-between p-2">
 						<img src={logoSrc} alt="Opsigo" class="h-8" />
 						<Button variant="ghost" class="p-2" onclick={handleClose}>
-							<Close class="h-6! w-6!" /></Button
-						>
+							<Close class="h-6! w-6!" />
+						</Button>
 					</div>
 					<Separator class="mb-4" />
 					<div class="flex gap-x-2 px-2">
@@ -138,19 +126,15 @@
 						</div>
 					</div>
 				</div>
+
 				<div class="mt-4 mb-2 h-2 bg-(--sidebar-accent)"></div>
 				<div class="flex h-full flex-col justify-between overflow-y-auto">
 					<ul>
-						{#each sidebarItems as { icon, label, href }, i}
+						{#each sidebarItems as { icon, label, href, children }, i}
 							{@const isActive =
 								href === '/' ? current === href || current === '' : current === href}
 							{@const Icon = icon}
-							<li
-								class={cn('px-2 py-2', {
-									'bg-primary/10': isActive && $themeConfigStore.navigationColor === 'default',
-									'bg-sidebar-accent': isActive && $themeConfigStore.navigationColor !== 'default'
-								})}
-							>
+							<li class="px-2 py-2">
 								<a
 									{href}
 									class={cn(
@@ -164,9 +148,29 @@
 									<Icon class="h-6! w-6!" />
 									<span>{label}</span>
 								</a>
+
+								{#if children}
+									<ul class="mt-1 ml-8 space-y-1">
+										{#each children as child}
+											{@const isChildActive = current === child.href}
+											<li>
+												<a
+													href={child.href}
+													class={cn('block text-sm text-(--sidebar-foreground)/70', {
+														'text-primary font-semibold': isChildActive
+													})}
+													onclick={handleClose}
+												>
+													{child.label}
+												</a>
+											</li>
+										{/each}
+									</ul>
+								{/if}
 							</li>
 						{/each}
 					</ul>
+
 					<div class="space-y-2 p-2">
 						<MLanguageSwitch />
 						<ThemeCostumizer />
