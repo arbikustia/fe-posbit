@@ -172,8 +172,8 @@
 					</ul>
 
 					<div class="space-y-2 p-2">
-						<MLanguageSwitch />
-						<ThemeCostumizer />
+						<!-- <MLanguageSwitch /> -->
+						<!-- <ThemeCostumizer /> -->
 						<form method="POST" use:enhance={logout} action="/api/logout">
 							<Button type="submit" variant="outline" class="mt-5 w-full text-red-500"
 								>Logout</Button
