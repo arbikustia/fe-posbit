@@ -9,7 +9,7 @@
 	const logoSrc = $derived(themeSrcLogo($themeConfigStore.logoType));
 </script>
 
-<div class="bg-sidebar fixed top-0 z-10 flex w-full max-w-lg justify-between p-2 shadow-md">
+<div class="bg-sidebar fixed top-0 z-10 flex w-full justify-between p-2 shadow-md">
 	<div class="flex items-center">
 		<Button variant="ghost" onclick={() => (isOpenSidebar = true)}>
 			<Icon

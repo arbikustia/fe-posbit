@@ -26,7 +26,7 @@
 	const current = $derived(currentPage(page.url.pathname));
 </script>
 
-<div class="fixed bottom-0 w-full max-w-lg overflow-hidden rounded-t-lg bg-white pb-1 shadow-inner">
+<div class="fixed bottom-0 w-full overflow-hidden rounded-t-lg bg-white pb-1 shadow-inner">
 	<ul class="flex justify-around">
 		{#each navbarItems as { icon, label, href }, i}
 			{@const isActive = href === '/' ? current === href || current === '' : current === href}

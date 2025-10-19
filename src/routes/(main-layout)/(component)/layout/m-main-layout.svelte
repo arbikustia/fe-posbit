@@ -18,7 +18,7 @@
 			</main>
 		</div>
 	{:else}
-		<div class="mx-auto max-w-lg pb-20 pt-12">
+		<div class=" pb-20 pt-12">
 			<MLayoutHeader />
 			<main>
 				{@render children()}
