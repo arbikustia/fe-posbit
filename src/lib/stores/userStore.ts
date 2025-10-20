@@ -14,6 +14,15 @@ function createStore() {
 		},
 		getToken: function () {
 			return get(store)?.token;
+		},
+		setToken: function (token: string) {
+			const storeVal = get(store);
+			if (storeVal) {
+				this.set({
+					...storeVal,
+					token
+				});
+			}
 		}
 	};
 }

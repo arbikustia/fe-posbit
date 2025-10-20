@@ -8,50 +8,45 @@
 	import { onMount, tick } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { cn } from '$lib/utils';
+	import { useUserPage } from '../../create/use-create.svelte.js';
 
-	let showSearch = $state(false);
-	let searchEl: HTMLInputElement | null = $state(null);
+	const { state } = useUserPage();
+	// let showSearch = $state(false);
+	// let searchEl: HTMLInputElement | null = $state(null);
 
 	async function toggleSearch() {
-		showSearch = !showSearch;
-		if (showSearch) {
+		state.showSearch = !state.showSearch;
+		if (state.showSearch) {
 			await tick();
-			searchEl?.focus();
+			state.searchEl?.focus();
 		}
 	}
 
 	type TableRow = {
 		id?: number;
-		userName: string;
+		username: string;
 		role: string;
+		email: string;
+		last_created: string;
 		open?: boolean;
 	};
 
-	let rows = $state<TableRow[]>([
-		{ id: 1, userName: 'Superadmin', role: 'Superadmin', open: true },
-		{ id: 2, userName: 'Putri', role: 'Cashier', open: true },
-		{ id: 3, userName: 'Putra', role: 'Technician', open: true },
-		{ id: 4, userName: 'Arbi', role: 'Technician', open: true }
-	]);
-
 	// 🔥 State untuk modal delete
-	let showDeleteModal = $state(false);
-	let selectedUser = $state<TableRow | null>(null);
 
 	function openDeleteModal(user: TableRow) {
-		selectedUser = user;
-		showDeleteModal = true;
+		state.selectedUser = user;
+		state.showDeleteModal = true;
 	}
 
 	function closeDeleteModal() {
-		showDeleteModal = false;
-		selectedUser = null;
+		state.showDeleteModal = false;
+		state.selectedUser = null;
 	}
 
 	function confirmDelete() {
-		if (selectedUser) {
-			console.log('Deleting user:', selectedUser.userName);
-			rows = rows.filter((r) => r.id !== selectedUser?.id);
+		if (state.selectedUser) {
+			console.log('Deleting user:', state.selectedUser.username);
+			state.table = state.table.filter((r: any) => r.id !== state.selectedUser?.id);
 			closeDeleteModal();
 		}
 	}
@@ -82,9 +77,9 @@
 				<!-- Search Container -->
 				<div class="relative flex w-full items-center justify-end sm:w-auto">
 					<div class="overflow-hidden">
-						{#if showSearch}
+						{#if state.showSearch}
 							<input
-								bind:this={searchEl}
+								bind:this={state.searchEl}
 								transition:fly={{ x: 120, duration: 250 }}
 								placeholder="Search user..."
 								class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
@@ -135,6 +130,18 @@
 								</th>
 								<th
 									scope="col"
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Email
+								</th>
+								<th
+									scope="col"
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Last Updated
+								</th>
+								<th
+									scope="col"
 									class="px-3 py-2.5 text-center text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
 									Action
@@ -142,7 +149,7 @@
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-gray-200 bg-white">
-							{#each rows as row, index}
+							{#each state.table as row, index}
 								<tr class="transition hover:bg-gray-50">
 									<td
 										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm"
@@ -152,7 +159,7 @@
 									<td
 										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 									>
-										{row.userName}
+										{row.username}
 									</td>
 									<td class="px-3 py-2.5 whitespace-nowrap sm:px-4 sm:py-3">
 										<span
@@ -165,6 +172,16 @@
 										>
 											{row.role}
 										</span>
+									</td>
+									<td
+										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
+										{row.email}
+									</td>
+									<td
+										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
+										{row.last_created}
 									</td>
 									<td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
 										{#if row.open}
@@ -235,7 +252,7 @@
 </div>
 
 <!-- 🧩 DELETE CONFIRM MODAL -->
-{#if showDeleteModal}
+{#if state.showDeleteModal}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
@@ -272,7 +289,8 @@
 			<!-- Message -->
 			<p class="mb-5 text-center text-sm text-gray-600 sm:mb-6 dark:text-gray-400">
 				Are you sure you want to delete
-				<span class="font-semibold text-gray-800 dark:text-gray-100">{selectedUser?.userName}</span
+				<span class="font-semibold text-gray-800 dark:text-gray-100"
+					>{state.selectedUser?.username}</span
 				>?
 				<span class="block sm:inline">This action cannot be undone.</span>
 			</p>

@@ -1,9 +1,9 @@
-import dummy from '$lib/dummy/hotel.json';
-import type { Hotel } from '$lib/types/Hotel';
+import apiClient from '$lib/api/apiClient';
+import type { RestApiResponse } from '$lib/types/api/base/RestApi';
+
 
 export const hotelService = {
-    getAll: async (options:any): Promise<Hotel[]> => {
-        //await new Promise((resolve) => setTimeout(resolve, 3000));
-        return options;
+    getAll: () => {
+        return apiClient.get<RestApiResponse<any[]>>('/api/role/get-all-role');
     }
 };
