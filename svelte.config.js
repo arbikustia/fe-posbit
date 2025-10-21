@@ -28,8 +28,9 @@ const config = {
 			base: '',
 		},
 		alias: {
-			'@/*': './path/to/lib/*',
-			$appCss: 'src/app.css',
+			'@': resolve('./src'),
+			// keep a shortcut to the app css if you use $appCss in imports
+			$appCss: resolve('./src/app.css')
 		}
 	}
 };
