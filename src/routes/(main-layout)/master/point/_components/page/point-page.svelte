@@ -8,51 +8,54 @@
 	import { onMount, tick } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { cn } from '$lib/utils';
+	import { pointService } from '$lib/services/pointService.js';
+	import { usePointPage } from '../../create/use-create.svelte';
 
-	let showSearch = $state(false);
-	let searchEl: HTMLInputElement | null = $state(null);
+	const { state, handleGetPaged } = usePointPage();
+
+	onMount(() => {
+		handleGetPaged();
+	});
 
 	async function toggleSearch() {
-		showSearch = !showSearch;
-		if (showSearch) {
+		state.showSearch = !state.showSearch;
+		if (state.showSearch) {
 			await tick();
-			searchEl?.focus();
+			state.searchEl?.focus();
 		}
 	}
 
 	type TableRow = {
 		id?: number;
-		pointperValue: string;
-		pointValue: string;
-		status: string;
+		amount_per_point: string;
+		point_value: string;
+		is_active: boolean;
+		last_created: string;
 		open?: boolean;
 	};
 
-	let rows = $state<TableRow[]>([
-		{ id: 1, pointperValue: '1000', pointValue: '1', status: 'Active', open: true },
-		{ id: 2, pointperValue: '2000', pointValue: '2', status: 'Inactive', open: true },
-		{ id: 3, pointperValue: '500', pointValue: '0.5', status: 'Active', open: true }
-	]);
-
-	// 🔥 State untuk modal delete
-	let showDeleteModal = $state(false);
-	let selectedPoint = $state<TableRow | null>(null);
-
+	// 🧩 DELETE MODAL
 	function openDeleteModal(point: TableRow) {
-		selectedPoint = point;
-		showDeleteModal = true;
+		state.selectedPoint = point;
+		state.showDeleteModal = true;
 	}
 
 	function closeDeleteModal() {
-		showDeleteModal = false;
-		selectedPoint = null;
+		state.showDeleteModal = false;
+		state.selectedPoint = null;
 	}
 
-	function confirmDelete() {
-		if (selectedPoint) {
-			console.log('Deleting point:', selectedPoint.pointperValue);
-			rows = rows.filter((r) => r.id !== selectedPoint?.id);
-			closeDeleteModal();
+	async function confirmDelete() {
+		if (state.selectedPoint) {
+			try {
+				await pointService.delete(state.selectedPoint.id);
+				state.table = state.table.filter(
+					(r: any) => r.id !== state.selectedPoint?.id
+				);
+				closeDeleteModal();
+			} catch (err) {
+				console.error('Failed to delete point:', err);
+			}
 		}
 	}
 </script>
@@ -82,9 +85,9 @@
 				<!-- Search Container -->
 				<div class="relative flex w-full items-center justify-end sm:w-auto">
 					<div class="overflow-hidden">
-						{#if showSearch}
+						{#if state.showSearch}
 							<input
-								bind:this={searchEl}
+								bind:this={state.searchEl}
 								transition:fly={{ x: 120, duration: 250 }}
 								placeholder="Search point..."
 								class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
@@ -117,53 +120,77 @@
 							<tr>
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>No</th
 								>
+									No
+								</th>
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Amount per Value</th
 								>
+									Amount per Value
+								</th>
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Point Value</th
 								>
+									Point Value
+								</th>
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Status</th
 								>
+									Status
+								</th>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Last Updated
+								</th>
 								<th
 									class="px-3 py-2.5 text-center text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Action</th
 								>
+									Action
+								</th>
 							</tr>
 						</thead>
+
 						<tbody class="divide-y divide-gray-200 bg-white">
-							{#each rows as row, index}
+							{#each state.table as row, index}
 								<tr class="transition hover:bg-gray-50">
 									<td
 										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm"
-										>{index + 1}</td
 									>
+										{index + 1}
+									</td>
+
 									<td
 										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-										>{row.pointperValue}</td
 									>
+										{row.amount_per_point}
+									</td>
+
 									<td
 										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-										>{row.pointValue}</td
 									>
+										{row.point_value}
+									</td>
+
 									<td class="px-3 py-2.5 whitespace-nowrap sm:px-4 sm:py-3">
 										<span
 											class={cn(
 												'inline-flex rounded-md px-2 py-0.5 text-xs font-medium md:py-1 md:text-sm',
-												row.status === 'Active'
+												row.is_active
 													? 'bg-green-500/10 text-green-700'
 													: 'bg-gray-200 text-gray-700'
 											)}
 										>
-											{row.status}
+											{row.is_active ? 'Active' : 'Inactive'}
 										</span>
 									</td>
+
+									<td
+										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
+										{row.last_created}
+									</td>
+
 									<td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
 										{#if row.open}
 											<div class="flex items-center justify-center gap-2 md:gap-3">
@@ -181,10 +208,23 @@
 														style="color: #ff0f22"
 													/>
 												</button>
+
 												<button
 													type="button"
 													class="rounded-full p-1.5 transition hover:scale-110 hover:bg-yellow-50 md:p-2"
 													aria-label="Edit point"
+													onclick={() =>
+														goto(
+															`/master/point/create?id=${encodeURIComponent(
+																String(row.id ?? '')
+															)}&amount_per_point=${encodeURIComponent(
+																String(row.amount_per_point ?? '')
+															)}&point_value=${encodeURIComponent(
+																String(row.point_value ?? '')
+															)}&is_active=${encodeURIComponent(
+																String(row.is_active)
+															)}`
+														)}
 												>
 													<Icon
 														icon="lucide:edit"
@@ -233,7 +273,7 @@
 </div>
 
 <!-- 🧩 DELETE CONFIRM MODAL -->
-{#if showDeleteModal}
+{#if state.showDeleteModal}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
@@ -257,16 +297,14 @@
 				/>
 			</div>
 
-			<h2
-				class="mb-2 text-center text-base font-semibold text-gray-800 sm:text-lg dark:text-gray-100"
-			>
+			<h2 class="mb-2 text-center text-base font-semibold text-gray-800 sm:text-lg dark:text-gray-100">
 				Delete Confirmation
 			</h2>
 
 			<p class="mb-5 text-center text-sm text-gray-600 sm:mb-6 dark:text-gray-400">
 				Are you sure you want to delete
 				<span class="font-semibold text-gray-800 dark:text-gray-100"
-					>{selectedPoint?.pointperValue}</span
+					>{state.selectedPoint?.amount_per_point}</span
 				>?
 				<span class="block sm:inline">This action cannot be undone.</span>
 			</p>

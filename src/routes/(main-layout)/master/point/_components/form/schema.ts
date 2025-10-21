@@ -1,16 +1,25 @@
 import { z } from 'zod';
 
 export const pointSchema = z.object({
-  pointPerValue: z
-    .string()
-    .min(1, 'Amount per Point is required'),
+  amount_per_point: z.preprocess((val) => {
+    if (typeof val === 'string') return val.trim() === '' ? NaN : Number(val);
+    return val;
+  }, z.number().gt(0, 'Amount per Point must be > 0')),
 
-  pointValue: z
-    .string()
-    .min(1, 'Point Value is required'),
+  point_value: z.preprocess((val) => {
+    if (typeof val === 'string') return val.trim() === '' ? NaN : Number(val);
+    return val;
+  }, z.number().gt(0, 'Point Value must be > 0')),
 
-  status: z
-    .boolean({
-      required_error: 'Status is required'
-    })
+  is_active: z.preprocess((val) => {
+    // normalize string values from query params or form to boolean,
+    // allow undefined so default(true) can apply
+    if (typeof val === 'string') {
+      const v = val.trim().toLowerCase();
+      if (v === '') return undefined;
+      if (v === 'true' || v === '1') return true;
+      if (v === 'false' || v === '0') return false;
+    }
+    return val;
+  }, z.boolean().default(true))
 });

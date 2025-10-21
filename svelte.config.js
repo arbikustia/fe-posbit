@@ -21,8 +21,7 @@ const config = {
 			assets: 'build',
 			fallback: null,
 			precompress: false,
-			strict: true,
-			runtime: 'nodejs20.x'
+			strict: true
 		}),
 		paths: {
 			base: '',

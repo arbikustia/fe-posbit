@@ -46,7 +46,7 @@
 		// Hanya reset jika is_member berubah dari true ke false
 		if (previousIsMember === true && $formData.is_member === false) {
 			$formData.member_since = null;
-			$formData.member_code = null;
+			$formData.member_code = "";
 			memberSinceDate = undefined;
 		}
 		previousIsMember = $formData.is_member;

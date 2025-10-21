@@ -23,5 +23,31 @@ export const userService = {
 		return apiClient.get<RestApiResponse<unknown>>(
 			`/users/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
 		);
-	}
+	},
+	delete: (id: string) => {
+		return apiClient.delete<RestApiResponse<unknown>>(
+			`/users/${id}`
+		);
+	},
+	create: (body: {
+		username: string;
+		email: string;
+		password: string;
+		role: string[];
+	}) => {
+		return apiClient.post<RestApiResponse<unknown>>(
+			`/users`, body
+		);
+	},
+	update: (body: {
+		id: string;
+		username: string;
+		email: string;
+		password: string;
+		role: string[];
+	}) => {
+		return apiClient.put<RestApiResponse<unknown>>(
+			`/users/${body.id}`, body
+		);
+	},
 };

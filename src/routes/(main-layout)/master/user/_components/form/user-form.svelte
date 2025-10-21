@@ -32,7 +32,7 @@
 	method="POST"
 	use:enhance
 	onsubmit={handleSubmit}
-	class="mx-auto w-full max-w-lg py-4 px-4 sm:px-6 md:px-8"
+	class="mx-auto w-full max-w-lg px-4 py-4 sm:px-6 md:px-8"
 >
 	<h2 class="mb-6 text-lg font-bold sm:text-xl md:text-2xl">Create User Data</h2>
 
@@ -45,7 +45,27 @@
 			<Input
 				placeholder="Enter user name"
 				bind:value={$formData.userName}
-				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.userName ? 'border-red-500 focus:border-red-500' : ''}"
+				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.userName
+					? 'border-red-500 focus:border-red-500'
+					: ''}"
+			/>
+		</Form.Control>
+		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
+	</Form.Field>
+
+	<!-- EMAIL -->
+	<Form.Field {form} name="email" class="mt-4">
+		<Form.Control>
+			<Form.Label class="text-sm font-medium text-gray-700">
+				Email <span class="text-red-500">*</span>
+			</Form.Label>
+			<Input
+				type="email"
+				placeholder="Enter email address"
+				bind:value={$formData.email}
+				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.email
+					? 'border-red-500 focus:border-red-500'
+					: ''}"
 			/>
 		</Form.Control>
 		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
@@ -61,7 +81,9 @@
 				type="password"
 				placeholder="Enter password"
 				bind:value={$formData.password}
-				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.password ? 'border-red-500 focus:border-red-500' : ''}"
+				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.password
+					? 'border-red-500 focus:border-red-500'
+					: ''}"
 			/>
 		</Form.Control>
 		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
@@ -73,27 +95,23 @@
 			<Form.Label class="text-sm font-medium text-gray-700">
 				Role <span class="text-red-500">*</span>
 			</Form.Label>
-			<Select.Root type="single" name="role" bind:value={$formData.role}>
-				<Select.Trigger class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base">
-					{triggerContent}
-				</Select.Trigger>
-				<Select.Content>
-					<Select.Group>
-						<Select.Label>Select Role</Select.Label>
-						{#each roleOptions as role (role.value)}
-							<Select.Item value={role.value} label={role.label}>
-								{role.label}
-							</Select.Item>
-						{/each}
-					</Select.Group>
-				</Select.Content>
-			</Select.Root>
+			<select
+				bind:value={$formData.role}
+				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.role
+					? 'border-red-500 focus:border-red-500'
+					: ''}"
+			>
+				<option value="" disabled>Select role</option>
+				{#each roleOptions as opt}
+					<option value={opt.value}>{opt.label}</option>
+				{/each}
+			</select>
 		</Form.Control>
 		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
 	</Form.Field>
 
 	<!-- BUTTONS -->
-	<div class="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-end sm:items-center">
+	<div class="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
 		<Button
 			type="button"
 			variant="outline"
@@ -104,7 +122,7 @@
 		</Button>
 		<Button
 			type="submit"
-			class="w-full rounded-full bg-primary px-4 py-2 text-sm text-white transition hover:bg-primary-dark sm:w-auto"
+			class="bg-primary hover:bg-primary-dark w-full rounded-full px-4 py-2 text-sm text-white transition sm:w-auto"
 		>
 			Save
 		</Button>

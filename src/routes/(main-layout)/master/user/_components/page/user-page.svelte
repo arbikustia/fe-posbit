@@ -9,6 +9,7 @@
 	import { fly } from 'svelte/transition';
 	import { cn } from '$lib/utils';
 	import { useUserPage } from '../../create/use-create.svelte.js';
+	import { userService } from '@/services/userService.js';
 
 	const { state } = useUserPage();
 	// let showSearch = $state(false);
@@ -25,6 +26,7 @@
 	type TableRow = {
 		id?: number;
 		username: string;
+		password: string;
 		role: string;
 		email: string;
 		last_created: string;
@@ -45,7 +47,8 @@
 
 	function confirmDelete() {
 		if (state.selectedUser) {
-			console.log('Deleting user:', state.selectedUser.username);
+			console.log('Deleting user:', state.selectedUser);
+			userService.delete(state.selectedUser.id);
 			state.table = state.table.filter((r: any) => r.id !== state.selectedUser?.id);
 			closeDeleteModal();
 		}
@@ -204,6 +207,16 @@
 													type="button"
 													class="rounded-full p-1.5 transition hover:scale-110 hover:bg-yellow-50 md:p-2"
 													aria-label="Edit user"
+													onclick={() =>
+														goto(
+															`/master/user/create?username=${encodeURIComponent(
+																row.username
+															)}&role=${encodeURIComponent(row.role)}&email=${encodeURIComponent(
+																row.email ?? ''
+															)}&id=${encodeURIComponent(String(row.id ?? ''))}&password=${encodeURIComponent(
+																String(row.password ?? '')
+															)}`
+														)}
 												>
 													<Icon
 														icon="lucide:edit"
