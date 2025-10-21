@@ -1,8 +1,9 @@
+import { PUBLIC_BASE_API_URL, PUBLIC_SHOW_API_REQUEST_ERROR } from '$env/static/public';
 import { userStore } from '$lib/stores/userStore';
 import type { RestApiResponse } from '$lib/types/api/base/RestApi';
 import axios from 'axios';
 import { toast } from 'svelte-sonner';
-import { PUBLIC_SHOW_API_REQUEST_ERROR, PUBLIC_BASE_API_URL } from '$env/static/public';
+// import { PUBLIC_SHOW_API_REQUEST_ERROR, PUBLIC_BASE_API_URL } from '$env/static/public';
 
 const showApiRequestError = PUBLIC_SHOW_API_REQUEST_ERROR === 'true';
 
