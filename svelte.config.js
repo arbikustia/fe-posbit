@@ -28,9 +28,7 @@ const config = {
 			base: '',
 		},
 		alias: {
-			'@': resolve('./src'),
-			// keep a shortcut to the app css if you use $appCss in imports
-			$appCss: resolve('./src/app.css')
+			$appCss: 'src/app.css',
 		}
 	}
 };
