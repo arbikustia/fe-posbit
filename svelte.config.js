@@ -28,7 +28,7 @@ const config = {
 			base: '',
 		},
 		alias: {
-			'@/*': './path/to/lib/*',
+			'@/*': './src/lib/*',
 			$appCss: 'src/app.css',
 		}
 	}
