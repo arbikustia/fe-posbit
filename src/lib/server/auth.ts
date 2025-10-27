@@ -19,7 +19,7 @@ export function decodeJwt(token: string): { [key: string]: unknown } | null {
 export function setAuthCookie(event: RequestEvent, response: any): void {
 	const { accessToken, refreshToken } = response;
 
-	if (!accessToken ) {
+	if (!accessToken) {
 		throw new Error('Auth Failed, please contact Administrator');
 	}
 
@@ -64,7 +64,7 @@ export function deleteAuthCookie(event: RequestEvent): void {
 }
 
 export async function login(event: RequestEvent, username: string, password: string) {
-	const res = await fetch('https://hellomo.server-backend.cloud/api/Authentication', {
+	const res = await fetch('https://pos.bantuit.my.id/api/authentication', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -81,6 +81,13 @@ export async function login(event: RequestEvent, username: string, password: str
 
 	const data = await res.json();
 	setAuthCookie(event, data.data);
+	event.cookies.set('username', username, {
+		httpOnly: false,
+		path: '/',
+		secure: true,
+		sameSite: 'lax'
+	});
+
 }
 
 export function logout(event: RequestEvent) {

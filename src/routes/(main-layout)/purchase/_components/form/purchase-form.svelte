@@ -3,30 +3,30 @@
 	import Input from '$lib/components/ui/input/input.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import type { SuperForm } from 'sveltekit-superforms';
-	import type z from 'zod';
-	import type { invoiceSchema } from './schema';
+	import * as Command from '$lib/components/ui/command/index.js';
+	import * as Popover from '$lib/components/ui/popover/index.js';
+	import CheckIcon from '@lucide/svelte/icons/check';
+	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
+	import XIcon from '@lucide/svelte/icons/x';
+	import { tick } from 'svelte';
+	import { cn } from '$lib/utils.js';
 	import { goto } from '$app/navigation';
+	import { usePurchasePage } from '../../create/use-create.svelte';
 
-	type InvoiceFormProps = {
-		form: SuperForm<z.infer<typeof invoiceSchema>>;
-		handleSubmit: () => void;
-	};
+	const { form, handleSubmit, state:pageState } = usePurchasePage();
+	const { form: formData, enhance, errors } = form;
 
-	let { form, handleSubmit }: InvoiceFormProps = $props();
-	const { form: formData, enhance } = form;
+	// === OPTIONS ===
 
-	// === DATA PILIHAN ===
-	const itemOptions = [
-		{ value: '1', label: 'Laptop Lenovo', stock: 15 },
-		{ value: '2', label: 'Keyboard Logitech', stock: 30 },
-		{ value: '3', label: 'Monitor LG', stock: 10 }
-	];
+	// Derived reactive item options
+	const itemOptions = $derived(pageState.listItem ?? []);
 
 	const customerOptions = [
-		{ value: '1', label: 'John Doe' },
-		{ value: '2', label: 'Putri Maharani' },
-		{ value: '3', label: 'Budi Santoso' }
+		{ value: '3fa85f64-5717-4562-b3fc-2c963f66afa6', label: 'John Doe' },
+		{ value: '2fa85f64-5717-4562-b3fc-2c963f66afa6', label: 'Putri Maharani' },
+		{ value: '1fa85f64-5717-4562-b3fc-2c963f66afa6', label: 'Budi Santoso' },
+		{ value: '4fa85f64-5717-4562-b3fc-2c963f66afa6', label: 'Sarah Johnson' },
+		{ value: '5fa85f64-5717-4562-b3fc-2c963f66afa6', label: 'Ahmad Wijaya' }
 	];
 
 	const statusOptions = [
@@ -38,250 +38,333 @@
 	const paymentOptions = [
 		{ value: 'Cash', label: 'Cash' },
 		{ value: 'Credit Card', label: 'Credit Card' },
-		{ value: 'Transfer', label: 'Transfer' }
+		{ value: 'Transfer', label: 'Transfer' },
+		{ value: 'E-Wallet', label: 'E-Wallet' }
 	];
 
-	// === STATE ===
+	// === STATES ===
 	let selectedItems = $state<string[]>([]);
-	let itemDetails = $state<{ id: string; qty: number }[]>([]);
+	let itemDetails = $state<{ item_id: string; qty: number }[]>([]);
 
-	let statusValue = $state('');
-	let paymentValue = $state('');
+	let open = $state(false);
+	let triggerRef = $state<HTMLButtonElement>(null!);
 
-	// derived labels
+	// Derived labels for display
 	const statusLabel = $derived(
-		statusOptions.find((r) => r.value === statusValue)?.label ?? 'Select Status'
+		statusOptions.find((r) => r.value === $formData.status)?.label ?? 'Select Status'
 	);
 	const paymentLabel = $derived(
-		paymentOptions.find((r) => r.value === paymentValue)?.label ?? 'Select Payment Method'
+		paymentOptions.find((r) => r.value === $formData.payment_method)?.label ??
+			'Select Payment Method'
 	);
 
-	// sinkronisasi item details dengan selectedItems
+	// === TOGGLE ITEMS ===
+	function toggleItem(itemValue: string) {
+		selectedItems = selectedItems.includes(itemValue)
+			? selectedItems.filter((id) => id !== itemValue)
+			: [...selectedItems, itemValue];
+	}
+
+	function removeItem(itemValue: string, e: Event) {
+		e.stopPropagation();
+		selectedItems = selectedItems.filter((id) => id !== itemValue);
+	}
+
+	function clearAll(e: Event) {
+		e.stopPropagation();
+		selectedItems = [];
+	}
+
+	function closeAndFocusTrigger() {
+		open = false;
+		tick().then(() => triggerRef?.focus());
+	}
+
+	// === SYNC SELECTED ITEMS WITH DETAILS ===
 	$effect(() => {
-		itemDetails = selectedItems.map((id) => {
-			const existing = itemDetails.find((d) => d.id === id);
-			return existing ?? { id, qty: 1 };
+		const mapped = selectedItems.map((id) => {
+			const existing = itemDetails.find((d) => d.item_id === id);
+			return existing ?? { item_id: id, qty: 1 };
 		});
+
+		const changed =
+			mapped.length !== itemDetails.length ||
+			mapped.some((m, i) => m.item_id !== itemDetails[i]?.item_id || m.qty !== itemDetails[i]?.qty);
+
+		if (changed) {
+			itemDetails = mapped;
+			formData.update((f) => ({ ...f, details: mapped }));
+		}
 	});
 
-	// === UPDATE QTY ===
+	// === UPDATE QUANTITY ===
 	function updateQty(id: string, newQty: number) {
-		const updated = itemDetails.map((item) =>
-			item.id === id ? { ...item, qty: Math.max(1, newQty) } : item
+		const updated = itemDetails.map((i) =>
+			i.item_id === id ? { ...i, qty: Math.max(1, newQty) } : i
 		);
-		itemDetails = updated; // ⬅️ reaktifkan perubahan
+		itemDetails = updated;
+		formData.update((f) => ({ ...f, details: updated }));
 	}
+
+	// === AUTO CALCULATE TOTAL ===
+	$effect(() => {
+		const total = itemDetails.reduce((sum, detail) => {
+			const item = itemOptions.find((i) => i.value === detail.item_id);
+			return sum + (item?.price ?? 0) * detail.qty;
+		}, 0);
+
+		formData.update((f) => ({
+			...f,
+			total_amount: total,
+			final_amount: total - (f.discount_amount ?? 0)
+		}));
+	});
 </script>
 
 <form
 	method="POST"
 	use:enhance
 	onsubmit={handleSubmit}
-	class="mx-auto w-full max-w-3xl px-4 py-4 sm:px-6 md:px-8"
+	class="mx-auto w-full max-w-4xl space-y-6 px-4 py-6 sm:px-6 md:px-8"
 >
-	<h2 class="mb-6 text-base font-bold sm:text-lg md:text-xl">Create New Purchase</h2>
+	<h2 class="text-xl font-bold sm:text-2xl">Create New Purchase</h2>
 
-	<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-		<!-- === ITEM SELECT MULTIPLE === -->
-		<div class="col-span-2">
-			<Form.Field {form} name="item_id">
-				<Form.Control>
-					<Form.Label>Items</Form.Label>
-					<Select.Root type="multiple" name="item_id" bind:value={selectedItems}>
-						<Select.Trigger class="w-full rounded-md border px-3 py-2 text-sm">
-							{#if selectedItems.length > 0}
-								{selectedItems
-									.map((id) => itemOptions.find((r) => r.value === id)?.label)
-									.join(', ')}
-							{:else}
-								Select Items
-							{/if}
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Group>
-								<Select.Label>Select Items</Select.Label>
-								{#each itemOptions as i (i.value)}
-									<Select.Item value={i.value} label={i.label}>
-										{i.label}
-									</Select.Item>
-								{/each}
-							</Select.Group>
-						</Select.Content>
-					</Select.Root>
-				</Form.Control>
-				<Form.FieldErrors />
-			</Form.Field>
+	<!-- ITEMS -->
+	<Form.Field {form} name="details">
+		<Form.Control>
+			<Form.Label class="text-sm font-medium text-gray-700"
+				>Items <span class="text-red-500">*</span></Form.Label
+			>
 
-			{#if selectedItems.length > 0}
-				<div class="">
-					<div class="space-y-3">
-						{#each itemDetails as detail (detail.id)}
-							{@const item = itemOptions.find((i) => i.value === detail.id)}
-							<div
-								class="flex flex-col gap-3 rounded-lg border border-gray-700 p-3 sm:flex-row sm:items-center sm:justify-between"
-							>
-								<div class="flex flex-col sm:flex-row sm:gap-6">
-									<p class="text-sm font-medium text-gray-900">{item?.label}</p>
-									<p class="text-xs text-gray-400">Stock: {item?.stock}</p>
-								</div>
-
-								<!-- === QTY DISPLAY WITH + / - BUTTONS === -->
-								<div class="flex items-center gap-3">
-									<span class="text-xs text-gray-400">Qty:</span>
-
-									<div class="flex items-center overflow-hidden rounded-lg border border-gray-600">
-										<!-- tombol minus -->
-										<button
-											type="button"
-											class="px-2 py-1 text-gray-300 transition hover:bg-gray-700"
-											onclick={() => updateQty(detail.id, Math.max(1, detail.qty - 1))}
+			<Popover.Root bind:open>
+				<Popover.Trigger bind:ref={triggerRef} class="h-fit w-full">
+					{#snippet child({ props })}
+						<Button
+							variant="outline"
+							class="min-h-[2.5rem] w-full justify-between text-left font-normal"
+							{...props}
+							role="combobox"
+						>
+							<div class="flex flex-1 flex-wrap gap-1.5">
+								{#if selectedItems.length === 0}
+									<span class="text-muted-foreground">Select items...</span>
+								{:else}
+									{#each selectedItems as id}
+										{@const item = itemOptions.find((i) => i.value === id)}
+										<span
+											class="bg-primary/10 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium"
 										>
-											−
+											{item?.label}
+											<button
+												type="button"
+												onclick={(e) => removeItem(id, e)}
+												class="hover:text-destructive transition"
+											>
+												<XIcon class="size-3" />
+											</button>
+										</span>
+									{/each}
+									{#if selectedItems.length > 3}
+										<button type="button" onclick={clearAll} title="Clear all">
+											<XIcon class="text-destructive ml-1 size-4" />
 										</button>
-
-										<!-- qty display -->
-										<div class="w-12 bg-gray-800 text-center text-sm text-white select-none">
-											{detail.qty}
-										</div>
-
-										<!-- tombol plus -->
-										<button
-											type="button"
-											class="px-2 py-1 text-gray-300 transition hover:bg-gray-700"
-											onclick={() => updateQty(detail.id, detail.qty + 1)}
-										>
-											＋
-										</button>
-									</div>
-								</div>
+									{/if}
+								{/if}
 							</div>
-						{/each}
+							<ChevronsUpDownIcon class="ml-2 size-4 shrink-0 opacity-50" />
+						</Button>
+					{/snippet}
+				</Popover.Trigger>
+
+				<Popover.Content class="w-[500px] p-0">
+					<Command.Root>
+						<Command.Input placeholder="Search items..." class="h-9" />
+						<Command.List>
+							<Command.Empty>No items found.</Command.Empty>
+							<Command.Group>
+								{#each itemOptions as item}
+									<Command.Item
+										value={item.label}
+										keywords={[item.label, item.value]}
+										onSelect={() => toggleItem(item.value)}
+										class="flex items-center justify-between"
+									>
+										<div class="flex items-center gap-2">
+											<CheckIcon
+												class={cn(
+													'size-4',
+													!selectedItems.includes(item.value) && 'text-transparent'
+												)}
+											/>
+											<div class="flex flex-col">
+												<span class="text-sm font-medium">{item.label}</span>
+												<span class="text-muted-foreground text-xs">
+													Rp {item.price.toLocaleString('id-ID')}
+												</span>
+											</div>
+										</div>
+										<span class="text-muted-foreground text-xs">Stock: {item.stock}</span>
+									</Command.Item>
+								{/each}
+							</Command.Group>
+						</Command.List>
+
+						{#if selectedItems.length > 0}
+							<div class="flex items-center justify-between border-t p-2">
+								<span class="text-muted-foreground text-xs">
+									{selectedItems.length} selected
+								</span>
+								<Button
+									size="sm"
+									variant="ghost"
+									onclick={closeAndFocusTrigger}
+									class="h-7 text-xs"
+								>
+									Done
+								</Button>
+							</div>
+						{/if}
+					</Command.Root>
+				</Popover.Content>
+			</Popover.Root>
+		</Form.Control>
+		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
+	</Form.Field>
+
+	<!-- ITEM DETAILS -->
+	{#if selectedItems.length > 0}
+		<div class="space-y-3">
+			{#each itemDetails as detail (detail.item_id)}
+				{@const item = itemOptions.find((i) => i.value === detail.item_id)}
+				{@const subtotal = (item?.price ?? 0) * detail.qty}
+
+				<div class="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:justify-between">
+					<div class="flex flex-col">
+						<p class="font-medium">{item?.label}</p>
+						<div class="text-muted-foreground text-sm">
+							Stock: {item?.stock} • Price: Rp {item?.price.toLocaleString('id-ID')}
+						</div>
+					</div>
+
+					<div class="flex items-center gap-4">
+						<div class="flex items-center gap-2">
+							<span class="text-muted-foreground text-sm">Qty:</span>
+							<div class="flex items-center overflow-hidden rounded-lg border">
+								<button
+									type="button"
+									class="hover:bg-muted px-3 py-1 transition"
+									onclick={() => updateQty(detail.item_id, detail.qty - 1)}>−</button
+								>
+								<div class="bg-muted w-12 py-1 text-center text-sm font-medium">{detail.qty}</div>
+								<button
+									type="button"
+									class="hover:bg-muted px-3 py-1 transition"
+									onclick={() => updateQty(detail.item_id, detail.qty + 1)}>+</button
+								>
+							</div>
+						</div>
+						<div class="text-right">
+							<p class="text-muted-foreground text-xs">Subtotal</p>
+							<p class="font-semibold">Rp {subtotal.toLocaleString('id-ID')}</p>
+						</div>
 					</div>
 				</div>
-			{/if}
+			{/each}
 		</div>
-		<!-- === CUSTOMER === -->
-		<Form.Field {form} name="cust_id">
+	{/if}
+
+	<!-- FORM FIELDS -->
+	<div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+		<!-- CUSTOMER -->
+		<Form.Field {form} name="customer_id">
 			<Form.Control>
-				<Form.Label>Customer</Form.Label>
-				<Select.Root type="single" name="cust_id" bind:value={$formData.cust_id}>
-					<Select.Trigger class="w-full rounded-md border px-3 py-2 text-sm">
-						{customerOptions.find((r) => r.value === $formData.cust_id)?.label ?? 'Select Customer'}
+				<Form.Label>Customer <span class="text-red-500">*</span></Form.Label>
+				<Select.Root type="single" name="customer_id" bind:value={$formData.customer_id}>
+					<Select.Trigger class="w-full">
+						{customerOptions.find((r) => r.value === $formData.customer_id)?.label ??
+							'Select Customer'}
 					</Select.Trigger>
 					<Select.Content>
-						<Select.Group>
-							<Select.Label>Select Customer</Select.Label>
-							{#each customerOptions as c (c.value)}
-								<Select.Item value={c.value} label={c.label}>{c.label}</Select.Item>
-							{/each}
-						</Select.Group>
+						{#each customerOptions as c}
+							<Select.Item value={c.value} label={c.label}>{c.label}</Select.Item>
+						{/each}
 					</Select.Content>
 				</Select.Root>
 			</Form.Control>
-			<Form.FieldErrors />
+			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
 
-		<!-- === POINT USED === -->
+		<!-- STATUS -->
+		<Form.Field {form} name="status">
+			<Form.Control>
+				<Form.Label>Status <span class="text-red-500">*</span></Form.Label>
+				<Select.Root type="single" name="status" bind:value={$formData.status}>
+					<Select.Trigger class="w-full">{statusLabel}</Select.Trigger>
+					<Select.Content>
+						{#each statusOptions as s}
+							<Select.Item value={s.value} label={s.label}>{s.label}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			</Form.Control>
+			<Form.FieldErrors class="text-sm text-red-600" />
+		</Form.Field>
+
+		<!-- PAYMENT METHOD -->
+		<Form.Field {form} name="payment_method">
+			<Form.Control>
+				<Form.Label>Payment Method <span class="text-red-500">*</span></Form.Label>
+				<Select.Root type="single" name="payment_method" bind:value={$formData.payment_method}>
+					<Select.Trigger class="w-full">{paymentLabel}</Select.Trigger>
+					<Select.Content>
+						{#each paymentOptions as p}
+							<Select.Item value={p.value} label={p.label}>{p.label}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			</Form.Control>
+			<Form.FieldErrors class="text-sm text-red-600" />
+		</Form.Field>
+
+		<!-- DISCOUNT -->
+		<Form.Field {form} name="discount_amount">
+			<Form.Control>
+				<Form.Label>Discount</Form.Label>
+				<Input type="number" placeholder="0" bind:value={$formData.discount_amount} />
+			</Form.Control>
+			<Form.FieldErrors class="text-sm text-red-600" />
+		</Form.Field>
+
+		<!-- POINT USED -->
 		<Form.Field {form} name="point_used">
 			<Form.Control>
 				<Form.Label>Point Used</Form.Label>
-				<Input type="number" placeholder="Enter Point Used" bind:value={$formData.point_used} />
+				<Input type="number" placeholder="0" bind:value={$formData.point_used} />
 			</Form.Control>
-			<Form.FieldErrors />
+			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
 
-		<!-- === POINT EARNED === -->
+		<!-- POINT EARNED -->
 		<Form.Field {form} name="point_earned">
 			<Form.Control>
 				<Form.Label>Point Earned</Form.Label>
-				<Input type="number" placeholder="Enter Point Earned" bind:value={$formData.point_earned} />
+				<Input type="number" placeholder="0" bind:value={$formData.point_earned} />
 			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
-
-		<!-- === STATUS === -->
-		<Form.Field {form} name="status">
-			<Form.Control>
-				<Form.Label>Status</Form.Label>
-				<Select.Root type="single" name="status" bind:value={statusValue}>
-					<Select.Trigger class="w-full rounded-md border px-3 py-2 text-sm">
-						{statusLabel}
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Group>
-							<Select.Label>Select Status</Select.Label>
-							{#each statusOptions as s (s.value)}
-								<Select.Item value={s.value} label={s.label}>{s.label}</Select.Item>
-							{/each}
-						</Select.Group>
-					</Select.Content>
-				</Select.Root>
-			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
-
-		<!-- === TOTAL AMOUNT === -->
-		<Form.Field {form} name="total_amount">
-			<Form.Control>
-				<Form.Label>Total Amount</Form.Label>
-				<Input type="number" placeholder="Enter Total Amount" bind:value={$formData.total_amount} />
-			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
-
-		<!-- === FINAL AMOUNT === -->
-		<Form.Field {form} name="final_amount">
-			<Form.Control>
-				<Form.Label>Final Amount</Form.Label>
-				<Input type="number" placeholder="Enter Final Amount" bind:value={$formData.final_amount} />
-			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
-
-		<!-- === DISCOUNT AMOUNT === -->
-		<Form.Field {form} name="discount_amount">
-			<Form.Control>
-				<Form.Label>Discount Amount</Form.Label>
-				<Input
-					type="number"
-					placeholder="Enter Discount Amount"
-					bind:value={$formData.discount_amount}
-				/>
-			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
-
-		<!-- === PAYMENT METHOD === -->
-		<Form.Field {form} name="payment_method">
-			<Form.Control>
-				<Form.Label>Payment Method</Form.Label>
-				<Select.Root type="single" name="payment_method" bind:value={paymentValue}>
-					<Select.Trigger class="w-full rounded-md border px-3 py-2 text-sm">
-						{paymentLabel}
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Group>
-							<Select.Label>Select Payment</Select.Label>
-							{#each paymentOptions as p (p.value)}
-								<Select.Item value={p.value} label={p.label}>{p.label}</Select.Item>
-							{/each}
-						</Select.Group>
-					</Select.Content>
-				</Select.Root>
-			</Form.Control>
-			<Form.FieldErrors />
+			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
 	</div>
 
-	<!-- === ITEM DETAILS DYNAMIC === -->
-
-	<!-- === BUTTONS === -->
-	<div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+	<!-- BUTTONS -->
+	<div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
 		<Button
+			type="button"
 			variant="outline"
-			class="w-full rounded-full sm:w-auto"
-			onclick={() => goto('/purchase')}>Cancel</Button
+			class="w-full sm:w-auto"
+			onclick={() => goto('/purchase')}
 		>
-		<Button type="submit" class="w-full rounded-full sm:w-auto">Save</Button>
+			Cancel
+		</Button>
+
+		<Button type="submit" class="w-full sm:w-auto">Save Purchase</Button>
 	</div>
 </form>

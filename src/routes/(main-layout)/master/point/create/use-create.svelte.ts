@@ -22,105 +22,134 @@ export function usePointPage() {
         searchEl: HTMLInputElement | null;
         showDeleteModal: boolean;
         selectedPoint: null | any;
+        currentPage: number;
+        pageSize: number;
+        totalPages: number;
+        totalCount: number;
+        isLoading: boolean;
+        searchTerm: string;
     };
 
 
     const { form: formData, validateForm, errors } = form;
+
 
     const state = $state<stateProps>({
         table: [],
         showSearch: false,
         searchEl: null,
         showDeleteModal: false,
-        selectedPoint: null
+        selectedPoint: null,
+        currentPage: 1,
+        pageSize: 10,
+        totalPages: 0,
+        totalCount: 0,
+        isLoading: false,
+        searchTerm: '',
     });
+
+    // 🔹 Transform data dari API ke table
+    function transformPointData(apiData: any[]) {
+        return apiData.map((item, index) => ({
+            id: item.id || index + 1,
+            amount_per_point: item.amount_per_point ?? '-',
+            point_value: item.point_value ?? '-',
+            is_active: item.is_active ?? false,
+            updated_at: item.updated_at ?? '-',
+            open: true
+        }));
+    }
+
+
+    async function handleGetPaged(pageNumber = state.currentPage, searchTerm = state.searchTerm) {
+        try {
+
+            state.isLoading = true;
+
+            const res: any = await pointService.getPaged({
+                PageNumber: pageNumber,
+                PageSize: state.pageSize,
+                SearchTerm: searchTerm
+            });
+
+            if (res?.data?.data) {
+                state.table = transformPointData(res.data.data);
+                state.currentPage = res.data.page_number ?? pageNumber;
+                state.totalPages = res.data.total_pages ?? 1;
+                state.totalCount = res.data.total_count ?? state.table.length;
+            } else {
+                state.table = [];
+            }
+
+        } catch (err) {
+            console.error('Pagination fetch failed:', err);
+            toast.error('Failed to load point');
+            state.table = [];
+        } finally {
+            state.isLoading = false;
+        }
+    }
+
+    // 🔹 Fungsi untuk pindah halaman
+    async function handlePageChange(pageNum: number) {
+        if (pageNum < 1 || pageNum > state.totalPages) return;
+        state.currentPage = pageNum;
+        await handleGetPaged(pageNum);
+    }
+
 
     async function handleSubmit() {
         var result = await validateForm({ update: true });
-        if (result.valid) {
-            const values = get(formData);
-            const body = {
-                amount_per_point: values.amount_per_point,
-                point_value: values.point_value,
-                is_active: values.is_active,
-            };
 
+        if (!result.valid) {
+            toast.error('Please check your input');
+            return;
+        }
+        const values = get(formData);
+
+        const body = {
+            amount_per_point: values.amount_per_point,
+            point_value: values.point_value,
+            is_active: values.is_active,
+        };
+
+        try {
             if ((values as any).id) {
-                // update existing point
-                pointService.update({
+                await pointService.update({
                     id: String((values as any).id),
                     amount_per_point: body.amount_per_point,
                     point_value: body.point_value,
                     is_active: body.is_active,
                 })
-                    .then(() => {
-                        toast.success('Point updated successfully');
-                        goto('/master/point');
-                    })
-                    .catch(() => {
-                        toast.error('Failed to update point');
-                    });
+                toast.success('Point updated successfully');
             } else {
-                // create new point
-                pointService.create(body)
-                    .then(() => {
-                        toast.success('Point created successfully');
-                        goto('/master/point');
-                    })
-                    .catch(() => {
-                        toast.error('Failed to create point');
-                    });
+                await pointService.create(body)
+                toast.success('User created successfully');
             }
 
-            console.log('form values:', values);
-        } else {
-            toast.error('Please check your input');
-        }
-    }
-
-    // Function untuk transform data dari API ke format rows
-    function transformPointData(apiData: any[]) {
-        return apiData.map((item, index) => ({
-            id: item.id || index + 1, // Gunakan ID dari API atau buat sequential
-            amount_per_point: item.amount_per_point,
-            point_value: item.point_value,
-            is_active: item.is_active,
-            last_created: item.last_created,
-            open: true // Default value untuk properti open
-        }));
-    }
-
-    async function handleGetPaged() {
-        try {
-            const res: any = await pointService.getPaged({
-                PageNumber: 1,
-                PageSize: 10,
-                SearchTerm: ''
-            });
-
-            // Transform data dari API ke format yang diinginkan
-            if (res.data && res.data.data) {
-                state.table = transformPointData(res.data.data);
-            } else {
-                // Fallback ke data dummy jika struktur response berbeda
-                state.table = [];
-            }
-
-            console.log(res.data.data, 'data');
-            console.log(state.table, 'transformed point data');
+            goto('/master/point');
         } catch (err) {
-            console.log(err);
-            // Fallback ke data dummy jika error
-            state.table = [];
+            toast.error('Failed to save point');
         }
     }
+
+    $effect(() => {
+        (async () => {
+            if (state.searchTerm) {
+                handleGetPaged(1, state.searchTerm);
+            }
+        })();
+    });
+
 
     onMount(() => {
         handleGetPaged();
-        // jika ada query params (edit) maka isi default form dengan nilai dari URL
+
         const url = get(page).url;
         const qp = url.searchParams;
-        const hasAny = qp.has('amount_per_point') || qp.has('point_value') || qp.has('is_active') || qp.has('id');
+        const hasAny =
+            qp.has('username') || qp.has('email') || qp.has('role') || qp.has('id') || qp.has('password');
+
         if (hasAny) {
             formData.update((f) => ({
                 ...f,
@@ -132,11 +161,15 @@ export function usePointPage() {
         }
     });
 
+
+
+
     return {
         state,
         form,
         errors,
         handleSubmit,
-        handleGetPaged // Export jika perlu dipanggil ulang
+        handleGetPaged,
+        handlePageChange
     };
 }

@@ -3,6 +3,11 @@ import apiClient from '$lib/api/apiClient';
 import type { RestApiResponse } from '$lib/types/api/base/RestApi';
 
 export const customerService = {
+    getByNumber: (number: number) => {
+        return apiClient.get<RestApiResponse<unknown>>(
+            `/customer/${number}`
+        );
+    },
     getPaged: (params: { PageNumber: number, PageSize: number, SearchTerm: string }) => {
         return apiClient.get<RestApiResponse<unknown>>(
             `/customer/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`

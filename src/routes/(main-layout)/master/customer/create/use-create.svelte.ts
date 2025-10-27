@@ -9,153 +9,178 @@ import { page } from '$app/stores';
 import { customerService } from '@/services/customerService';
 
 export function useCustomerPage() {
-    const form = superForm(defaults(zod(customerSchema)), {
-        SPA: true,
-        validators: zod(customerSchema),
-        dataType: 'json',
-        resetForm: false
-    });
+	const form = superForm(defaults(zod(customerSchema)), {
+		SPA: true,
+		validators: zod(customerSchema),
+		dataType: 'json',
+		resetForm: false
+	});
 
-    type stateProps = {
-        table: any[];
-        showSearch: boolean;
-        searchEl: HTMLInputElement | null;
-        showDeleteModal: boolean;
-        selectedCustomer: null | any;
-    };
+	type stateProps = {
+		table: any[];
+		showSearch: boolean;
+		searchEl: HTMLInputElement | null;
+		showDeleteModal: boolean;
+		selectedCustomer: null | any;
+		currentPage: number;
+		pageSize: number;
+		totalPages: number;
+		totalCount: number;
+		isLoading: boolean;
+		searchTerm: string;
+	};
 
-    const { form: formData, validateForm, errors } = form;
+	const { form: formData, validateForm, errors } = form;
 
-    const state = $state<stateProps>({
-        table: [],
-        showSearch: false,
-        searchEl: null,
-        showDeleteModal: false,
-        selectedCustomer: null
-    });
+	const state = $state<stateProps>({
+		table: [],
+		showSearch: false,
+		searchEl: null,
+		showDeleteModal: false,
+		selectedCustomer: null,
+		currentPage: 1,
+		pageSize: 10,
+		totalPages: 0,
+		totalCount: 0,
+		isLoading: false,
+		searchTerm: ''
+	});
 
-    async function handleSubmit() {
-        const result = await validateForm({ update: true });
-        if (result.valid) {
-            const values = get(formData);
-            const body = {
-                customer_name: values.customer_name,
-                phone: values.phone,
-                is_member: values.is_member,
-                member_since: values.member_since,
-                // ensure empty string when not provided
-                member_code: values.member_code ?? '',
-                point: Number(values.point)
-            };
+	// 🔹 Transform data dari API ke bentuk table
+	function transformCustomerData(apiData: any[]) {
+		return apiData.map((item, index) => ({
+			id: item.id || index + 1,
+			customer_name: item.customer_name,
+			phone: item.phone,
+			is_member: item.is_member,
+			member_since: item.member_since,
+			member_code: item.member_code ?? '',
+			point: item.point,
+			last_created: item.last_created,
+			open: true
+		}));
+	}
 
-            if ((values as any).id) {
-                // update existing customer
-                customerService.update({
-                    id: String((values as any).id),
-                    customer_name: body.customer_name,
-                    phone: body.phone,
-                    is_member: body.is_member,
-                    member_since: body.member_since,
-                    member_code: body.member_code,
-                    point: body.point
-                })
-                    .then(() => {
-                        toast.success('Customer updated successfully');
-                        goto('/master/customer');
-                    })
-                    .catch(() => {
-                        toast.error('Failed to update customer');
-                    });
-            } else {
-                // create new customer
-                customerService.create(body)
-                    .then(() => {
-                        toast.success('Customer created successfully');
-                        goto('/master/customer');
-                    })
-                    .catch(() => {
-                        toast.error('Failed to create customer');
-                    });
-            }
+	$effect(() => {
+		(async () => {
+			if (state.searchTerm) {
+				handleGetPaged(1, state.searchTerm);
+			}
+		})();
+	});
 
-            console.log('form values:', values);
-        } else {
-            toast.error('Please check your input');
-        }
-    }
 
-    function transformCustomerData(apiData: any[]) {
-        return apiData.map((item, index) => ({
-            id: item.id || index + 1,
-            customer_name: item.customer_name,
-            phone: item.phone,
-            is_member: item.is_member,
-            member_since: item.member_since,
-            // default to empty string if missing
-            member_code: item.member_code ?? '',
-            point: item.point,
-            last_created: item.last_created,
-            open: true
-        }));
-    }
+	// 🔹 Pagination handler
+	async function handleGetPaged(pageNumber = state.currentPage, searchTerm = state.searchTerm) {
+		try {
+			state.isLoading = true;
 
-    async function handleGetPaged() {
-        try {
-            const res: any = await customerService.getPaged({
-                PageNumber: 1,
-                PageSize: 10,
-                SearchTerm: ''
-            });
+			const res: any = await customerService.getPaged({
+				PageNumber: pageNumber,
+				PageSize: state.pageSize,
+				SearchTerm: searchTerm
+			});
 
-            if (res.data && res.data.data) {
-                state.table = transformCustomerData(res.data.data);
-            } else {
-                state.table = [];
-            }
+			if (res?.data?.data) {
+				state.table = transformCustomerData(res.data.data);
+				state.currentPage = res.data.page_number ?? pageNumber;
+				state.totalPages = res.data.total_pages ?? 1;
+				state.totalCount = res.data.total_count ?? state.table.length;
+			} else {
+				state.table = [];
+			}
+		} catch (err) {
+			console.error('Pagination fetch failed:', err);
+			toast.error('Failed to load customer');
+			state.table = [];
+		} finally {
+			state.isLoading = false;
+		}
+	}
 
-            console.log(res.data?.data, 'customer data');
-            console.log(state.table, 'transformed customer data');
-        } catch (err) {
-            console.log(err);
-            state.table = [];
-        }
-    }
+	// 🔹 Ganti halaman
+	async function handlePageChange(pageNum: number) {
+		if (pageNum < 1 || pageNum > state.totalPages) return;
+		state.currentPage = pageNum;
+		await handleGetPaged(pageNum);
+	}
 
-    onMount(() => {
-        handleGetPaged();
+	// 🔹 Submit handler
+	async function handleSubmit() {
+		const result = await validateForm({ update: true });
+		if (!result.valid) {
+			toast.error('Please check your input');
+			return;
+		}
 
-        const url = get(page).url;
-        const qp = url.searchParams;
-        const hasAny =
-            qp.has('customer_name') ||
-            qp.has('phone') ||
-            qp.has('is_member') ||
-            qp.has('member_since') ||
-            qp.has('member_code') ||
-            qp.has('point') ||
-            qp.has('id');
+		const values = get(formData);
+		const body = {
+			customer_name: values.customer_name,
+			phone: values.phone,
+			is_member: values.is_member,
+			member_since: values.member_since,
+			member_code: values.member_code ?? '',
+			point: Number(values.point)
+		};
 
-        if (hasAny) {
-            formData.update((f) => ({
-                ...f,
-                customer_name: qp.get('customer_name') ?? f.customer_name,
-                phone: qp.get('phone') ?? f.phone,
-                is_member:
-                    qp.has('is_member') ? (qp.get('is_member') === 'true' || qp.get('is_member') === '1') : f.is_member,
-                member_since: qp.get('member_since') ?? f.member_since,
-                // ensure member_code becomes empty string if not present
-                member_code: qp.get('member_code') ?? f.member_code ?? '',
-                point: qp.has('point') ? Number(qp.get('point')) : f.point,
-                id: qp.get('id') ?? (f as any).id
-            }));
-        }
-    });
+		try {
+			if ((values as any).id) {
+				await customerService.update({
+					id: String((values as any).id),
+					customer_name: body.customer_name,
+					phone: body.phone,
+					is_member: body.is_member,
+					member_since: body.member_since,
+					member_code: body.member_code,
+					point: body.point
+				});
+				toast.success('Customer updated successfully');
+			} else {
+				await customerService.create(body);
+				toast.success('Customer created successfully');
+			}
 
-    return {
-        state,
-        form,
-        errors,
-        handleSubmit,
-        handleGetPaged
-    };
+			goto('/master/customer');
+		} catch (err) {
+			toast.error('Failed to save customer');
+		}
+	}
+
+	onMount(() => {
+		handleGetPaged();
+
+		const url = get(page).url;
+		const qp = url.searchParams;
+		const hasAny =
+			qp.has('customer_name') ||
+			qp.has('phone') ||
+			qp.has('is_member') ||
+			qp.has('member_since') ||
+			qp.has('member_code') ||
+			qp.has('point') ||
+			qp.has('id');
+
+		if (hasAny) {
+			formData.update((f) => ({
+				...f,
+				customer_name: qp.get('customer_name') ?? f.customer_name,
+				phone: qp.get('phone') ?? f.phone,
+				is_member:
+					qp.has('is_member') ? (qp.get('is_member') === 'true' || qp.get('is_member') === '1') : f.is_member,
+				member_since: qp.get('member_since') ?? f.member_since,
+				member_code: qp.get('member_code') ?? f.member_code ?? '',
+				point: qp.has('point') ? Number(qp.get('point')) : f.point,
+				id: qp.get('id') ?? (f as any).id
+			}));
+		}
+	});
+
+	return {
+		state,
+		form,
+		errors,
+		handleSubmit,
+		handleGetPaged,
+		handlePageChange
+	};
 }

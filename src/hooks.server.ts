@@ -7,13 +7,13 @@ export async function handle({ event, resolve }) {
 	const userAgent = event.request.headers.get('user-agent') || '';
 	const isMobile = /mobile|android|iphone|ipad/i.test(userAgent);
 
-	if (!currentUser && !event.url.pathname.includes('/auth')) {
-		return new Response('Redirect', { status: 303, headers: { Location: '/auth/login' } });
-	}
+	// if (!currentUser && !event.url.pathname.includes('/auth')) {
+	// 	return new Response('Redirect', { status: 303, headers: { Location: '/auth/login' } });
+	// }
 
-	if (currentUser && event.url.pathname.includes('/auth')) {
-		return new Response('Redirect', { status: 303, headers: { Location: '/' } });
-	}
+	// if (currentUser && event.url.pathname.includes('/auth')) {
+	// 	return new Response('Redirect', { status: 303, headers: { Location: '/' } });
+	// }
 
 	// for client side
 	if (!currentUser) {

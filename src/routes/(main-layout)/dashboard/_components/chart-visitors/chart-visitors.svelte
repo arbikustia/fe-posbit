@@ -3,18 +3,20 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Area, AreaChart } from 'layerchart';
 	import { curveCardinal } from 'd3-shape';
+	import dayjs from 'dayjs';
+	const { state } = $props();
 
-	// Data pemasukan per hari
-	const chartData = [
-		{ date: new Date('2024-04-01'), total: 555 },
-		{ date: new Date('2024-04-02'), total: 939 },
-		{ date: new Date('2024-04-03'), total: 589 },
-		{ date: new Date('2024-04-04'), total: 759 },
-		{ date: new Date('2024-04-05'), total: 504 },
-		{ date: new Date('2024-04-06'), total: 695 },
-		{ date: new Date('2024-04-07'), total: 849 },
-		{ date: new Date('2024-04-08'), total: 681 }
-	];
+	// Data pemasukan per hari	
+	const chartData = $derived(
+		state.chart?.labels?.map((label: string, i: number) => ({
+			date: new Date(label),
+			total: state.chart.values[i]
+		})) ?? []
+	);
+
+	$effect(() => {
+		console.log(chartData, 'chartData');
+	});
 
 	// Chart config
 	const chartConfig = {

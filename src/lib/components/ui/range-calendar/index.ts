@@ -16,8 +16,8 @@ import Caption from "./range-calendar-caption.svelte";
 import Nav from "./range-calendar-nav.svelte";
 import Month from "./range-calendar-month.svelte";
 
-const GridHead = RangeCalendarPrimitive.GridHead;
-const GridBody = RangeCalendarPrimitive.GridBody;
+const GridHead = (RangeCalendarPrimitive as any)?.GridHead ?? Heading;
+const GridBody = (RangeCalendarPrimitive as any)?.GridBody ?? Grid;
 
 export {
 	Day,

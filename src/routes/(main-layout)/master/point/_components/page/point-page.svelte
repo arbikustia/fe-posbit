@@ -11,11 +11,8 @@
 	import { pointService } from '$lib/services/pointService.js';
 	import { usePointPage } from '../../create/use-create.svelte';
 
-	const { state, handleGetPaged } = usePointPage();
+	const { state, handlePageChange } = usePointPage();
 
-	onMount(() => {
-		handleGetPaged();
-	});
 
 	async function toggleSearch() {
 		state.showSearch = !state.showSearch;
@@ -30,7 +27,7 @@
 		amount_per_point: string;
 		point_value: string;
 		is_active: boolean;
-		last_created: string;
+		updated_at: string;
 		open?: boolean;
 	};
 
@@ -49,9 +46,7 @@
 		if (state.selectedPoint) {
 			try {
 				await pointService.delete(state.selectedPoint.id);
-				state.table = state.table.filter(
-					(r: any) => r.id !== state.selectedPoint?.id
-				);
+				state.table = state.table.filter((r: any) => r.id !== state.selectedPoint?.id);
 				closeDeleteModal();
 			} catch (err) {
 				console.error('Failed to delete point:', err);
@@ -87,7 +82,7 @@
 					<div class="overflow-hidden">
 						{#if state.showSearch}
 							<input
-								bind:this={state.searchEl}
+								bind:value={state.searchTerm}
 								transition:fly={{ x: 120, duration: 250 }}
 								placeholder="Search point..."
 								class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
@@ -188,7 +183,7 @@
 									<td
 										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 									>
-										{row.last_created}
+										{row.updated_at}
 									</td>
 
 									<td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
@@ -221,9 +216,7 @@
 																String(row.amount_per_point ?? '')
 															)}&point_value=${encodeURIComponent(
 																String(row.point_value ?? '')
-															)}&is_active=${encodeURIComponent(
-																String(row.is_active)
-															)}`
+															)}&is_active=${encodeURIComponent(String(row.is_active))}`
 														)}
 												>
 													<Icon
@@ -247,23 +240,33 @@
 
 		<!-- PAGINATION -->
 		<div class="w-full">
-			<Pagination.Root count={100} perPage={10}>
+			<Pagination.Root count={state.totalCount} perPage={state.pageSize}>
 				{#snippet children({ pages, currentPage })}
 					<div class="mt-4 flex w-full justify-end">
 						<Pagination.Content>
-							<Pagination.Item class="hidden md:block"><Pagination.PrevButton /></Pagination.Item>
+							<Pagination.Item class="hidden md:block">
+								<Pagination.PrevButton onclick={() => handlePageChange(state.currentPage - 1)} />
+							</Pagination.Item>
+
 							{#each pages as page (page.key)}
 								{#if page.type === 'ellipsis'}
 									<Pagination.Item><Pagination.Ellipsis /></Pagination.Item>
 								{:else}
 									<Pagination.Item>
-										<Pagination.Link {page} isActive={currentPage === page.value}>
+										<Pagination.Link
+											{page}
+											isActive={currentPage === page.value}
+											onclick={() => handlePageChange(page.value)}
+										>
 											{page.value}
 										</Pagination.Link>
 									</Pagination.Item>
 								{/if}
 							{/each}
-							<Pagination.Item class="hidden md:block"><Pagination.NextButton /></Pagination.Item>
+
+							<Pagination.Item class="hidden md:block">
+								<Pagination.NextButton onclick={() => handlePageChange(state.currentPage + 1)} />
+							</Pagination.Item>
 						</Pagination.Content>
 					</div>
 				{/snippet}
@@ -297,7 +300,9 @@
 				/>
 			</div>
 
-			<h2 class="mb-2 text-center text-base font-semibold text-gray-800 sm:text-lg dark:text-gray-100">
+			<h2
+				class="mb-2 text-center text-base font-semibold text-gray-800 sm:text-lg dark:text-gray-100"
+			>
 				Delete Confirmation
 			</h2>
 

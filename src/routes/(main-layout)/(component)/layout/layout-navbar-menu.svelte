@@ -179,6 +179,32 @@
 					</g>
 				</svg>
 			</LayoutNavBarMenuItem>
+			<!-- <LayoutNavBarMenuItem
+				href="/master/role"
+				label="Role"
+				extendClass="text-xs w-full text-start h-10 flex justify-start"
+			>
+				<svg
+					slot="icon"
+					class="size-5!"
+					xmlns="http://www.w3.org/2000/svg"
+					width="100"
+					height="100"
+					viewBox="0 0 48 48"
+				>
+					<g
+						fill="none"
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="4"
+					>
+						<path d="M14 13v6h28V7H14z" />
+						<path d="M14 13H6v22h8" />
+						<path d="M14 29h28v12H14z" />
+					</g>
+				</svg>
+			</LayoutNavBarMenuItem> -->
 		</Popover.Content>
 	</Popover.Root>
 	<LayoutNavBarMenuItem href="/transaction" label={'Transaction'}>

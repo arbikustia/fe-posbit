@@ -5,84 +5,54 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { goto } from '$app/navigation';
-	import { tick } from 'svelte';
+	import { tick, onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { cn } from '$lib/utils';
+	import { usePurchasePage } from '../../create/use-create.svelte'; // ✅ pastikan path ini benar
+	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover'; // pastikan path sesuai
 
-	let showSearch = false;
-	let searchEl: HTMLInputElement | null = null;
+	// ✅ Ambil state & logic dari composable
+	const { state, handleGetPaged, handlePageChange } = usePurchasePage();
 
+	// 🧩 TOGGLE SEARCH
 	async function toggleSearch() {
-		showSearch = !showSearch;
-		if (showSearch) {
+		state.showSearch = !state.showSearch;
+		if (state.showSearch) {
 			await tick();
-			searchEl?.focus();
+			state.searchEl?.focus();
 		}
 	}
 
 	type TableRow = {
 		id: number;
 		inv_number: string;
-		item_id: string;
-		cust_id: string;
-		point_used: number;
-		point_earned: number;
-		status: string;
+		customer_name: string;
 		total_amount: number;
 		final_amount: number;
-		discount_amount: number;
+		status: string;
 		payment_method: string;
 		open?: boolean;
 	};
 
-	let rows: TableRow[] = [
-		{
-			id: 1,
-			inv_number: 'INV-001',
-			item_id: 'ITM-1001',
-			cust_id: 'CST-2001',
-			point_used: 10,
-			point_earned: 20,
-			status: 'Completed',
-			total_amount: 500000,
-			final_amount: 450000,
-			discount_amount: 50000,
-			payment_method: 'Cash',
-			open: true
-		},
-		{
-			id: 2,
-			inv_number: 'INV-002',
-			item_id: 'ITM-1002',
-			cust_id: 'CST-2002',
-			point_used: 5,
-			point_earned: 10,
-			status: 'Pending',
-			total_amount: 300000,
-			final_amount: 300000,
-			discount_amount: 0,
-			payment_method: 'QRIS',
-			open: true
-		}
-	];
+	// 🧩 FETCH DATA DARI API SAAT LOAD
+	onMount(async () => {
+		await handleGetPaged();
+	});
 
-	let showDeleteModal = false;
-	let selectedRow: TableRow | null = null;
-
+	// 🧩 DELETE MODAL
 	function openDeleteModal(row: TableRow) {
-		selectedRow = row;
-		showDeleteModal = true;
+		state.selectedPurchase = row;
+		state.showDeleteModal = true;
 	}
 
 	function closeDeleteModal() {
-		showDeleteModal = false;
-		selectedRow = null;
+		state.showDeleteModal = false;
+		state.selectedPurchase = null;
 	}
 
-	function confirmDelete() {
-		if (selectedRow) {
-			const index = rows.findIndex((r) => r.id === selectedRow?.id);
-			if (index !== -1) rows.splice(index, 1);
+	async function confirmDelete() {
+		if (state.selectedPurchase) {
+			state.table = state.table.filter((r: any) => r.id !== state.selectedPurchase?.id);
 			closeDeleteModal();
 		}
 	}
@@ -99,6 +69,7 @@
 			<div
 				class="mt-3 flex flex-row gap-3 sm:mt-4 sm:flex-row sm:items-center sm:justify-between md:mt-6"
 			>
+				<!-- New Purchase Button -->
 				<Button
 					onclick={() => goto('/purchase/create')}
 					class="flex w-32 items-center justify-center gap-2 rounded-full px-5 py-2 text-xs sm:w-auto sm:px-6 md:w-fit md:text-sm"
@@ -107,14 +78,15 @@
 					<span>New Purchase</span>
 				</Button>
 
+				<!-- Search -->
 				<div class="relative flex w-full items-center justify-end sm:w-auto">
 					<div class="overflow-hidden">
-						{#if showSearch}
+						{#if state.showSearch}
 							<input
-								bind:this={searchEl}
+								bind:this={state.searchEl}
 								transition:fly={{ x: 120, duration: 250 }}
 								placeholder="Search purchase..."
-								class="bg-primary/10 w-44 rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-44 md:w-56"
+								class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
 							/>
 						{/if}
 					</div>
@@ -141,78 +113,145 @@
 				<div class="overflow-hidden">
 					<table class="min-w-full divide-y divide-gray-200">
 						<thead class="bg-gray-100">
-							<tr class="text-left text-xs font-medium text-gray-700 sm:text-sm">
-								<th class="px-3 py-2.5 sm:px-4 sm:py-3">No</th>
-								<th class="px-3 py-2.5 sm:px-4 sm:py-3">Invoice No</th>
-								<th class="px-3 py-2.5 sm:px-4 sm:py-3">Item ID</th>
-								<th class="px-3 py-2.5 sm:px-4 sm:py-3">Customer ID</th>
-								<th class="px-3 py-2.5 sm:px-4 sm:py-3">Point Used</th>
-								<th class="px-3 py-2.5 sm:px-4 sm:py-3">Point Earned</th>
-								<th class="px-3 py-2.5 sm:px-4 sm:py-3">Status</th>
-								<th class="px-3 py-2.5 sm:px-4 sm:py-3">Total</th>
-								<th class="px-3 py-2.5 sm:px-4 sm:py-3">Final</th>
-								<th class="px-3 py-2.5 sm:px-4 sm:py-3">Discount</th>
-								<th class="px-3 py-2.5 sm:px-4 sm:py-3">Payment</th>
-								<th class="px-3 py-2.5 text-center sm:px-4 sm:py-3">Action</th>
+							<tr>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+									>No</th
+								>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+									>Invoice No</th
+								>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+									>Item ID</th
+								>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+									>Customer ID</th
+								>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+									>Point Used</th
+								>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+									>Point Earned</th
+								>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+									>Status</th
+								>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+									>Total</th
+								>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+									>Final</th
+								>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+									>Discount</th
+								>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+									>Payment</th
+								>
+								<th
+									class="px-3 py-2.5 text-center text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+									>Action</th
+								>
 							</tr>
 						</thead>
-						<tbody class="divide-y divide-gray-200 bg-white">
-							{#each rows as row, index}
-								<tr class="transition hover:bg-gray-50">
-									<td class="px-3 py-2.5 text-xs text-gray-500 sm:px-4 sm:py-3">{index + 1}</td>
-									<td class="px-3 py-2.5 text-xs sm:px-4 sm:py-3">{row.inv_number}</td>
-									<td class="px-3 py-2.5 text-xs sm:px-4 sm:py-3">{row.item_id}</td>
-									<td class="px-3 py-2.5 text-xs sm:px-4 sm:py-3">{row.cust_id}</td>
-									<td class="px-3 py-2.5 text-xs sm:px-4 sm:py-3">{row.point_used}</td>
-									<td class="px-3 py-2.5 text-xs sm:px-4 sm:py-3">{row.point_earned}</td>
-									<td class="px-3 py-2.5 sm:px-4 sm:py-3">
-										<span
-											class={cn(
-												'inline-flex rounded-md px-2 py-0.5 text-xs font-medium md:py-1 md:text-sm',
-												row.status === 'Completed'
-													? 'bg-green-500/10 text-green-700'
-													: row.status === 'Pending'
-														? 'bg-yellow-500/10 text-yellow-700'
-														: 'bg-red-500/10 text-red-700'
-											)}>{row.status}</span
-										>
+
+						<tbody class="divide-y divide-gray-100">
+							{#each state.table as row}
+								<tr class="hover:bg-gray-50">
+									<td class="px-3 py-2.5 text-xs text-gray-500">{row.no}</td>
+									<td class="px-3 py-2.5 text-xs">{row.inv_number}</td>
+									<td class="px-3 py-2.5 text-xs">{row.customer_name}</td>
+									<td class="px-3 py-2.5 text-xs">{row.phone}</td>
+									<td class="px-3 py-2.5 text-xs">{row.status}</td>
+									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
+									<td class="px-3 py-2.5 text-xs">Rp {row.final_amount.toLocaleString()}</td>
+									<td class="px-3 py-2.5 text-xs">Rp {row.discount_amount.toLocaleString()}</td>
+									<td class="px-3 py-2.5 text-xs">{row.payment_method}</td>
+									<td class="px-3 py-2.5 text-xs">{row.created_at}</td>
+
+									<!-- 🔹 Popover Order Detail -->
+									<td class="px-3 py-2.5 text-xs">
+										{#if row.purchase_order_details?.length > 0}
+											<Popover>
+												<PopoverTrigger
+													class="cursor-pointer text-xs font-medium text-blue-500 underline hover:text-blue-600"
+												>
+													See more
+												</PopoverTrigger>
+
+												<PopoverContent
+													class="max-h-60 w-72 overflow-y-auto rounded-lg bg-white p-3 shadow-lg"
+												>
+													<p class="mb-2 text-sm font-semibold text-gray-700">Order Details</p>
+
+													<table class="min-w-full text-xs">
+														<thead>
+															<tr class="border-b border-gray-200 text-gray-500">
+																<th class="py-1 text-left">Item</th>
+																<th class="py-1 text-left">Description</th>
+																<th class="py-1 text-left">Qty</th>
+															</tr>
+														</thead>
+														<tbody>
+															{#each row.purchase_order_details as detail}
+																<tr>
+																	<td class="py-1 text-gray-700">{detail.name}</td>
+																	<td class="py-1 text-gray-700">{detail.description}</td>
+																	<td class="py-1 text-gray-700">{detail.qty}</td>
+																</tr>
+															{/each}
+														</tbody>
+													</table>
+												</PopoverContent>
+											</Popover>
+										{:else}
+											<span class="text-xs text-gray-400 italic">No details</span>
+										{/if}
 									</td>
-									<td class="px-3 py-2.5 text-xs sm:px-4 sm:py-3"
-										>Rp {row.total_amount.toLocaleString()}</td
-									>
-									<td class="px-3 py-2.5 text-xs sm:px-4 sm:py-3"
-										>Rp {row.final_amount.toLocaleString()}</td
-									>
-									<td class="px-3 py-2.5 text-xs sm:px-4 sm:py-3"
-										>Rp {row.discount_amount.toLocaleString()}</td
-									>
-									<td class="px-3 py-2.5 text-xs sm:px-4 sm:py-3">{row.payment_method}</td>
-									<td class="px-3 py-2.5 text-center sm:px-4 sm:py-3">
-										<div class="flex items-center justify-center gap-2 md:gap-3">
-											<button
-												class="rounded-full p-1.5 transition hover:scale-110 hover:bg-red-50 md:p-2"
-												onclick={() => openDeleteModal(row)}
-											>
-												<Icon
-													icon="material-symbols-light:delete-rounded"
-													width="18"
-													height="18"
-													class="md:h-5 md:w-5"
-													style="color: #ff0f22"
-												/>
-											</button>
-											<button
-												class="rounded-full p-1.5 transition hover:scale-110 hover:bg-yellow-50 md:p-2"
-											>
-												<Icon
-													icon="lucide:edit"
-													width="16"
-													height="16"
-													class="md:h-[18px] md:w-[18px]"
-													style="color: #cea200"
-												/>
-											</button>
-										</div>
+									<td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
+										{#if row.open}
+											<div class="flex items-center justify-center gap-2 md:gap-3">
+												<button
+													type="button"
+													onclick={() => openDeleteModal(row)}
+													class="rounded-full p-1.5 transition hover:scale-110 hover:bg-red-50 md:p-2"
+													aria-label="Delete purchase"
+												>
+													<Icon
+														icon="material-symbols-light:delete-rounded"
+														width="18"
+														height="18"
+														class="md:h-5 md:w-5"
+														style="color: #ff0f22"
+													/>
+												</button>
+
+												<button
+													type="button"
+													class="rounded-full p-1.5 transition hover:scale-110 hover:bg-yellow-50 md:p-2"
+													aria-label="Edit purchase"
+													onclick={() => goto(`/purchase/create?id=${encodeURIComponent(row.id)}`)}
+												>
+													<Icon
+														icon="lucide:edit"
+														width="16"
+														height="16"
+														class="md:h-[18px] md:w-[18px]"
+														style="color: #cea200"
+													/>
+												</button>
+											</div>
+										{/if}
 									</td>
 								</tr>
 							{/each}
@@ -224,23 +263,33 @@
 
 		<!-- PAGINATION -->
 		<div class="w-full">
-			<Pagination.Root count={100} perPage={10}>
+			<Pagination.Root count={state.totalCount} perPage={state.pageSize}>
 				{#snippet children({ pages, currentPage })}
 					<div class="mt-4 flex w-full justify-end">
 						<Pagination.Content>
-							<Pagination.Item class="hidden md:block"><Pagination.PrevButton /></Pagination.Item>
+							<Pagination.Item class="hidden md:block">
+								<Pagination.PrevButton onclick={() => handlePageChange(state.currentPage - 1)} />
+							</Pagination.Item>
+
 							{#each pages as page (page.key)}
 								{#if page.type === 'ellipsis'}
 									<Pagination.Item><Pagination.Ellipsis /></Pagination.Item>
 								{:else}
 									<Pagination.Item>
-										<Pagination.Link {page} isActive={currentPage === page.value}>
+										<Pagination.Link
+											{page}
+											isActive={currentPage === page.value}
+											onclick={() => handlePageChange(page.value)}
+										>
 											{page.value}
 										</Pagination.Link>
 									</Pagination.Item>
 								{/if}
 							{/each}
-							<Pagination.Item class="hidden md:block"><Pagination.NextButton /></Pagination.Item>
+
+							<Pagination.Item class="hidden md:block">
+								<Pagination.NextButton onclick={() => handlePageChange(state.currentPage + 1)} />
+							</Pagination.Item>
 						</Pagination.Content>
 					</div>
 				{/snippet}
@@ -249,9 +298,8 @@
 	</div>
 </div>
 
-<!-- DELETE MODAL -->
-
-{#if showDeleteModal}
+<!-- 🧩 DELETE CONFIRM MODAL -->
+{#if state.showDeleteModal}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
@@ -281,9 +329,11 @@
 				Delete Confirmation
 			</h2>
 
-			<p class="mb-5 text-center text-sm text-gray-600 sm:mb-6">
+			<p class="mb-5 text-center text-sm text-gray-600 sm:mb-6 dark:text-gray-400">
 				Are you sure you want to delete
-				<span class="font-semibold text-gray-800">{selectedRow?.inv_number}</span>?
+				<span class="font-semibold text-gray-800 dark:text-gray-100"
+					>{state.selectedPurchase?.inv_number}</span
+				>?
 				<span class="block sm:inline">This action cannot be undone.</span>
 			</p>
 

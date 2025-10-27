@@ -2,15 +2,20 @@
 import { z } from 'zod';
 
 export const invoiceSchema = z.object({
-	id: z.string().min(1, 'ID is required'),
-	inv_number: z.string().min(1, 'Invoice Number is required'),
-	item_id: z.string().min(1, 'Item ID is required'),
-	cust_id: z.string().min(1, 'Customer ID is required'),
-	point_used: z.number().min(0, 'Point Used must be a number'),
-	point_earned: z.number().min(0, 'Point Earned must be a number'),
+	customer_id: z.string().uuid('Customer ID must be a valid UUID'),
+	point_used: z.number().min(0, 'Point Used must be 0 or greater'),
+	point_earned: z.number().min(0, 'Point Earned must be 0 or greater'),
 	status: z.string().min(1, 'Status is required'),
-	total_amount: z.number().min(0, 'Total Amount is required'),
-	final_amount: z.number().min(0, 'Final Amount is required'),
-	discount_amount: z.number().min(0, 'Discount Amount is required'),
-	payment_method: z.string().min(1, 'Payment Method is required')
+	total_amount: z.number().min(0, 'Total Amount must be 0 or greater'),
+	final_amount: z.number().min(0, 'Final Amount must be 0 or greater'),
+	discount_amount: z.number().min(0, 'Discount Amount must be 0 or greater'),
+	payment_method: z.string().min(1, 'Payment Method is required'),
+	details: z
+		.array(
+			z.object({
+				item_id: z.string().min(1, 'Item ID is required'),
+				qty: z.number().min(1, 'Quantity must be at least 1'),
+			})
+		)
+		.nonempty('Details must contain at least one item'),
 });

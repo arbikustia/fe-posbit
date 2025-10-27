@@ -2,9 +2,9 @@
 	import Icon from '@iconify/svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Pagination from '$lib/components/ui/pagination/index.js';
-	import { goto } from '$app/navigation';
 	import { tick } from 'svelte';
 	import { fly } from 'svelte/transition';
+	import { useMasterItemPage } from '../../use-page.svelte';
 
 	let showSearch = false;
 	let searchEl: HTMLInputElement | null = null;
@@ -17,55 +17,17 @@
 		}
 	}
 
-	type ItemRow = {
-		id: number;
-		item_name: string;
-		qty_stok_toko: number;
-		harga_beli: number;
-		harga_jual: number;
-		qty: number;
-		open?: boolean;
-	};
-
-	let rows: ItemRow[] = [
-		{
-			id: 1,
-			item_name: 'Kopi Kapal Api',
-			qty_stok_toko: 120,
-			harga_beli: 2500,
-			harga_jual: 3500,
-			qty: 3,
-			open: true
-		},
-		{
-			id: 2,
-			item_name: 'Indomie Goreng',
-			qty_stok_toko: 85,
-			harga_beli: 2800,
-			harga_jual: 4000,
-			qty: 5,
-			open: true
-		},
-		{
-			id: 3,
-			item_name: 'Aqua Botol 600ml',
-			qty_stok_toko: 50,
-			harga_beli: 3500,
-			harga_jual: 5000,
-			qty: 2,
-			open: true
-		}
-	];
+	// ✅ Ambil data langsung dari state.table
+	const { state, handlePageChange } = useMasterItemPage();
 </script>
 
 <div class="mx-auto w-full max-w-7xl">
 	<!-- HEADER -->
 	<header class="mb-4 sm:mb-6 md:mb-8">
-		<div class=" flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">
-			<!-- New Customer Button -->
+		<div class="flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">
 			<Button
 				variant="ghost"
-				class="flex w-28 cursor-default items-center justify-center gap-2 rounded-full bg-transparent px-0 py-2  text-xs hover:bg-transparent sm:w-auto  md:w-fit md:text-sm"
+				class="flex w-28 cursor-default items-center justify-center gap-2 rounded-full bg-transparent px-0 py-2 text-xs hover:bg-transparent sm:w-auto md:w-fit md:text-sm"
 			>
 				<div class="flex items-center justify-between">
 					<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">
@@ -81,7 +43,7 @@
 						<input
 							bind:this={searchEl}
 							transition:fly={{ x: 120, duration: 250 }}
-							placeholder="Search customer..."
+							placeholder="Search item..."
 							class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
 						/>
 					{/if}
@@ -108,50 +70,98 @@
 		<table class="min-w-full divide-y divide-gray-200">
 			<thead class="bg-gray-100">
 				<tr class="text-left text-sm font-medium text-gray-700">
-					<th class="px-4 py-3">No</th>
-					<th class="px-4 py-3">Item Name</th>
-					<th class="px-4 py-3">Qty Stok Toko</th>
-					<th class="px-4 py-3">Harga Beli</th>
-					<th class="px-4 py-3">Harga Jual</th>
-					<th class="px-4 py-3">Qty</th>
+					<th
+						class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+						>No</th
+					>
+					<th
+						class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+						>Item Name</th
+					>
+					<th
+						class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+						>Description</th
+					>
+					<th
+						class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+						>Harga Beli</th
+					>
+					<th
+						class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+						>Harga Jual</th
+					>
+					<th
+						class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+						>Qty</th
+					>
 				</tr>
 			</thead>
+
 			<tbody class="divide-y divide-gray-200 bg-white">
-				{#each rows as row, index}
+				{#each state.table as row, index}
 					<tr class="transition hover:bg-gray-50">
-						<td class="px-4 py-3 text-gray-500">{index + 1}</td>
-						<td class="px-4 py-3 font-medium">{row.item_name}</td>
-						<td class="px-4 py-3">{row.qty_stok_toko}</td>
-						<td class="px-4 py-3">Rp {row.harga_beli.toLocaleString()}</td>
-						<td class="px-4 py-3">Rp {row.harga_jual.toLocaleString()}</td>
-						<td class="px-4 py-3">{row.qty}</td>
+						<td
+							class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm"
+							>{index + 1}</td
+						>
+						<td
+							class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+							>{row.nama_barang}</td
+						>
+						<td
+							class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+							>{row.deskripsi}</td
+						>
+						<td
+							class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+							>Rp {row.harga_beli?.toLocaleString?.() ?? '-'}</td
+						>
+						<td
+							class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+							>Rp {row.harga_jual?.toLocaleString?.() ?? '-'}</td
+						>
+						<td
+							class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+							>{row.qty}</td
+						>
 					</tr>
 				{/each}
 			</tbody>
 		</table>
 	</div>
+
 	<!-- PAGINATION -->
-	<div class="w-full">
-		<Pagination.Root count={100} perPage={10}>
+	<!-- <div class="w-full">
+		<Pagination.Root count={state.totalCount} perPage={state.pageSize}>
 			{#snippet children({ pages, currentPage })}
 				<div class="mt-4 flex w-full justify-end">
 					<Pagination.Content>
-						<Pagination.Item class="hidden md:block"><Pagination.PrevButton /></Pagination.Item>
+						<Pagination.Item class="hidden md:block">
+							<Pagination.PrevButton onclick={() => handlePageChange(state.currentPage - 1)} />
+						</Pagination.Item>
+
 						{#each pages as page (page.key)}
 							{#if page.type === 'ellipsis'}
 								<Pagination.Item><Pagination.Ellipsis /></Pagination.Item>
 							{:else}
 								<Pagination.Item>
-									<Pagination.Link {page} isActive={currentPage === page.value}>
+									<Pagination.Link
+										{page}
+										isActive={currentPage === page.value}
+										onclick={() => handlePageChange(page.value)}
+									>
 										{page.value}
 									</Pagination.Link>
 								</Pagination.Item>
 							{/if}
 						{/each}
-						<Pagination.Item class="hidden md:block"><Pagination.NextButton /></Pagination.Item>
+
+						<Pagination.Item class="hidden md:block">
+							<Pagination.NextButton onclick={() => handlePageChange(state.currentPage + 1)} />
+						</Pagination.Item>
 					</Pagination.Content>
 				</div>
 			{/snippet}
 		</Pagination.Root>
-	</div>
+	</div> -->
 </div>

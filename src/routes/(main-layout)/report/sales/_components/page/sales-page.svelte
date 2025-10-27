@@ -7,6 +7,9 @@
 	import { tick } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { cn } from '$lib/utils';
+	import { useSalesPage } from '../../create/use-create.svelte';
+
+	const { state, handlePageChange } = useSalesPage();
 
 	let showSearch = false;
 	let searchEl: HTMLInputElement | null = null;
@@ -57,28 +60,26 @@
 
 <!-- HEADER -->
 <header class="mb-4 sm:mb-6 md:mb-8">
-	<div class="flex items-center justify-between">
-		<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">Sales Data</h1>
-	</div>
-
-	<div
-		class="mt-3 flex flex-row gap-3 sm:mt-4 sm:flex-row sm:items-center sm:justify-between md:mt-6"
-	>
+	<div class="flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">
 		<Button
-			onclick={() => goto('/report/sales/create')}
-			class="flex w-28 items-center justify-center gap-2 rounded-full px-3 py-2 text-xs sm:w-auto sm:px-4 md:w-fit md:text-sm"
+			variant="ghost"
+			class="flex w-28 cursor-default items-center justify-center gap-2 rounded-full bg-transparent px-0 py-2 text-xs hover:bg-transparent sm:w-auto md:w-fit md:text-sm"
 		>
-			<Icon icon="ic:round-plus" width="20" height="20" class="md:h-6 md:w-6" />
-			<span>New Sale</span>
+			<div class="flex items-center justify-between">
+				<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">
+					Report Sale
+				</h1>
+			</div>
 		</Button>
 
+		<!-- Search Container -->
 		<div class="relative flex w-full items-center justify-end sm:w-auto">
 			<div class="overflow-hidden">
 				{#if showSearch}
 					<input
 						bind:this={searchEl}
 						transition:fly={{ x: 120, duration: 250 }}
-						placeholder="Search sales..."
+						placeholder="Search item..."
 						class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
 					/>
 				{/if}
@@ -123,15 +124,15 @@
 							class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 							>Sale</th
 						>
-						<th
+						<!-- <th
 							class="px-3 py-2.5 text-center text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 							>Action</th
-						>
+						> -->
 					</tr>
 				</thead>
 
 				<tbody class="divide-y divide-gray-200 bg-white">
-					{#each rows as row, index}
+					{#each state.table as row, index}
 						<tr class="transition hover:bg-gray-50">
 							<td
 								class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm"
@@ -149,7 +150,7 @@
 								class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 								>{row.sale_id}</td
 							>
-							<td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
+							<!-- <td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
 								{#if row.open}
 									<div class="flex items-center justify-center gap-2 md:gap-3">
 										<button
@@ -181,7 +182,7 @@
 										</button>
 									</div>
 								{/if}
-							</td>
+							</td> -->
 						</tr>
 					{/each}
 				</tbody>
@@ -192,23 +193,33 @@
 
 <!-- PAGINATION -->
 <div class="w-full">
-	<Pagination.Root count={100} perPage={10}>
+	<Pagination.Root count={state.totalCount} perPage={state.pageSize}>
 		{#snippet children({ pages, currentPage })}
 			<div class="mt-4 flex w-full justify-end">
 				<Pagination.Content>
-					<Pagination.Item class="hidden md:block"><Pagination.PrevButton /></Pagination.Item>
+					<Pagination.Item class="hidden md:block">
+						<Pagination.PrevButton onclick={() => handlePageChange(state.currentPage - 1)} />
+					</Pagination.Item>
+
 					{#each pages as page (page.key)}
 						{#if page.type === 'ellipsis'}
 							<Pagination.Item><Pagination.Ellipsis /></Pagination.Item>
 						{:else}
 							<Pagination.Item>
-								<Pagination.Link {page} isActive={currentPage === page.value}
-									>{page.value}</Pagination.Link
+								<Pagination.Link
+									{page}
+									isActive={currentPage === page.value}
+									onclick={() => handlePageChange(page.value)}
 								>
+									{page.value}
+								</Pagination.Link>
 							</Pagination.Item>
 						{/if}
 					{/each}
-					<Pagination.Item class="hidden md:block"><Pagination.NextButton /></Pagination.Item>
+
+					<Pagination.Item class="hidden md:block">
+						<Pagination.NextButton onclick={() => handlePageChange(state.currentPage + 1)} />
+					</Pagination.Item>
 				</Pagination.Content>
 			</div>
 		{/snippet}

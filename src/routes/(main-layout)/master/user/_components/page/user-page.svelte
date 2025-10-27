@@ -11,9 +11,7 @@
 	import { useUserPage } from '../../create/use-create.svelte.js';
 	import { userService } from '@/services/userService.js';
 
-	const { state } = useUserPage();
-	// let showSearch = $state(false);
-	// let searchEl: HTMLInputElement | null = $state(null);
+	const { state, handlePageChange } = useUserPage();
 
 	async function toggleSearch() {
 		state.showSearch = !state.showSearch;
@@ -82,7 +80,7 @@
 					<div class="overflow-hidden">
 						{#if state.showSearch}
 							<input
-								bind:this={state.searchEl}
+								bind:value={state.searchTerm}
 								transition:fly={{ x: 120, duration: 250 }}
 								placeholder="Search user..."
 								class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
@@ -239,23 +237,33 @@
 
 		<!-- PAGINATION -->
 		<div class="w-full">
-			<Pagination.Root count={100} perPage={10}>
+			<Pagination.Root count={state.totalCount} perPage={state.pageSize}>
 				{#snippet children({ pages, currentPage })}
 					<div class="mt-4 flex w-full justify-end">
 						<Pagination.Content>
-							<Pagination.Item class="hidden md:block"><Pagination.PrevButton /></Pagination.Item>
+							<Pagination.Item class="hidden md:block">
+								<Pagination.PrevButton onclick={() => handlePageChange(state.currentPage - 1)} />
+							</Pagination.Item>
+
 							{#each pages as page (page.key)}
 								{#if page.type === 'ellipsis'}
 									<Pagination.Item><Pagination.Ellipsis /></Pagination.Item>
 								{:else}
 									<Pagination.Item>
-										<Pagination.Link {page} isActive={currentPage === page.value}>
+										<Pagination.Link
+											{page}
+											isActive={currentPage === page.value}
+											onclick={() => handlePageChange(page.value)}
+										>
 											{page.value}
 										</Pagination.Link>
 									</Pagination.Item>
 								{/if}
 							{/each}
-							<Pagination.Item class="hidden md:block"><Pagination.NextButton /></Pagination.Item>
+
+							<Pagination.Item class="hidden md:block">
+								<Pagination.NextButton onclick={() => handlePageChange(state.currentPage + 1)} />
+							</Pagination.Item>
 						</Pagination.Content>
 					</div>
 				{/snippet}

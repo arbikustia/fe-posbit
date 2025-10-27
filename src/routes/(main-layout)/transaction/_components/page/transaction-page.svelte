@@ -1,20 +1,18 @@
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table/index.js';
 	import Icon from '@iconify/svelte';
 	import * as Pagination from '$lib/components/ui/pagination/index.js';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import Input from '$lib/components/ui/input/input.svelte';
-	import { goto } from '$app/navigation';
-	import { onMount, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import { fly } from 'svelte/transition';
-	import * as Tabs from '$lib/components/ui/tabs/index.js';
-	import * as Select from '$lib/components/ui/select/index.js';
-	import SearchForm from '../search-form/search-form.svelte';
-	import { cn } from '$lib/utils';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
+	import { useTransactionPage } from './use-transaction.svelte';
+	import { useTransactionForm } from '../search-form/form.svelte';
 
 	let showSearch = false;
 	let searchEl: HTMLInputElement | null = null;
+
+	const { state, handlePageChange, handleSearch } = useTransactionPage();
+	const { state: pageState } = useTransactionForm();
 
 	async function toggleSearch() {
 		showSearch = !showSearch;
@@ -30,47 +28,6 @@
 		transactionName: string;
 		open?: boolean;
 	};
-
-	const rows = [
-		{
-			category: 'Gelang',
-			productName: 'Gelang Emas Klasik 24K',
-			price: 3450000,
-			image: 'https://images.unsplash.com/photo-1590080875831-3c5d3b6b7a45',
-			open: true
-		},
-		{
-			category: 'Cincin',
-			productName: 'Cincin Emas Berlian 18K',
-			price: 5280000,
-			image: 'https://images.unsplash.com/photo-1600180758890-6c1a7b1b7c9e',
-			open: true
-		},
-		{
-			category: 'Kalung',
-			productName: 'Kalung Emas Rantai Halus 22K',
-			price: 6750000,
-			image: 'https://images.unsplash.com/photo-1610375461246-87d0d84d1b97',
-			open: true
-		},
-		{
-			category: 'Anting',
-			productName: 'Anting Emas Mutiara 20K',
-			price: 4150000,
-			image: 'https://images.unsplash.com/photo-1617039546637-df84b08b52b2',
-			open: true
-		},
-		{
-			category: 'Liontin',
-			productName: 'Liontin Emas Putih Berlian',
-			price: 7350000,
-			image: 'https://images.unsplash.com/photo-1618858466601-8f7f1a9a9f90',
-			open: true
-		}
-	];
-
-	const formatPrice = (num: number) =>
-		new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(num);
 
 	function formatCurrency(num: number) {
 		return new Intl.NumberFormat('id-ID', {
@@ -120,9 +77,6 @@
 		0
 	);
 
-	let rawValue = ''; // nilai mentah (tanpa format)
-	let formattedValue = ''; // nilai dengan format rupiah
-
 	function formatToRupiah(value: string) {
 		const number = value.replace(/\D/g, ''); // hapus semua non-digit
 		if (!number) return '';
@@ -133,88 +87,119 @@
 			maximumFractionDigits: 0
 		}).format(parseInt(number));
 	}
-
-	function handleInput(e: Event) {
-		const target = e.target as HTMLInputElement;
-		rawValue = target.value.replace(/\D/g, '');
-		formattedValue = formatToRupiah(rawValue);
-
-		// set tampilan input jadi format Rupiah
-		target.value = formattedValue;
-	}
 </script>
 
 <div class="flex gap-4">
-	<div class="w-[65%]">
-		<table class="w-full overflow-hidden rounded-lg border border-gray-200">
-			<thead class="bg-primary/10">
-				<tr class="text-left text-sm font-medium text-gray-700">
-					<th class="px-4 py-3">No</th>
-					<th class="px-4 py-3">Category</th>
-					<th class="px-4 py-3">Item Name</th>
-					<th class="px-4 py-3">Price</th>
-					<th class="px-4 py-3">Image</th>
-					<th class="px-4 py-3 text-center">Action</th>
-				</tr>
-			</thead>
-
-			<tbody>
-				{#each rows as row, index}
-					<tr class="border-b border-gray-200 text-sm hover:bg-gray-50">
-						<td class="w-20 px-4 py-3 text-gray-500">{index + 1}</td>
-						<td class="px-4 py-3">{row.category}</td>
-						<td class="px-4 py-3">{row.productName}</td>
-						<td class="px-3 py-3">
-							<span class="bg-primary/10 text-primary rounded-sm p-1 px-2 font-medium"
-								>{formatPrice(row.price)}</span
-							>
-						</td>
-						<td class="px-4 py-3 text-blue-700">
-							<a href={row.image} target="_blank"> Image </a>
-						</td>
-						<td class="w-10 px-4 py-3 text-center">
-							{#if row.open}
-								<div class="flex items-center justify-center gap-2">
-									<Icon
-										icon="solar:cart-plus-bold"
-										width="24"
-										height="24"
-										class="cursor-pointer text-green-500"
-									/>
-								</div>
-							{/if}
-						</td>
+	<div class="mx-auto w-full max-w-7xl">
+		<!-- TABLE -->
+		<div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+			<table class="min-w-full divide-y divide-gray-200">
+				<thead class="bg-gray-100">
+					<tr class="text-left text-sm font-medium text-gray-700">
+						<th
+							class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+							>No</th
+						>
+						<th
+							class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+							>Barcode ID</th
+						>
+						<th
+							class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+							>Item Name</th
+						>
+						<th
+							class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+							>Label</th
+						>
+						<th
+							class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+							>Harga Jual</th
+						>
+						<th
+							class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+							>Action</th
+						>
 					</tr>
-				{/each}
-			</tbody>
-		</table>
-		<Pagination.Root count={100} perPage={10}>
-			{#snippet children({ pages, currentPage })}
-				<div class="flex w-full justify-end">
-					<Pagination.Content>
-						<Pagination.Item>
-							<Pagination.PrevButton />
-						</Pagination.Item>
-						{#each pages as page (page.key)}
-							{#if page.type === 'ellipsis'}
-								<Pagination.Item>
-									<Pagination.Ellipsis />
-								</Pagination.Item>
-							{:else}
-								<Pagination.Item>
-									<Pagination.Link {page} isActive={currentPage === page.value}>
-										{page.value}
-									</Pagination.Link>
-								</Pagination.Item>
-							{/if}
+				</thead>
+
+				<tbody class="divide-y divide-gray-200 bg-white">
+					{#if pageState.itemTable?.length > 0}
+						{#each pageState.itemTable as row, index}
+							<tr class="transition hover:bg-gray-50">
+								<td class="px-3 py-2.5 whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm"
+									>{index + 1}</td
+								>
+								<td class="px-3 py-2.5 whitespace-nowrap sm:px-4 sm:py-3 md:text-sm"
+									>{row.barcode_id}</td
+								>
+								<td class="px-3 py-2.5 font-medium whitespace-nowrap sm:px-4 sm:py-3 md:text-sm"
+									>{row.name}</td
+								>
+								<td class="px-3 py-2.5 whitespace-nowrap sm:px-4 sm:py-3 md:text-sm"
+									>{row.label_name}</td
+								>
+								<td class="px-3 py-2.5 whitespace-nowrap sm:px-4 sm:py-3 md:text-sm">
+									{formatCurrency(row.harga_jual)}
+								</td>
+								<td class="px-4 py-3 text-center">
+									<Button
+										class="flex items-center justify-center gap-1 rounded-full bg-green-500 px-3 py-1 text-xs text-white hover:bg-green-600"
+										onclick={() => console.log('Add to cart:', row)}
+									>
+										<Icon icon="solar:cart-plus-bold" width="16" height="16" />
+										Add
+									</Button>
+								</td>
+							</tr>
 						{/each}
-						<Pagination.Item>
-							<Pagination.NextButton />
-						</Pagination.Item>
-					</Pagination.Content>
-				</div>
-			{/snippet}
-		</Pagination.Root>
+					{:else}
+						<tr>
+							<td colspan="6" class="px-4 py-4 text-center text-gray-500"> No data available </td>
+						</tr>
+					{/if}
+				</tbody>
+			</table>
+		</div>
+
+		<!-- PAGINATION -->
+		<div class="w-full">
+			<Pagination.Root count={pageState.totalCount} perPage={pageState.pageSize}>
+				{#snippet children({ pages, currentPage })}
+					<div class="mt-4 flex w-full justify-end">
+						<Pagination.Content>
+							<Pagination.Item class="hidden md:block">
+								<Pagination.PrevButton
+									onclick={() => handlePageChange(pageState.currentPage - 1)}
+								/>
+							</Pagination.Item>
+
+							{#each pages as page (page.key)}
+								{#if page.type === 'ellipsis'}
+									<Pagination.Item><Pagination.Ellipsis /></Pagination.Item>
+								{:else}
+									<Pagination.Item>
+										<Pagination.Link
+											{page}
+											isActive={currentPage === page.value}
+											onclick={() => handlePageChange(page.value)}
+										>
+											{page.value}
+										</Pagination.Link>
+									</Pagination.Item>
+								{/if}
+							{/each}
+
+							<Pagination.Item class="hidden md:block">
+								<Pagination.NextButton
+									onclick={() => handlePageChange(pageState.currentPage + 1)}
+								/>
+							</Pagination.Item>
+						</Pagination.Content>
+					</div>
+				{/snippet}
+			</Pagination.Root>
+		</div>
 	</div>
 	<div class="w-[35%] rounded-lg border border-gray-100 bg-white p-3 shadow-sm">
 		<!-- Header -->
@@ -230,7 +215,9 @@
 			<div class=" text-right font-semibold">
 				<div>
 					<span class=" text-xs font-bold">Total</span>
-					<span class="ml-2 text-lg font-bold text-blue-600">{formatCurrency(totalAll)}</span>
+					<span class="ml-2 text-lg font-bold text-blue-600"
+						>{formatCurrency(pageState.amount)}</span
+					>
 				</div>
 				<div>
 					<span class=" text-xs font-bold">Change</span>
@@ -284,9 +271,7 @@
 									</Tooltip.Provider>
 
 									<span>
-										<Button class="h-5 w-1">-</Button>
-										<span class="text-md w-3 px-2 font-medium">5</span>
-										<Button class="h-5 w-1">+</Button>
+										<span class="text-md w-3 px-2 font-medium">1</span>
 									</span>
 								</div>
 							{/each}

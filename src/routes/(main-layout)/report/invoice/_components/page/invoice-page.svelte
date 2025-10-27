@@ -54,29 +54,27 @@
 
 <!-- HEADER -->
 <header class="mb-4 sm:mb-6 md:mb-8">
-	<div class="flex items-center justify-between">
-		<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl">Report Invoice</h1>
-	</div>
-
-	<div
-		class="mt-3 flex flex-row gap-3 sm:mt-4 sm:flex-row sm:items-center sm:justify-between md:mt-6"
-	>
+	<div class="flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">
 		<Button
-			onclick={() => goto('/report/invoice/create')}
-			class="flex w-28 items-center justify-center gap-2 rounded-full px-3 py-2 text-xs sm:w-auto sm:px-4 md:w-fit md:text-sm"
+			variant="ghost"
+			class="flex w-28 cursor-default items-center justify-center gap-2 rounded-full bg-transparent px-0 py-2 text-xs hover:bg-transparent sm:w-auto md:w-fit md:text-sm"
 		>
-			<Icon icon="ic:round-plus" width="20" height="20" />
-			New Invoice
+			<div class="flex items-center justify-between">
+				<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">
+					Report Invoice
+				</h1>
+			</div>
 		</Button>
 
+		<!-- Search Container -->
 		<div class="relative flex w-full items-center justify-end sm:w-auto">
 			<div class="overflow-hidden">
 				{#if showSearch}
 					<input
 						bind:this={searchEl}
 						transition:fly={{ x: 120, duration: 250 }}
-						placeholder="Search invoice..."
-						class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm outline-none sm:w-48 md:w-56"
+						placeholder="Search item..."
+						class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
 					/>
 				{/if}
 			</div>
@@ -86,7 +84,12 @@
 				class="absolute right-0 rounded-full p-2 transition hover:bg-gray-100 dark:hover:bg-gray-800"
 				onclick={toggleSearch}
 			>
-				<Icon icon="majesticons:search-line" width="20" height="20" class="text-gray-600" />
+				<Icon
+					icon="majesticons:search-line"
+					width="20"
+					height="20"
+					class="text-gray-600 md:h-[22px] md:w-[22px]"
+				/>
 			</button>
 		</div>
 	</div>
@@ -100,7 +103,7 @@
 				<th class="px-3 py-2.5 sm:px-4 sm:py-3">No</th>
 				<th class="px-3 py-2.5 sm:px-4 sm:py-3">Invoice ID</th>
 				<th class="px-3 py-2.5 sm:px-4 sm:py-3">Description</th>
-				<th class="px-3 py-2.5 text-center sm:px-4 sm:py-3">Action</th>
+				<!-- <th class="px-3 py-2.5 text-center sm:px-4 sm:py-3">Action</th> -->
 			</tr>
 		</thead>
 
@@ -112,7 +115,7 @@
 					<td class="px-3 py-2.5 text-xs text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 						>{row.description}</td
 					>
-					<td class="px-3 py-2.5 text-center sm:px-4 sm:py-3">
+					<!-- <td class="px-3 py-2.5 text-center sm:px-4 sm:py-3">
 						<div class="flex items-center justify-center gap-2 md:gap-3">
 							<button
 								type="button"
@@ -133,7 +136,7 @@
 								<Icon icon="lucide:edit" width="16" height="16" style="color: #cea200" />
 							</button>
 						</div>
-					</td>
+					</td> -->
 				</tr>
 			{/each}
 		</tbody>

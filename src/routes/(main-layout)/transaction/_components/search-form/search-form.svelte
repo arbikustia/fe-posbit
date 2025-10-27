@@ -2,52 +2,59 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { cn } from '$lib/utils';
-
-	let { variant = 'default' }: any = $props();
-
 	import Icon from '@iconify/svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { goto } from '$app/navigation';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import dayjs from 'dayjs';
 	import { onMount, onDestroy } from 'svelte';
+	import { useTransactionForm } from './form.svelte';
+	import { browser } from '$app/environment';
 
-	// Gunakan $state untuk reaktivitas di Svelte 5
-	let currentTime = $state(dayjs().format('DD-MM-YYYY HH:mm:ss'));
-
+	const { state } = useTransactionForm();
+	// Variant prop
+	let { variant = 'default' }: any = $props();
 	let timer: NodeJS.Timeout | null = null;
 
+	function getCookie(name: string) {
+		if (!browser) return null;
+		const value = `; ${document.cookie}`;
+		const parts = value.split(`; ${name}=`);
+		if (parts.length === 2) return parts.pop()?.split(';').shift();
+		return null;
+	}
+
 	onMount(() => {
-		// Update setiap 1 detik
+		state.username = getCookie('username') || 'superadmin';
 		timer = setInterval(() => {
-			currentTime = dayjs().format('DD-MM-YYYY HH:mm:ss');
+			state.currentTime = dayjs().format('DD-MM-YYYY HH:mm:ss');
 		}, 1000);
 	});
-
-	onDestroy(() => {
-		if (timer) clearInterval(timer);
-	});
-
-	let paymentMethod = $state('cash');
-	let paymentMethodeOpen = $state(false);
+	onDestroy(() => timer && clearInterval(timer));
 
 	const paymentOptions = [
-		{ value: 'cash', label: 'Cash' },
-		{ value: 'debit', label: 'Debit' }
+		{ value: 'CASH', label: 'CASH' },
+		{ value: 'DEBIT', label: 'DEBIT' }
 	];
+
+	// Fungsi ketika klik Purchase
+	function handlePurchase() {
+		console.log('Data Transaksi:', {
+			...state,
+			time: state.currentTime
+		});
+
+		// Contoh tindakan lanjut:
+		// - Validasi form
+		// - Kirim ke API
+		// - Navigasi ke halaman lain
+		goto('/invoice');
+	}
 </script>
 
+<!-- ==== VARIANT STICKY ==== -->
 {#if variant === 'sticky'}
-	{#snippet searchButton()}
-		<Button
-			onclick={() => goto('/invoice')}
-			class={cn('h-10 w-full flex-none text-lg', {})}
-			size="lg"
-		>
-			<span class="ml-1">Purchase</span>
-		</Button>
-	{/snippet}
-	<Select.Root type="single" bind:value={paymentMethod} bind:open={paymentMethodeOpen}>
+	<Select.Root type="single" bind:value={state.paymentMethod} bind:open={state.paymentMethodeOpen}>
 		<section class="bg-card sticky top-0 z-31 border-y shadow-sm">
 			<div class="mx-auto max-w-6xl space-y-2 px-4 pt-2 pb-2">
 				<div class="flex w-full flex-1 grid-cols-5 flex-row items-end justify-start gap-5">
@@ -56,14 +63,14 @@
 							class="text-primary bg-primary/10 flex h-9 w-fit items-center gap-2 rounded-md p-1 px-4 text-sm font-medium"
 						>
 							<Icon icon="solar:user-linear" width="14" height="14" class="text-primary" />
-							superadmin
+							{state.username}
 						</div>
 					</div>
 					<div class="flex flex-col items-start justify-start gap-1">
 						<div
 							class="text-primary bg-primary/10 flex h-9 w-fit items-center rounded-md p-1 px-4 text-sm font-medium"
 						>
-							<div>{currentTime}</div>
+							<div>{state.currentTime}</div>
 						</div>
 					</div>
 					<div class="flex flex-col items-start justify-start gap-1">
@@ -73,9 +80,8 @@
 							<Select.Trigger
 								class="text-primary bg-primary/10 relative flex h-auto w-fit cursor-pointer items-center space-x-2 rounded-md border-none p-1 px-4 text-sm font-medium shadow-none"
 							>
-								<span>{paymentOptions.find((p) => p.value === paymentMethod)?.label}</span>
+								<span>{paymentOptions.find((p) => p.value === state.paymentMethod)?.label}</span>
 							</Select.Trigger>
-
 							<Select.Content>
 								<Select.Group>
 									{#each paymentOptions as option (option.value)}
@@ -86,64 +92,64 @@
 						</div>
 					</div>
 				</div>
-				<div class="grid w-full grid-cols-5 flex-row items-end justify-start gap-2">
-					<!-- Customer Name -->
+
+				<!-- FORM INPUT -->
+				<div class="grid w-full grid-cols-6 flex-row items-end justify-start gap-2">
 					<div class="flex flex-col items-start justify-start gap-1">
-						<div class="h-auto w-full rounded-lg border border-gray-200">
-							<Input
-								placeholder="Customer Name"
-								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
-							/>
-						</div>
+						<Input
+							type="tel"
+							bind:value={state.customerNumber}
+							placeholder="Phone Number"
+							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
+						/>
+					</div>
+					<div class="flex flex-col items-start justify-start gap-1">
+						<Input
+							bind:value={state.customerName}
+							placeholder="Customer Name"
+							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
+						/>
+					</div>
+					<div class="flex flex-col items-start justify-start gap-1">
+						<Input
+							bind:value={state.searchProduct}
+							placeholder="Search Product"
+							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
+						/>
+					</div>
+					<div class="flex flex-col items-start justify-start gap-1">
+						<Input
+							type="number"
+							bind:value={state.amount}
+							placeholder="Amount Received"
+							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
+						/>
+					</div>
+					<div class="flex flex-col items-start justify-start gap-1">
+						<Input
+							type="number"
+							bind:value={state.discount}
+							placeholder="Discount (%)"
+							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
+						/>
 					</div>
 
-					<!-- Phone Number -->
-					<div class="flex flex-col items-start justify-start gap-1">
-						<div class="h-auto w-full rounded-lg border border-gray-200">
-							<Input
-								type="tel"
-								placeholder="Phone Number"
-								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
-							/>
-						</div>
-					</div>
-
-					<!-- Search Product -->
-					<div class="flex flex-col items-start justify-start gap-1">
-						<div class="h-auto w-full rounded-lg border border-gray-200">
-							<Input
-								placeholder="Search Product"
-								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
-							/>
-						</div>
-					</div>
-					<div class="flex flex-col items-start justify-start gap-1">
-						<div class="h-auto w-full rounded-lg border border-gray-200">
-							<Input
-								placeholder="Amount Received"
-								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
-							/>
-						</div>
-					</div>
-
-					{@render searchButton()}
+					<!-- BUTTON -->
+					<Button
+						onclick={handlePurchase}
+						class={cn('h-10 w-full flex-none text-lg', {})}
+						size="lg"
+					>
+						<span class="ml-1">Purchase</span>
+					</Button>
 				</div>
 			</div>
 		</section>
 	</Select.Root>
-{:else if variant === 'default'}
-	{#snippet searchButton()}
-		<Button
-			class={cn('h-12 w-full flex-none text-lg', {
-				'min-h-11': variant === 'default'
-			})}
-			onclick={() => goto('/invoice')}
-			size="lg"
-		>
-			<span class="ml-1">Purchase</span>
-		</Button>
-	{/snippet}
-	<Select.Root type="single" bind:value={paymentMethod} bind:open={paymentMethodeOpen}>
+
+	<!-- ==== VARIANT DEFAULT ==== -->
+{:else}
+	<Select.Root type="single" bind:value={state.paymentMethod} bind:open={state.paymentMethodeOpen}>
 		<section class="w-full">
 			<Card.Root>
 				<Card.Content class="flex w-full flex-col items-start space-y-2">
@@ -153,80 +159,99 @@
 								class="text-primary bg-primary/10 flex h-9 w-fit items-center gap-2 rounded-md p-1 px-4 text-sm font-medium"
 							>
 								<Icon icon="solar:user-linear" width="14" height="14" class="text-primary" />
-								superadmin
+								{state.username}
+							</div>
+						</div>
+						<div class="flex w-48 flex-col items-start justify-center gap-1">
+							<div
+								class="text-primary bg-primary/10 flex h-9 w-full items-center justify-center rounded-md p-1 px-4 text-center text-sm font-medium"
+							>
+								{state.currentTime}
 							</div>
 						</div>
 						<div class="flex flex-col items-start justify-start gap-1">
-							<div
-								class="text-primary bg-primary/10 flex h-9 w-fit items-center rounded-md p-1 px-4 text-sm font-medium"
+							<Select.Trigger
+								class="text-primary bg-primary/10 relative flex h-auto w-fit cursor-pointer items-center space-x-2 rounded-md border-none p-1 px-4 text-sm font-medium shadow-none"
 							>
-								<div>{currentTime}</div>
-							</div>
-						</div>
-						<div class="flex flex-col items-start justify-start gap-1">
-							<div
-								class="relative flex h-auto w-fit cursor-pointer items-center space-x-2 rounded-md text-sm font-medium"
-							>
-								<Select.Trigger
-									class="text-primary bg-primary/10 relative flex h-auto w-fit cursor-pointer items-center space-x-2 rounded-md border-none p-1 px-4 text-sm font-medium shadow-none"
-								>
-									<span>{paymentOptions.find((p) => p.value === paymentMethod)?.label}</span>
-								</Select.Trigger>
-
-								<Select.Content>
-									<Select.Group>
-										{#each paymentOptions as option (option.value)}
-											<Select.Item value={option.value}>{option.label}</Select.Item>
-										{/each}
-									</Select.Group>
-								</Select.Content>
-							</div>
+								<span>{paymentOptions.find((p) => p.value === state.paymentMethod)?.label}</span>
+							</Select.Trigger>
+							<Select.Content>
+								<Select.Group>
+									{#each paymentOptions as option (option.value)}
+										<Select.Item value={option.value}>{option.label}</Select.Item>
+									{/each}
+								</Select.Group>
+							</Select.Content>
 						</div>
 					</div>
-					<div class="grid w-full flex-1 grid-cols-5 flex-row items-end justify-center gap-5">
-						<div class="flex flex-col items-start justify-start gap-1">
-							<div class="text-sm font-medium text-gray-500">Customer Name</div>
-							<div class="h-auto w-full rounded-lg border border-gray-200 p-1">
-								<Input
-									placeholder="Customer Name"
-									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
-								/>
-							</div>
-						</div>
 
-						<!-- Phone Number -->
+					<!-- FORM INPUT -->
+					<div class="grid w-full flex-1 grid-cols-6 flex-row items-end justify-center gap-5">
 						<div class="flex flex-col items-start justify-start gap-1">
 							<div class="text-sm font-medium text-gray-500">Phone Number</div>
-							<div class="h-auto w-full rounded-lg border border-gray-200 p-1">
+							<div class=" rounded-lg border border-gray-300 p-1">
 								<Input
 									type="tel"
+									bind:value={state.customerNumber}
 									placeholder="Phone Number"
 									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
 								/>
 							</div>
 						</div>
 
-						<!-- Search Product -->
+						<div class="flex flex-col items-start justify-start gap-1">
+							<div class="text-sm font-medium text-gray-500">Customer Name</div>
+							<div class=" rounded-lg border border-gray-300 p-1">
+								<Input
+									bind:value={state.customerName}
+									placeholder="Customer Name"
+									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
+								/>
+							</div>
+						</div>
+
 						<div class="flex flex-col items-start justify-start gap-1">
 							<div class="text-sm font-medium text-gray-500">Search Product</div>
-							<div class="h-auto w-full rounded-lg border border-gray-200 p-1">
+							<div class=" rounded-lg border border-gray-300 p-1">
 								<Input
+									bind:value={state.searchTerm}
 									placeholder="Search Product"
 									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
 								/>
 							</div>
 						</div>
+
 						<div class="flex flex-col items-start justify-start gap-1">
 							<div class="text-sm font-medium text-gray-500">Amount Received</div>
-							<div class="h-auto w-full rounded-lg border border-gray-200 p-1">
+							<div class=" rounded-lg border border-gray-300 p-1">
 								<Input
+									type="number"
+									bind:value={state.amount}
 									placeholder="Amount Received"
 									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
 								/>
 							</div>
 						</div>
 
-						{@render searchButton()}
+						<div class="flex flex-col items-start justify-start gap-1">
+							<div class="text-sm font-medium text-gray-500">Discount (%)</div>
+							<div class=" rounded-lg border border-gray-300 p-1">
+								<Input
+									type="number"
+									bind:value={state.discount}
+									placeholder="Discount (%)"
+									class="hover:bg-primary/5 h-10 w-full border-none  px-3 py-2 text-sm shadow-none transition outline-none"
+								/>
+							</div>
+						</div>
+
+						<Button
+							onclick={handlePurchase}
+							class={cn('h-12 w-full flex-none text-lg', { 'min-h-11': variant === 'default' })}
+							size="lg"
+						>
+							<span class="ml-1">Purchase</span>
+						</Button>
 					</div>
 				</Card.Content>
 			</Card.Root>
