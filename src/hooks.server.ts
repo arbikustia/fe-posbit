@@ -3,17 +3,42 @@ import { injectTheme } from '$lib/server/theme';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 
 export async function handle({ event, resolve }) {
-	const currentUser = getAuthFromCookies(event);
+	const start = performance.now();
+	
+	// Bypass hooks untuk api route
+	if (event.url.pathname.startsWith('/api')) {
+		return resolve(event);
+	}
+
+	// Bypass hooks untuk service worker
+	if (event.url.pathname.includes('service-worker')) {
+		return resolve(event);
+	}
+
+	const currentUser = await getAuthFromCookies(event);
 	const userAgent = event.request.headers.get('user-agent') || '';
 	const isMobile = /mobile|android|iphone|ipad/i.test(userAgent);
 
-	// if (!currentUser && !event.url.pathname.includes('/auth')) {
-	// 	return new Response('Redirect', { status: 303, headers: { Location: '/auth/login' } });
-	// }
+	// Handle redirect logic - berikan header cache-control untuk service worker
+	if (!currentUser && !event.url.pathname.includes('/auth')) {
+		return new Response('Redirect', { 
+			status: 303, 
+			headers: { 
+				'Location': '/auth/login',
+				'Cache-Control': 'no-store, no-cache, must-revalidate'
+			} 
+		});
+	}
 
-	// if (currentUser && event.url.pathname.includes('/auth')) {
-	// 	return new Response('Redirect', { status: 303, headers: { Location: '/' } });
-	// }
+	if (currentUser && event.url.pathname.includes('/auth')) {
+		return new Response('Redirect', { 
+			status: 303, 
+			headers: { 
+				'Location': '/',
+				'Cache-Control': 'no-store, no-cache, must-revalidate'
+			} 
+		});
+	}
 
 	// for client side
 	if (!currentUser) {
@@ -30,7 +55,9 @@ export async function handle({ event, resolve }) {
 		return resolve(event, {
 			transformPageChunk: ({ html }) => {
 				const newHtml = html.replace('%lang%', locale);
-				return injectTheme(event, newHtml);
+				const inject = injectTheme(event, newHtml);
+				console.log('[timing] resolve', performance.now() - start, 'ms');
+				return inject;
 			}
 		});
 	});
