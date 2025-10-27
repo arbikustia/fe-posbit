@@ -1,6 +1,6 @@
 {
-  "name": "OPSIGO",
-  "description": "A modern UI for OPSIGO Agency",
+  "name": "Bantu Kasir",
+  "description": "A modern UI for Bantu IT",
   "display": "standalone",
   "start_url": "/",
   "icons": [
