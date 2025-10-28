@@ -22,7 +22,7 @@
     status: "Lunas",
   });
 
-  $derived notaData.total = notaData.items.reduce((a, b) => a + b.subtotal, 0);
+  // $derived notaData.total = notaData.items.reduce((a, b) => a + b.subtotal, 0);
 
   function cetakNota() {
     window.print();
@@ -116,7 +116,7 @@
   </table>
 
   <hr />
-  <table>
+  <!-- <table>
     <tr>
       <td class="bold">TOTAL</td>
       <td class="right total">Rp {notaData.total.toLocaleString()}</td>
@@ -129,7 +129,7 @@
       <td>Status</td>
       <td class="right">{notaData.status}</td>
     </tr>
-  </table>
+  </table> -->
 
   <hr />
   <div class="footer">

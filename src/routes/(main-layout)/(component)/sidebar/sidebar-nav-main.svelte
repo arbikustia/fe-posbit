@@ -58,7 +58,7 @@
 		{#each menuItems as item (item.name)}
 			{@const isActive =
 				currentPage(page.url.pathname) === item.href ||
-				(item.children || []).some((child) => currentPage(page.url.pathname) === child.href)}
+				(item.children || []).some((child) => currentPage(page.url.pathname) === child?.href)}
 			{@const hasChildren = item.children && item.children.length > 0}
 			{@const isOpen = openMenus[item.name.toLowerCase()]}
 
