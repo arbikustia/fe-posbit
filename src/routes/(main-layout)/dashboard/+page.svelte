@@ -8,7 +8,8 @@
 	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
 	import dayjs from 'dayjs';
 	import { useDashboardPage } from '../dashboard/_components/use-dashboard-page.svelte';
-	// import * as Popover from '$lib/components/ui/popover/index.js';
+	import * as Popover from '$lib/components/ui/popover/index.js';
+	import { onMount } from 'svelte';
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
 	// ✅ Ambil semua state & handler langsung dari useDashboardPage
@@ -33,6 +34,18 @@
 			df.format(dayjs(state.startDate).toDate()) + ' - ' + df.format(dayjs(state.endDate).toDate())
 		);
 	}
+
+	onMount(() => {
+		// Jalankan fullscreen otomatis
+		try {
+			const el = document.documentElement;
+			if (el.requestFullscreen) el.requestFullscreen();
+			else if ((el as any).webkitRequestFullscreen) (el as any).webkitRequestFullscreen();
+			else if ((el as any).msRequestFullscreen) (el as any).msRequestFullscreen();
+		} catch (e) {
+			console.warn('Gagal masuk fullscreen:', e);
+		}
+	});
 </script>
 
 <svelte:head>
@@ -42,7 +55,7 @@
 <div class="container flex flex-1 flex-col">
 	<div class="@container/main flex flex-1 flex-col gap-4">
 		<!-- 🔹 Kalender -->
-		<!-- <div class="grid max-w-65 gap-2">
+		<div class="grid max-w-65 gap-2">
 			<Popover.Root>
 				<Popover.Trigger class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}>
 					<CalendarIcon class="mr-2 size-4" />
@@ -67,7 +80,7 @@
 					/>
 				</Popover.Content>
 			</Popover.Root>
-		</div> -->
+		</div>
 
 		<!-- 🔹 Konten utama -->
 		<div class="flex flex-col gap-4 md:gap-6">

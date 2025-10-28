@@ -211,17 +211,6 @@
 						</div>
 
 						<div class="flex flex-col items-start justify-start gap-1">
-							<div class="text-sm font-medium text-gray-500">Search Product</div>
-							<div class=" rounded-lg border border-gray-300 p-1">
-								<Input
-									bind:value={state.searchTerm}
-									placeholder="Search Product"
-									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
-								/>
-							</div>
-						</div>
-
-						<div class="flex flex-col items-start justify-start gap-1">
 							<div class="text-sm font-medium text-gray-500">Amount Received</div>
 							<div class=" rounded-lg border border-gray-300 p-1">
 								<Input
@@ -241,6 +230,16 @@
 									bind:value={state.discount}
 									placeholder="Discount (%)"
 									class="hover:bg-primary/5 h-10 w-full border-none  px-3 py-2 text-sm shadow-none transition outline-none"
+								/>
+							</div>
+						</div>
+						<div class="flex flex-col items-start justify-start gap-1">
+							<div class="text-sm font-medium text-gray-500">Scan Item</div>
+							<div class=" rounded-lg border border-gray-300 p-1">
+								<Input
+									bind:value={state.searchTerm}
+									placeholder="Scan Item"
+									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
 								/>
 							</div>
 						</div>
