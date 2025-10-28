@@ -2,28 +2,37 @@
 	import { HighlightCard } from './_components/highlight-card';
 	import { ChartVisitors } from './_components/chart-visitors';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
-	import type { DateRange } from 'bits-ui';
-	import {
-		CalendarDate,
-		DateFormatter,
-		type DateValue,
-		getLocalTimeZone
-	} from '@internationalized/date';
+	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 	import { cn } from '$lib/utils.js';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
-	import * as Popover from '$lib/components/ui/popover/index.js';
+	import dayjs from 'dayjs';
+	import { useDashboardPage } from '../dashboard/_components/use-dashboard-page.svelte';
+	// import * as Popover from '$lib/components/ui/popover/index.js';
+	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
-	const df = new DateFormatter('en-US', {
-		dateStyle: 'medium'
-	});
+	// ✅ Ambil semua state & handler langsung dari useDashboardPage
+	const { state, handleGetSummary, handleGetChart } = useDashboardPage();
 
-	let value: DateRange = $state({
-		start: new CalendarDate(2022, 1, 20),
-		end: new CalendarDate(2022, 1, 20).add({ days: 20 })
-	});
+	// ✅ Ubah tanggal → update di state & fetch ulang data
+	function handleDateChange(v: any) {
+		if (v?.start && v?.end) {
+			state.startDate = dayjs(v.start.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
+			state.endDate = dayjs(v.end.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
 
-	let startValue: DateValue | undefined = $state(undefined);
+			// Fetch ulang data dari dashboard service
+			handleGetSummary(state.startDate, state.endDate);
+			handleGetChart(state.startDate, state.endDate, state.filter);
+		}
+	}
+
+	// ✅ Helper untuk tampilkan teks tanggal dengan aman
+	function formatDateText() {
+		if (!state.startDate || !state.endDate) return 'Pick a date';
+		return (
+			df.format(dayjs(state.startDate).toDate()) + ' - ' + df.format(dayjs(state.endDate).toDate())
+		);
+	}
 </script>
 
 <svelte:head>
@@ -32,40 +41,38 @@
 
 <div class="container flex flex-1 flex-col">
 	<div class="@container/main flex flex-1 flex-col gap-4">
-		<div class="grid gap-2 max-w-65">
+		<!-- 🔹 Kalender -->
+		<!-- <div class="grid max-w-65 gap-2">
 			<Popover.Root>
-				<Popover.Trigger
-					class={cn(buttonVariants({ variant: 'outline' }), !value && 'text-muted-foreground')}
-				>
+				<Popover.Trigger class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}>
 					<CalendarIcon class="mr-2 size-4" />
-					{#if value && value.start}
-						{#if value.end}
-							{df.format(value.start.toDate(getLocalTimeZone()))} - {df.format(
-								value.end.toDate(getLocalTimeZone())
-							)}
-						{:else}
-							{df.format(value.start.toDate(getLocalTimeZone()))}
-						{/if}
-					{:else if startValue}
-						{df.format(startValue.toDate(getLocalTimeZone()))}
-					{:else}
-						Pick a date
-					{/if}
+					{formatDateText()}
 				</Popover.Trigger>
 				<Popover.Content class="w-auto p-0" align="start">
 					<RangeCalendar
-						bind:value
-						onStartValueChange={(v) => {
-							startValue = v;
-						}}
 						numberOfMonths={2}
+						onchange={handleDateChange}
+						value={{
+							start: new CalendarDate(
+								Number(dayjs(state.startDate).format('YYYY')),
+								Number(dayjs(state.startDate).format('M')),
+								Number(dayjs(state.startDate).format('D'))
+							),
+							end: new CalendarDate(
+								Number(dayjs(state.endDate).format('YYYY')),
+								Number(dayjs(state.endDate).format('M')),
+								Number(dayjs(state.endDate).format('D'))
+							)
+						}}
 					/>
 				</Popover.Content>
 			</Popover.Root>
-		</div>
+		</div> -->
+
+		<!-- 🔹 Konten utama -->
 		<div class="flex flex-col gap-4 md:gap-6">
-			<HighlightCard />
-			<ChartVisitors />
+			<HighlightCard {state} />
+			<ChartVisitors {state} />
 		</div>
 	</div>
 </div>

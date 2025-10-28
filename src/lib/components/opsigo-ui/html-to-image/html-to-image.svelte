@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button, type ButtonProps } from '$lib/components/ui/button';
 	import { cn, webShare } from '$lib/utils';
-	import { Image as ImageIcon, LoaderCircle } from '@lucide/svelte';
+	import LoaderCircle  from '@lucide/svelte/icons/loader-circle';
 	import type { Snippet } from 'svelte';
 	import { toBlob } from 'html-to-image';
 	import { toast } from 'svelte-sonner';

@@ -2,7 +2,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
 	import { CalendarDate, getLocalTimeZone, today, type DateValue } from '@internationalized/date';
-	import { ChevronLeft, ChevronRight } from '@lucide/svelte';
+	import  ChevronRight  from '@lucide/svelte/icons/chevron-right';
+	import  ChevronLeft  from '@lucide/svelte/icons/chevron-left';
 	import type { DateRange } from 'bits-ui';
 	import dayjs from 'dayjs';
 	import localeData from 'dayjs/plugin/localeData';

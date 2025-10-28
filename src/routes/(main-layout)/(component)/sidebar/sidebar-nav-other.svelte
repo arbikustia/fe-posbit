@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Sidebar from '$lib/components/ui/sidebar';
-	import { ChevronRight } from '@lucide/svelte';
+	import  ChevronRight  from '@lucide/svelte/icons/chevron-right';
 	import { ThemeCostumizer } from '../theme-costumizer';
 	import { DropdownMenuTrigger } from '$lib/components/ui/dropdown-menu';
 	import { LanguageSwitch } from '../language-switch';

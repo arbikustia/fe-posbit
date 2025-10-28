@@ -12,7 +12,8 @@
 		TransactionIcon
 	} from '$lib/components/icons';
 	import { currentPage } from '$lib/helpers/page-helper';
-	import { ChevronDown, ChevronRight } from '@lucide/svelte';
+	import  ChevronDown from '@lucide/svelte/icons/chevron-down';
+	import  ChevronRight  from '@lucide/svelte/icons/chevron-right';
 
 	// State untuk menu yang terbuka
 	let openMenus = $state<Record<string, boolean>>({

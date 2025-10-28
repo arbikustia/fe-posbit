@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { LayoutList, Table } from '@lucide/svelte';
+	import LayoutList from '@lucide/svelte/icons/layout-list';
+	import Table from '@lucide/svelte/icons/table';
 
 	export type ListViewMode = 'list' | 'table';
 

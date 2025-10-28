@@ -5,11 +5,12 @@
 	import { zod } from 'sveltekit-superforms/adapters';
 	import { loginSchema } from '../../schema';
 	import * as Form from '$lib/components/ui/form/index.js';
-	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
+	// import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 	import type { PageData } from '../../$types';
 	import * as Alert from '$lib/components/ui/alert';
-	import { CircleAlert } from '@lucide/svelte';
+	import  CircleAlert  from '@lucide/svelte/icons/circle-alert';
 	import { fly, slide } from 'svelte/transition';
+	import LoaderCircle from '@lucide/svelte/icons/Loader-circle';
 
 	let { data }: { data: PageData } = $props();
 

@@ -2,6 +2,9 @@
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import Icon from '@iconify/svelte';
+
+	// Props diterima dari parent (Dashboard)
+	const { state } = $props();
 </script>
 
 <div class="highlight-card">
@@ -15,7 +18,7 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-2xl md:text-2xl lg:text-3xl font-semibold tabular-nums">
-				Rp 100.000
+				Rp {state?.summary?.total_sale?.toLocaleString('id-ID') ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
@@ -29,7 +32,9 @@
 					Jumlah Transaksi
 				</Card.Description>
 			</div>
-			<Card.Title class="text-4xl md:text-2xl lg:text-3xl font-semibold tabular-nums">128</Card.Title>
+			<Card.Title class="text-4xl md:text-2xl lg:text-3xl font-semibold tabular-nums">
+				{state?.summary?.total_tTransaction ?? 0}
+			</Card.Title>
 		</Card.Header>
 	</Card.Root>
 
@@ -42,7 +47,9 @@
 					Jumlah Pelanggan Baru
 				</Card.Description>
 			</div>
-			<Card.Title class="text-4xl md:text-2xl lg:text-3xl font-semibold tabular-nums">47</Card.Title>
+			<Card.Title class="text-4xl md:text-2xl lg:text-3xl font-semibold tabular-nums">
+				{state?.summary?.new_customer ?? 0}
+			</Card.Title>
 		</Card.Header>
 	</Card.Root>
 
@@ -56,19 +63,31 @@
 				</Card.Description>
 			</div>
 
-			<div class="text-center md:text-left">
-				<div class="text-xl md:text-xl font-semibold">Celana Cargo</div>
-				<div class="flex flex-wrap justify-center md:justify-start gap-2 mt-1">
-					<span
-						class="bg-primary/10 border-primary rounded-full border px-2 py-0.5 text-xs md:text-sm font-medium"
-						>Qty 354</span
-					>
-					<span
-						class="bg-primary/10 border-primary rounded-full border px-2 py-0.5 text-xs md:text-sm font-medium"
-						>Rp 45.000.000</span
-					>
+			{#if state?.summary?.top_five?.length > 0}
+				<div class="flex flex-col w-full gap-3 overflow-y-auto max-h-56">
+					{#each state.summary.top_five.slice(0, 5) as item}
+						<div class="flex flex-col border-b border-border pb-2 last:border-none">
+							<div class="text-base md:text-lg font-semibold truncate text-center md:text-left">
+								{item?.name ?? 'Unknown Item'}
+							</div>
+							<div class="flex flex-wrap justify-center md:justify-start gap-2 mt-1">
+								<span
+									class="bg-primary/10 border-primary rounded-full border px-2 py-0.5 text-xs md:text-sm font-medium"
+									>Qty {item?.qty ?? 0}</span
+								>
+								<span
+									class="bg-primary/10 border-primary rounded-full border px-2 py-0.5 text-xs md:text-sm font-medium"
+									>Rp {(item?.total ?? 0).toLocaleString('id-ID')}</span
+								>
+							</div>
+						</div>
+					{/each}
 				</div>
-			</div>
+			{:else}
+				<p class="text-sm text-muted-foreground text-center mt-2">
+					Tidak ada data penjualan item.
+				</p>
+			{/if}
 		</Card.Header>
 	</Card.Root>
 </div>

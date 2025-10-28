@@ -3,7 +3,7 @@
 	import { People } from '$lib/components/icons';
 	import * as Sidebar from '$lib/components/ui/sidebar';
 	import { currentPage } from '$lib/helpers/page-helper';
-	import { Building, Newspaper } from '@lucide/svelte';
+	import  Newspaper  from '@lucide/svelte/icons/newspaper';
 
 	const newBookingItems = [
 		{

@@ -2,18 +2,13 @@
 	import { HighlightCard } from './_components/highlight-card';
 	import { ChartVisitors } from './_components/chart-visitors';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
-	import {
-		CalendarDate,
-		DateFormatter,
-		getLocalTimeZone
-	} from '@internationalized/date';
+	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 	import { cn } from '$lib/utils.js';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { useDashboardPage } from './_components/use-dashboard-page.svelte';
 	import dayjs from 'dayjs';
-
+	import { useDashboardPage } from '../dashboard/_components/use-dashboard-page.svelte';
+	// import * as Popover from '$lib/components/ui/popover/index.js';
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
 	// ✅ Ambil semua state & handler langsung dari useDashboardPage
@@ -35,9 +30,7 @@
 	function formatDateText() {
 		if (!state.startDate || !state.endDate) return 'Pick a date';
 		return (
-			df.format(dayjs(state.startDate).toDate()) +
-			' - ' +
-			df.format(dayjs(state.endDate).toDate())
+			df.format(dayjs(state.startDate).toDate()) + ' - ' + df.format(dayjs(state.endDate).toDate())
 		);
 	}
 </script>
@@ -49,15 +42,12 @@
 <div class="container flex flex-1 flex-col">
 	<div class="@container/main flex flex-1 flex-col gap-4">
 		<!-- 🔹 Kalender -->
-		<div class="grid max-w-65 gap-2">
+		<!-- <div class="grid max-w-65 gap-2">
 			<Popover.Root>
-				<Popover.Trigger
-					class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}
-				>
+				<Popover.Trigger class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}>
 					<CalendarIcon class="mr-2 size-4" />
 					{formatDateText()}
 				</Popover.Trigger>
-
 				<Popover.Content class="w-auto p-0" align="start">
 					<RangeCalendar
 						numberOfMonths={2}
@@ -77,7 +67,7 @@
 					/>
 				</Popover.Content>
 			</Popover.Root>
-		</div>
+		</div> -->
 
 		<!-- 🔹 Konten utama -->
 		<div class="flex flex-col gap-4 md:gap-6">

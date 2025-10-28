@@ -4,7 +4,7 @@
 	import * as Drawer from '$lib/components/ui/drawer';
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
-	import { ChevronDown } from '@lucide/svelte';
+	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 
 	type WheelDatePickerProps = {
 		title: string;
@@ -196,7 +196,7 @@
 	<Drawer.Trigger type="button" class="w-full">
 		<div
 			class={cn(
-				'h-9 w-full rounded-md border border-input bg-white shadow-xs transition-colors focus-within:ring-1 focus-within:ring-ring',
+				'border-input focus-within:ring-ring h-9 w-full rounded-md border bg-white shadow-xs transition-colors focus-within:ring-1',
 				//data error
 				'data-fs-error:border-destructive data-fs-error:focus-within:ring-destructive',
 				className
@@ -208,7 +208,7 @@
 					{value !== '' ? dayjs(value).format('DD MMMM YYYY') : title}
 				</p>
 
-				<ChevronDown class="h-4 w-4 text-muted-foreground opacity-50" />
+				<ChevronDown class="text-muted-foreground h-4 w-4 opacity-50" />
 			</div>
 		</div>
 	</Drawer.Trigger>
@@ -216,7 +216,7 @@
 		<Drawer.Header>
 			<Drawer.Title>{title}</Drawer.Title>
 		</Drawer.Header>
-		<div class="pb-14 pt-2">
+		<div class="pt-2 pb-14">
 			<div class="mb-4 flex px-1 text-center">
 				<div class="flex-1 font-semibold">Day</div>
 				<div class="flex-1 font-semibold">Month</div>
@@ -226,7 +226,7 @@
 			<div class="relative flex h-52">
 				<!-- Highlight for selected value -->
 				<div
-					class="pointer-events-none absolute left-0 right-0 top-1/2 h-12 -translate-y-1/2 transform border-b border-t border-gray-200"
+					class="pointer-events-none absolute top-1/2 right-0 left-0 h-12 -translate-y-1/2 transform border-t border-b border-gray-200"
 				></div>
 
 				<!-- Day Picker -->

@@ -5,7 +5,6 @@
 	import { themeConfigStore } from '$lib/stores/themeConfigStore';
 	import { setDeviceContext } from '$lib/context/device';
 	import { onMount } from 'svelte';
-	export const prerender = true;
 	export const trailingSlash = 'always';
 
 	let { children, data } = $props();

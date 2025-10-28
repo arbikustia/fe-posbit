@@ -6,10 +6,10 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
 	server: {
-		https: {
-			key: fs.readFileSync('localhost-key.pem'),
-			cert: fs.readFileSync('localhost.pem')
-		},
+		// https: {
+		// 	key: fs.readFileSync('localhost-key.pem'),
+		// 	cert: fs.readFileSync('localhost.pem')
+		// },
 		host: 'localhost',
 		port: 99 // Bisa ubah ke port lain jika diperlukan
 	},

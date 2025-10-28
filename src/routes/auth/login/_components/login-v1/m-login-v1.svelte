@@ -8,7 +8,7 @@
 	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 	import type { PageData } from '../../$types';
 	import * as Alert from '$lib/components/ui/alert';
-	import { CircleAlert } from '@lucide/svelte';
+	import  CircleAlert  from '@lucide/svelte/icons/circle-alert';
 	import { fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { DisclaimerDialog } from './_components/dialog-disclaimer';

@@ -20,6 +20,7 @@
 	import type { customerSchema } from './schema';
 	import { goto } from '$app/navigation';
 	import { tick } from 'svelte';
+	import { BITCard } from '@/components/opsigo-ui/card';
 
 	const df = new DateFormatter('en-US', {
 		dateStyle: 'long'
@@ -46,7 +47,7 @@
 		// Hanya reset jika is_member berubah dari true ke false
 		if (previousIsMember === true && $formData.is_member === false) {
 			$formData.member_since = null;
-			$formData.member_code = "";
+			$formData.member_code = '';
 			memberSinceDate = undefined;
 		}
 		previousIsMember = $formData.is_member;
@@ -66,127 +67,127 @@
 	method="POST"
 	use:enhance
 	onsubmit={handleSubmit}
-	class="mx-auto w-full max-w-md px-4 py-4 sm:px-6 md:px-8"
+	class="mx-auto w-full container px-4 py-4 sm:px-6 md:px-8"
 >
-	<h2 class="mb-6 text-lg font-bold sm:text-xl md:text-2xl">Create Customer Data</h2>
-
-	<!-- CUSTOMER NAME -->
-	<Form.Field {form} name="customer_name">
-		<Form.Control>
-			<Form.Label class="text-sm font-medium text-gray-700">Customer Name</Form.Label>
-			<Input
-				placeholder="Enter customer name"
-				bind:value={$formData.customer_name}
-				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.customer_name
-					? 'border-red-500 focus:border-red-500'
-					: ''}"
-			/>
-		</Form.Control>
-		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
-	</Form.Field>
-
-	<!-- PHONE -->
-	<Form.Field {form} name="phone" class="mt-4">
-		<Form.Control>
-			<Form.Label class="text-sm font-medium text-gray-700">Phone</Form.Label>
-			<Input
-				placeholder="Enter phone number"
-				bind:value={$formData.phone}
-				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.phone
-					? 'border-red-500 focus:border-red-500'
-					: ''}"
-			/>
-		</Form.Control>
-		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
-	</Form.Field>
-
-	<!-- IS MEMBER -->
-	<Form.Field {form} name="is_member" class="mt-4">
-		<Form.Control>
-			<Form.Label class="text-sm font-medium text-gray-700">Is Member?</Form.Label>
-			<div class="flex items-center space-x-2">
-				<Switch id="is_member" bind:checked={$formData.is_member} />
-				<Label for="is_member" class="text-sm">{$formData.is_member ? 'Yes' : 'No'}</Label>
-			</div>
-		</Form.Control>
-		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
-	</Form.Field>
-
-	<!-- MEMBER SINCE -->
-	{#if $formData.is_member}
-		<Form.Field {form} name="member_since" class="mt-4">
+	<BITCard title="Create Customer Data">
+		<!-- CUSTOMER NAME -->
+		<Form.Field {form} name="customer_name">
 			<Form.Control>
-				<Form.Label class="text-sm font-medium text-gray-700">Member Since</Form.Label>
-				<Popover.Root>
-					<Popover.Trigger
-						class={cn(
-							buttonVariants({
-								variant: 'outline',
-								class: 'w-full justify-start text-left font-normal'
-							}),
-							!memberSinceDate && 'text-muted-foreground',
-							$errors.member_since && 'border-red-500'
-						)}
-					>
-						<CalendarIcon class="mr-2 h-4 w-4" />
-						{memberSinceDate
-							? df.format(memberSinceDate.toDate(getLocalTimeZone()))
-							: 'Pick a date'}
-					</Popover.Trigger>
-					<Popover.Content bind:ref={contentRef} class="w-auto p-0">
-						<Calendar type="single" bind:value={memberSinceDate} />
-					</Popover.Content>
-				</Popover.Root>
-			</Form.Control>
-			<Form.FieldErrors class="mt-1 text-sm text-red-600" />
-		</Form.Field>
-
-		<!-- MEMBER CODE -->
-		<Form.Field {form} name="member_code" class="mt-4">
-			<Form.Control>
-				<Form.Label class="text-sm font-medium text-gray-700">Member Code</Form.Label>
+				<Form.Label class="text-sm font-medium text-gray-700">Customer Name</Form.Label>
 				<Input
-					placeholder="Enter member code"
-					bind:value={$formData.member_code}
-					class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.member_code
+					placeholder="Enter customer name"
+					bind:value={$formData.customer_name}
+					class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.customer_name
 						? 'border-red-500 focus:border-red-500'
 						: ''}"
 				/>
 			</Form.Control>
 			<Form.FieldErrors class="mt-1 text-sm text-red-600" />
 		</Form.Field>
-	{/if}
 
-	<!-- POINT -->
-	<Form.Field {form} name="point" class="mt-4">
-		<Form.Control>
-			<Form.Label class="text-sm font-medium text-gray-700">Point</Form.Label>
-			<Input
-				type="number"
-				bind:value={$formData.point}
-				class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.point
-					? 'border-red-500 focus:border-red-500'
-					: ''}"
-			/>
-		</Form.Control>
-		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
-	</Form.Field>
+		<!-- PHONE -->
+		<Form.Field {form} name="phone" class="mt-4">
+			<Form.Control>
+				<Form.Label class="text-sm font-medium text-gray-700">Phone</Form.Label>
+				<Input
+					placeholder="Enter phone number"
+					bind:value={$formData.phone}
+					class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.phone
+						? 'border-red-500 focus:border-red-500'
+						: ''}"
+				/>
+			</Form.Control>
+			<Form.FieldErrors class="mt-1 text-sm text-red-600" />
+		</Form.Field>
 
-	<!-- BUTTONS -->
-	<div class="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
-		<Button
-			type="button"
-			variant="outline"
-			class="w-full rounded-full px-4 py-2 text-sm text-gray-500 hover:underline sm:w-auto"
-			onclick={() => goto('/master/customer')}
-		>
-			Cancel
-		</Button>
-		<Button
-			type="submit"
-			class="bg-primary hover:bg-primary-dark w-full rounded-full px-4 py-2 text-sm text-white transition sm:w-auto"
-		>
-			Save
-		</Button>
-	</div>
+		<!-- IS MEMBER -->
+		<Form.Field {form} name="is_member" class="mt-4">
+			<Form.Control>
+				<Form.Label class="text-sm font-medium text-gray-700">Is Member?</Form.Label>
+				<div class="flex items-center space-x-2">
+					<Switch id="is_member" bind:checked={$formData.is_member} />
+					<Label for="is_member" class="text-sm">{$formData.is_member ? 'Yes' : 'No'}</Label>
+				</div>
+			</Form.Control>
+			<Form.FieldErrors class="mt-1 text-sm text-red-600" />
+		</Form.Field>
+
+		<!-- MEMBER SINCE -->
+		{#if $formData.is_member}
+			<Form.Field {form} name="member_since" class="mt-4">
+				<Form.Control>
+					<Form.Label class="text-sm font-medium text-gray-700">Member Since</Form.Label>
+					<Popover.Root>
+						<Popover.Trigger
+							class={cn(
+								buttonVariants({
+									variant: 'outline',
+									class: 'w-full justify-start text-left font-normal'
+								}),
+								!memberSinceDate && 'text-muted-foreground',
+								$errors.member_since && 'border-red-500'
+							)}
+						>
+							<CalendarIcon class="mr-2 h-4 w-4" />
+							{memberSinceDate
+								? df.format(memberSinceDate.toDate(getLocalTimeZone()))
+								: 'Pick a date'}
+						</Popover.Trigger>
+						<Popover.Content bind:ref={contentRef} class="w-auto p-0">
+							<Calendar type="single" bind:value={memberSinceDate} />
+						</Popover.Content>
+					</Popover.Root>
+				</Form.Control>
+				<Form.FieldErrors class="mt-1 text-sm text-red-600" />
+			</Form.Field>
+
+			<!-- MEMBER CODE -->
+			<Form.Field {form} name="member_code" class="mt-4">
+				<Form.Control>
+					<Form.Label class="text-sm font-medium text-gray-700">Member Code</Form.Label>
+					<Input
+						placeholder="Enter member code"
+						bind:value={$formData.member_code}
+						class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.member_code
+							? 'border-red-500 focus:border-red-500'
+							: ''}"
+					/>
+				</Form.Control>
+				<Form.FieldErrors class="mt-1 text-sm text-red-600" />
+			</Form.Field>
+		{/if}
+
+		<!-- POINT -->
+		<Form.Field {form} name="point" class="mt-4">
+			<Form.Control>
+				<Form.Label class="text-sm font-medium text-gray-700">Point</Form.Label>
+				<Input
+					type="number"
+					bind:value={$formData.point}
+					class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.point
+						? 'border-red-500 focus:border-red-500'
+						: ''}"
+				/>
+			</Form.Control>
+			<Form.FieldErrors class="mt-1 text-sm text-red-600" />
+		</Form.Field>
+
+		<!-- BUTTONS -->
+		<div class="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
+			<Button
+				type="button"
+				variant="outline"
+				class="w-full rounded-full px-4 py-2 text-sm text-gray-500 hover:underline sm:w-auto"
+				onclick={() => goto('/master/customer')}
+			>
+				Cancel
+			</Button>
+			<Button
+				type="submit"
+				class="bg-primary hover:bg-primary-dark w-full rounded-full px-4 py-2 text-sm text-white transition sm:w-auto"
+			>
+				Save
+			</Button>
+		</div>
+	</BITCard>
 </form>

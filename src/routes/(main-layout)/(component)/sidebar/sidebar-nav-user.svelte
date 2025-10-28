@@ -4,17 +4,12 @@
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import { useSidebar } from '$lib/components/ui/sidebar/index.js';
 	import type { UserInfo } from '$lib/types/UserLogin';
-	import { Settings, User } from '@lucide/svelte';
-	import BadgeCheckIcon from '@lucide/svelte/icons/badge-check';
-	import BellIcon from '@lucide/svelte/icons/bell';
-	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
-	import CreditCardIcon from '@lucide/svelte/icons/credit-card';
+	import  Settings  from '@lucide/svelte/icons/settings';
 	import LogOutIcon from '@lucide/svelte/icons/log-out';
-	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 	import { userStore } from '$lib/stores/userStore';
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { goto } from '$app/navigation';
+	import  ChevronsUpDownIcon  from '@lucide/svelte/icons/chevrons-up-down';
 
 	const sidebar = useSidebar();
 	const userInfo = $derived($userStore?.userInfo) as UserInfo;

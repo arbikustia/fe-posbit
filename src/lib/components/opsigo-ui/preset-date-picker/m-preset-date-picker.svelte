@@ -7,7 +7,7 @@
 	import * as RangeCalendar from '$lib/components/ui/range-calendar';
 	import { cn } from '$lib/utils.js';
 	import { CalendarDate, getLocalTimeZone, parseDate, today } from '@internationalized/date';
-	import { ChevronDown } from '@lucide/svelte';
+	import  ChevronDown  from '@lucide/svelte/icons/chevron-down';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import dayjs from 'dayjs';
 	import { OSGMonthRangePicker } from '../month-range-picker';

@@ -4,7 +4,8 @@
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
 	import type { SearchFormBannerType } from '$lib/types/Theme';
 	import { cn } from '$lib/utils';
-	import { ChevronLeft, ChevronRight } from '@lucide/svelte';
+	import  ChevronRight  from '@lucide/svelte/icons/chevron-right';
+	import  ChevronLeft from '@lucide/svelte/icons/chevron-left';
 	import type { Snippet } from 'svelte';
 
 	type SearchFormBannerProps = {
