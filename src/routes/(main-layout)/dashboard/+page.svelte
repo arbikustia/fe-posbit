@@ -35,29 +35,30 @@
 		);
 	}
 
-	onMount(() => {
-		// Pastikan viewport fit dengan tinggi layar sebenarnya
-		function setViewportHeight() {
-			document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+onMount(() => {
+	try {
+		const el = document.documentElement;
+
+		// 🔹 Fullscreen untuk semua browser
+		if (el.requestFullscreen) {
+			el.requestFullscreen();
+		} else if ((el as any).webkitRequestFullscreen) {
+			// Safari / iPadOS / older WebKit
+			(el as any).webkitRequestFullscreen();
+		} else if ((el as any).msRequestFullscreen) {
+			// Old Microsoft Edge / IE
+			(el as any).msRequestFullscreen();
 		}
-		setViewportHeight();
-		window.addEventListener('resize', setViewportHeight);
-		return () => window.removeEventListener('resize', setViewportHeight);
-	});
+	} catch (e) {
+		console.warn('Gagal masuk fullscreen:', e);
+	}
+});
+
 </script>
 
 <svelte:head>
 	<title>Dashboard | Bantuit</title>
 </svelte:head>
-
-<style>
-	html,
-	body {
-		height: calc(var(--vh, 1vh) * 100);
-		width: 100vw;
-		overflow: hidden; /* agar tidak muncul scroll bar */
-	}
-</style>
 
 <div class="container flex flex-1 flex-col">
 	<div class="@container/main flex flex-1 flex-col gap-4">
