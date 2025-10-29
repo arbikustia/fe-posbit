@@ -133,7 +133,7 @@
 			<div class={cn("flex justify-between", state.paymentMethod === 'DEBIT' ? 'hidden' : 'flex')}>
 				<span class="font-semibold text-gray-800">Change</span>
 				<span class="font-bold text-green-600">
-					{formatCurrency((state.amountPaid || 0) - (state.grandTotal || 0))}
+					{state.amountPaid ? formatCurrency((state.amountPaid || 0) - (state.grandTotal || 0)) : 0}
 				</span>
 			</div>
 		</div>

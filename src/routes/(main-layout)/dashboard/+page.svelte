@@ -36,15 +36,13 @@
 	}
 
 	onMount(() => {
-		// Jalankan fullscreen otomatis
-		try {
-			const el = document.documentElement;
-			if (el.requestFullscreen) el.requestFullscreen();
-			else if ((el as any).webkitRequestFullscreen) (el as any).webkitRequestFullscreen();
-			else if ((el as any).msRequestFullscreen) (el as any).msRequestFullscreen();
-		} catch (e) {
-			console.warn('Gagal masuk fullscreen:', e);
+		// Pastikan viewport fit dengan tinggi layar sebenarnya
+		function setViewportHeight() {
+			document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
 		}
+		setViewportHeight();
+		window.addEventListener('resize', setViewportHeight);
+		return () => window.removeEventListener('resize', setViewportHeight);
 	});
 </script>
 
