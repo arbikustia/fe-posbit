@@ -50,6 +50,15 @@
 	<title>Dashboard | Bantuit</title>
 </svelte:head>
 
+<style>
+	html,
+	body {
+		height: calc(var(--vh, 1vh) * 100);
+		width: 100vw;
+		overflow: hidden; /* agar tidak muncul scroll bar */
+	}
+</style>
+
 <div class="container flex flex-1 flex-col">
 	<div class="@container/main flex flex-1 flex-col gap-4">
 		<!-- 🔹 Kalender -->
