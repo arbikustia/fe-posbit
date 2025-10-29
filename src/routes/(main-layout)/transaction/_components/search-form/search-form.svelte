@@ -40,48 +40,48 @@
 		if (!browser) return;
 
 		// === DATA NOTA ===
-		const toko = "DA.ALUS HIJAB";
-		const alamat = "Jl. Melati No. 45, Jakarta";
-		const telp = "Telp: 0812-9876-5432";
+		const toko = 'DA.ALUS HIJAB';
+		const alamat = 'Jl. Melati No. 45, Jakarta';
+		const telp = 'Telp: 0812-9876-5432';
 		const tanggal = state.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
-		const kasir = state.username || "Admin";
-		const customer = state.customerName || "Guest";
-		const member = "2023";
-		const point = "120";
+		const kasir = state.username || 'Admin';
+		const customer = state.customerName || 'Guest';
+		const member = '2023';
+		const point = '120';
 
 		// Data items - sesuaikan dengan data cart Anda
 		const items = [
-			["Hijab Segi Empat", 75000, 2],
-			["Pashmina Wolfis", 85000, 1],
-			["Jilbab Instan", 45000, 3],
+			['Hijab Segi Empat', 75000, 2],
+			['Pashmina Wolfis', 85000, 1],
+			['Jilbab Instan', 45000, 3]
 		];
 
 		// === FORMAT STRUK DALAM TEKS ===
-		let nota = "";
-		nota += toko + "\n";
-		nota += alamat + "\n";
-		nota += telp + "\n";
-		nota += "--------------------------------\n";
+		let nota = '';
+		nota += toko + '\n';
+		nota += alamat + '\n';
+		nota += telp + '\n';
+		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;
 		nota += `Customer: ${customer}\n`;
 		nota += `Member  : ${member}   Point: ${point}\n`;
-		nota += "--------------------------------\n";
-		nota += "Item                  Hrg   Qty\n";
-		nota += "--------------------------------\n";
+		nota += '--------------------------------\n';
+		nota += 'Item                  Hrg   Qty\n';
+		nota += '--------------------------------\n';
 
 		let subtotal = 0;
 		for (const [name, price, qty] of items) {
 			const total = price * qty;
 			subtotal += total;
-			const nama = String(name).substring(0, 18).padEnd(18, " ");
-			const hrg = String(price).padStart(6, " ");
+			const nama = String(name).substring(0, 18).padEnd(18, ' ');
+			const hrg = String(price).padStart(6, ' ');
 			nota += `${nama}${hrg} ${qty}\n`;
 		}
 
-		nota += "--------------------------------\n";
+		nota += '--------------------------------\n';
 		const diskonPersen = state.discount || 0;
-		const diskonNilai = subtotal * diskonPersen / 100;
+		const diskonNilai = (subtotal * diskonPersen) / 100;
 		const totalBayar = subtotal - diskonNilai;
 
 		nota += `Subtotal    : Rp${subtotal.toLocaleString('id-ID')}\n`;
@@ -89,18 +89,18 @@
 		nota += `TOTAL BAYAR : Rp${totalBayar.toLocaleString('id-ID')}\n`;
 		nota += `Bayar       : Rp${state.amountPaid.toLocaleString('id-ID')}\n`;
 		nota += `Kembali     : Rp${(state.amountPaid - totalBayar).toLocaleString('id-ID')}\n`;
-		nota += "--------------------------------\n";
+		nota += '--------------------------------\n';
 		nota += `Payment: ${state.paymentMethod}\n`;
-		nota += "--------------------------------\n";
-		nota += "Terima kasih telah berbelanja!\n";
-		nota += "DA.ALUS HIJAB\n";
-		nota += "*** Barang yang sudah dibeli ***\n";
-		nota += "*** tidak dapat dikembalikan ***\n\n\n\n";
+		nota += '--------------------------------\n';
+		nota += 'Terima kasih telah berbelanja!\n';
+		nota += 'DA.ALUS HIJAB\n';
+		nota += '*** Barang yang sudah dibeli ***\n';
+		nota += '*** tidak dapat dikembalikan ***\n\n\n\n';
 
 		// === CETAK MENGGUNAKAN RAWBT (BLUETOOTH THERMAL) ===
 		try {
 			const encoded = btoa(unescape(encodeURIComponent(nota)));
-			window.location.href = "rawbt:base64," + encoded;
+			window.location.href = 'rawbt:base64,' + encoded;
 		} catch (error) {
 			console.error('Error printing nota:', error);
 			alert('Gagal mencetak nota. Pastikan aplikasi RawBT terinstall.');
@@ -112,7 +112,7 @@
 			...state,
 			time: state.currentTime
 		});
-		
+
 		// Panggil fungsi print nota
 		printThermalNota();
 	}
@@ -211,6 +211,8 @@
 						<div class="w-full rounded-lg border border-gray-300 p-1">
 							<Input
 								type="text"
+								inputmode="numeric"
+								pattern="[0-9]*"
 								oninput={handleAmountInput}
 								value={formatIDR(state.amountPaid)}
 								placeholder="Amount Received"
