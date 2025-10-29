@@ -8,7 +8,7 @@
 	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
 	import dayjs from 'dayjs';
 	import { useDashboardPage } from '../dashboard/_components/use-dashboard-page.svelte';
-	import * as Popover from '$lib/components/ui/popover/index.js';
+	// import * as Popover from '$lib/components/ui/popover/index.js';
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
 	// ✅ Ambil semua state & handler langsung dari useDashboardPage
@@ -43,7 +43,7 @@
 	<div class="@container/main flex flex-1 flex-col gap-4">
 		<!-- 🔹 Kalender -->
 		<div class="grid max-w-65 gap-2">
-			<Popover.Root>
+			<!-- <Popover.Root>
 				<Popover.Trigger class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}>
 					<CalendarIcon class="mr-2 size-4" />
 					{formatDateText()}
@@ -66,7 +66,7 @@
 						}}
 					/>
 				</Popover.Content>
-			</Popover.Root>
+			</Popover.Root> -->
 		</div>
 
 		<!-- 🔹 Konten utama -->

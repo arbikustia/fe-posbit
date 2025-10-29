@@ -8,12 +8,12 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import dayjs from 'dayjs';
 	import { onMount, onDestroy } from 'svelte';
-	import { useTransactionForm } from './form.svelte';
+	import { useTransactionForm } from '../../form.svelte';
 	import { browser } from '$app/environment';
 
-	const { state } = useTransactionForm();
+	// const { state } = useTransactionForm();
 	// Variant prop
-	let { variant = 'default' }: any = $props();
+	let { variant = 'default', state = $bindable() }: any = $props();
 	let timer: NodeJS.Timeout | null = null;
 
 	function getCookie(name: string) {
@@ -43,13 +43,11 @@
 			...state,
 			time: state.currentTime
 		});
-
-		// Contoh tindakan lanjut:
-		// - Validasi form
-		// - Kirim ke API
-		// - Navigasi ke halaman lain
-		goto('/invoice');
 	}
+
+	// $effect(() => {
+	// 	console.log('🧾 item table changes:', state.itemTable);
+	// });
 </script>
 
 <!-- ==== VARIANT STICKY ==== -->
@@ -120,7 +118,7 @@
 					<div class="flex flex-col items-start justify-start gap-1">
 						<Input
 							type="number"
-							bind:value={state.amount}
+							bind:value={state.amountPaid}
 							placeholder="Amount Received"
 							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
 						/>
@@ -214,8 +212,9 @@
 							<div class="text-sm font-medium text-gray-500">Amount Received</div>
 							<div class=" rounded-lg border border-gray-300 p-1">
 								<Input
+									disabled={state.paymentMethod === 'DEBIT'}
 									type="number"
-									bind:value={state.amount}
+									bind:value={state.amountPaid}
 									placeholder="Amount Received"
 									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
 								/>
@@ -237,7 +236,7 @@
 							<div class="text-sm font-medium text-gray-500">Scan Item</div>
 							<div class=" rounded-lg border border-gray-300 p-1">
 								<Input
-									bind:value={state.searchTerm}
+									bind:value={state.searchProduct}
 									placeholder="Scan Item"
 									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
 								/>

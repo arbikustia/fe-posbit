@@ -4,6 +4,13 @@
 	import { TransactionPage } from './_components/page';
 	import SearchForm from './_components/search-form/search-form.svelte';
 	import { cn } from '$lib/utils';
+	import { useTransactionForm } from './form.svelte';
+
+	const { state: statePage } = useTransactionForm();
+
+	$effect(() => {
+		console.log('🧾 item table page changes:', statePage.itemTable);
+	});
 
 	let searchFormDefaultHeight = $state(0);
 	let scrollY = $state(0);
@@ -21,6 +28,7 @@
 	})}
 >
 	<SearchForm
+	state={statePage}
 		variant={scrollY > 250 ? 'sticky' : 'default'}
 		class="transition-all duration-700 ease-in-out"
 	/>
@@ -30,6 +38,6 @@
 	<div style="height: {searchFormDefaultHeight}px;"></div>
 {/if}
 <div class="space-y-5 p-5">
-	<TransactionPage />
+	<TransactionPage state={statePage} />
 </div>
 <svelte:window bind:scrollY />
