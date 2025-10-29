@@ -2,30 +2,34 @@ import { toast } from 'svelte-sonner';
 import { customerService } from '@/services/customerService';
 import { itemService } from '@/services/itemService';
 import dayjs from 'dayjs';
-import { onMount } from 'svelte';
+import { onMount, onDestroy } from 'svelte';
 
 export function useTransactionForm() {
 	const state = $state<any>({
 		customerName: '',
-		customerNumber: 0,
+		customerNumber: null,
 		searchProduct: '',
-		amount: 0,
-		discount: 0,
+		amount: null,
+		discount: null,
 		currentTime: dayjs().format('DD-MM-YYYY HH:mm:ss'),
 		paymentMethod: 'CASH',
 		paymentMethodeOpen: false,
 		customerData: null,
 		username: '',
-
-		// 🔹 Item data
 		itemTable: [],
 		isLoading: false,
-
-		// 🔹 Tambahan
-		amountPaid: 0, // uang dari customer
-		totalAll: 0 // total semua produk
+		amountPaid: null,
+		totalAll: 0,
+		isFetchingCustomer: false,
+		
+		// 🔹 Untuk auto-scan
+		scanBuffer: '',
+		scanInputRef: null as HTMLInputElement | null
 	});
 
+	let scanTimer: NodeJS.Timeout | null = null;
+
+	// 🔹 Transformasi data item dari API
 	function transformItemData(apiData: any[]) {
 		return apiData.map((item: any, index: number) => ({
 			id: item.item_id || index + 1,
@@ -38,6 +42,7 @@ export function useTransactionForm() {
 		}));
 	}
 
+	// 🔹 Fetch produk berdasarkan barcode
 	async function handleSearchProduct(value: string) {
 		if (!value || !value.trim()) return;
 
@@ -81,18 +86,102 @@ export function useTransactionForm() {
 		}
 	}
 
-	$effect(() => {
-		const value = state.searchProduct?.trim();
-		if (!value) return;
+	// 🔹 Handler keyboard global untuk auto-scan
+	function handleGlobalKeydown(e: KeyboardEvent) {
+		// Abaikan jika sedang mengetik di input lain (kecuali scan input)
+		const target = e.target as HTMLElement;
+		const isInputOrTextarea = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+		const isScanInput = target.getAttribute('data-scan-input') === 'true';
 
-		const debounceTimer = setTimeout(() => {
-			handleSearchProduct(value);
-		}, 400);
-		return () => clearTimeout(debounceTimer);
+		// Jika mengetik di input lain (bukan scan input), abaikan
+		if (isInputOrTextarea && !isScanInput) return;
+
+		// Jika tekan Enter, proses scan langsung (bypass $effect)
+		if (e.key === 'Enter') {
+			if (state.scanBuffer.trim()) {
+				e.preventDefault();
+				handleSearchProduct(state.scanBuffer.trim());
+				state.scanBuffer = '';
+				state.searchProduct = ''; // Clear tanpa trigger $effect
+				if (state.scanInputRef) {
+					state.scanInputRef.value = '';
+				}
+			}
+			return;
+		}
+
+		// Jika karakter yang bisa diketik (alfanumerik, dll)
+		if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+			e.preventDefault();
+			state.scanBuffer += e.key;
+
+			// Update input visual tanpa trigger $effect
+			if (state.scanInputRef) {
+				state.scanInputRef.value = state.scanBuffer;
+			}
+
+			// Auto-clear buffer setelah 100ms (untuk barcode scanner yang cepat)
+			if (scanTimer) clearTimeout(scanTimer);
+			scanTimer = setTimeout(() => {
+				if (state.scanBuffer.trim()) {
+					handleSearchProduct(state.scanBuffer.trim());
+					state.scanBuffer = '';
+					state.searchProduct = ''; // Clear tanpa trigger $effect
+					if (state.scanInputRef) {
+						state.scanInputRef.value = '';
+					}
+				}
+			}, 100);
+		}
+
+		// Jika Backspace, hapus karakter terakhir
+		if (e.key === 'Backspace') {
+			e.preventDefault();
+			state.scanBuffer = state.scanBuffer.slice(0, -1);
+			if (state.scanInputRef) {
+				state.scanInputRef.value = state.scanBuffer;
+			}
+		}
+	}
+
+	// 🔹 Effect: Fetch customer data jika nomor diinput
+	$effect(() => {
+		(async () => {
+			if (state.customerNumber && state.customerNumber > 0) {
+				state.isFetchingCustomer = true;
+				try {
+					console.log('👤 Fetching customer with number:', state.customerNumber);
+					const res = await customerService.getByNumber(state.customerNumber);
+
+					if (res?.data?.status && res?.data?.data) {
+						state.customerData = res.data.data;
+						state.customerName = res.data.data.customer_name ?? '';
+						console.log('✅ Customer found:', state.customerData);
+					} else {
+						state.customerData = null;
+						toast.error('Customer not found');
+					}
+				} catch (err) {
+					console.error('❌ Error fetching customer:', err);
+					state.customerData = null;
+					toast.error('Customer not found');
+				} finally {
+					state.isFetchingCustomer = false;
+				}
+			}
+		})();
 	});
 
 	onMount(() => {
 		console.log('🟢 useTransactionForm mounted');
+		
+		// Tambahkan global keyboard listener
+		document.addEventListener('keydown', handleGlobalKeydown);
+		
+		return () => {
+			document.removeEventListener('keydown', handleGlobalKeydown);
+			if (scanTimer) clearTimeout(scanTimer);
+		};
 	});
 
 	return {

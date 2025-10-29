@@ -11,8 +11,6 @@
 	import { useTransactionForm } from '../../form.svelte';
 	import { browser } from '$app/environment';
 
-	// const { state } = useTransactionForm();
-	// Variant prop
 	let { variant = 'default', state = $bindable() }: any = $props();
 	let timer: NodeJS.Timeout | null = null;
 
@@ -37,24 +35,112 @@
 		{ value: 'DEBIT', label: 'DEBIT' }
 	];
 
-	// Fungsi ketika klik Purchase
+	// 🔹 Fungsi Print Nota Thermal
+	function printThermalNota() {
+		if (!browser) return;
+
+		// === DATA NOTA ===
+		const toko = "DA.ALUS HIJAB";
+		const alamat = "Jl. Melati No. 45, Jakarta";
+		const telp = "Telp: 0812-9876-5432";
+		const tanggal = state.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
+		const kasir = state.username || "Admin";
+		const customer = state.customerName || "Guest";
+		const member = "2023";
+		const point = "120";
+
+		// Data items - sesuaikan dengan data cart Anda
+		const items = [
+			["Hijab Segi Empat", 75000, 2],
+			["Pashmina Wolfis", 85000, 1],
+			["Jilbab Instan", 45000, 3],
+		];
+
+		// === FORMAT STRUK DALAM TEKS ===
+		let nota = "";
+		nota += toko + "\n";
+		nota += alamat + "\n";
+		nota += telp + "\n";
+		nota += "--------------------------------\n";
+		nota += `Tanggal : ${tanggal}\n`;
+		nota += `Kasir   : ${kasir}\n`;
+		nota += `Customer: ${customer}\n`;
+		nota += `Member  : ${member}   Point: ${point}\n`;
+		nota += "--------------------------------\n";
+		nota += "Item                  Hrg   Qty\n";
+		nota += "--------------------------------\n";
+
+		let subtotal = 0;
+		for (const [name, price, qty] of items) {
+			const total = price * qty;
+			subtotal += total;
+			const nama = String(name).substring(0, 18).padEnd(18, " ");
+			const hrg = String(price).padStart(6, " ");
+			nota += `${nama}${hrg} ${qty}\n`;
+		}
+
+		nota += "--------------------------------\n";
+		const diskonPersen = state.discount || 0;
+		const diskonNilai = subtotal * diskonPersen / 100;
+		const totalBayar = subtotal - diskonNilai;
+
+		nota += `Subtotal    : Rp${subtotal.toLocaleString('id-ID')}\n`;
+		nota += `Diskon ${diskonPersen}% : Rp${diskonNilai.toLocaleString('id-ID')}\n`;
+		nota += `TOTAL BAYAR : Rp${totalBayar.toLocaleString('id-ID')}\n`;
+		nota += `Bayar       : Rp${state.amountPaid.toLocaleString('id-ID')}\n`;
+		nota += `Kembali     : Rp${(state.amountPaid - totalBayar).toLocaleString('id-ID')}\n`;
+		nota += "--------------------------------\n";
+		nota += `Payment: ${state.paymentMethod}\n`;
+		nota += "--------------------------------\n";
+		nota += "Terima kasih telah berbelanja!\n";
+		nota += "DA.ALUS HIJAB\n";
+		nota += "*** Barang yang sudah dibeli ***\n";
+		nota += "*** tidak dapat dikembalikan ***\n\n\n\n";
+
+		// === CETAK MENGGUNAKAN RAWBT (BLUETOOTH THERMAL) ===
+		try {
+			const encoded = btoa(unescape(encodeURIComponent(nota)));
+			window.location.href = "rawbt:base64," + encoded;
+		} catch (error) {
+			console.error('Error printing nota:', error);
+			alert('Gagal mencetak nota. Pastikan aplikasi RawBT terinstall.');
+		}
+	}
+
 	function handlePurchase() {
 		console.log('Data Transaksi:', {
 			...state,
 			time: state.currentTime
 		});
+		
+		// Panggil fungsi print nota
+		printThermalNota();
 	}
 
-	// $effect(() => {
-	// 	console.log('🧾 item table changes:', state.itemTable);
-	// });
+	// 🔹 Fungsi format ke IDR
+	function formatIDR(value: number | string) {
+		if (!value) return '';
+		const num = Number(String(value).replace(/[^\d]/g, ''));
+		return num.toLocaleString('id-ID', {
+			style: 'currency',
+			currency: 'IDR',
+			minimumFractionDigits: 0
+		});
+	}
+
+	// 🔹 Handler input rupiah
+	function handleAmountInput(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const rawValue = target.value.replace(/[^\d]/g, '');
+		state.amountPaid = Number(rawValue || 0);
+		target.value = formatIDR(rawValue);
+	}
 </script>
 
-<!-- ==== VARIANT STICKY ==== -->
-{#if variant === 'sticky'}
-	<Select.Root type="single" bind:value={state.paymentMethod} bind:open={state.paymentMethodeOpen}>
-		<section class="bg-card sticky top-0 z-31 border-y shadow-sm">
-			<div class="mx-auto max-w-6xl space-y-2 px-4 pt-2 pb-2">
+<Select.Root type="single" bind:value={state.paymentMethod} bind:open={state.paymentMethodeOpen}>
+	<section class="w-full">
+		<Card.Root>
+			<Card.Content class="flex  w-full flex-col items-start space-y-2">
 				<div class="flex w-full flex-1 grid-cols-5 flex-row items-end justify-start gap-5">
 					<div class="flex flex-col items-start justify-start gap-1">
 						<div
@@ -64,198 +150,111 @@
 							{state.username}
 						</div>
 					</div>
-					<div class="flex flex-col items-start justify-start gap-1">
+					<div class="flex w-48 flex-col items-start justify-center gap-1">
 						<div
-							class="text-primary bg-primary/10 flex h-9 w-fit items-center rounded-md p-1 px-4 text-sm font-medium"
+							class="text-primary bg-primary/10 flex h-9 w-full items-center justify-center rounded-md p-1 px-4 text-center text-sm font-medium"
 						>
-							<div>{state.currentTime}</div>
+							{state.currentTime}
 						</div>
 					</div>
 					<div class="flex flex-col items-start justify-start gap-1">
-						<div
-							class="relative flex h-auto w-fit cursor-pointer items-center space-x-2 rounded-md text-sm font-medium"
+						<Select.Trigger
+							class="text-primary bg-primary/10 relative flex h-auto w-fit cursor-pointer items-center space-x-2 rounded-md border-none p-1 px-4 text-sm font-medium shadow-none"
 						>
-							<Select.Trigger
-								class="text-primary bg-primary/10 relative flex h-auto w-fit cursor-pointer items-center space-x-2 rounded-md border-none p-1 px-4 text-sm font-medium shadow-none"
-							>
-								<span>{paymentOptions.find((p) => p.value === state.paymentMethod)?.label}</span>
-							</Select.Trigger>
-							<Select.Content>
-								<Select.Group>
-									{#each paymentOptions as option (option.value)}
-										<Select.Item value={option.value}>{option.label}</Select.Item>
-									{/each}
-								</Select.Group>
-							</Select.Content>
-						</div>
+							<span>{paymentOptions.find((p) => p.value === state.paymentMethod)?.label}</span>
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Group>
+								{#each paymentOptions as option (option.value)}
+									<Select.Item value={option.value}>{option.label}</Select.Item>
+								{/each}
+							</Select.Group>
+						</Select.Content>
 					</div>
 				</div>
 
 				<!-- FORM INPUT -->
-				<div class="grid w-full grid-cols-6 flex-row items-end justify-start gap-2">
-					<div class="flex flex-col items-start justify-start gap-1">
-						<Input
-							type="tel"
-							bind:value={state.customerNumber}
-							placeholder="Phone Number"
-							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
-						/>
-					</div>
-					<div class="flex flex-col items-start justify-start gap-1">
-						<Input
-							bind:value={state.customerName}
-							placeholder="Customer Name"
-							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
-						/>
-					</div>
-					<div class="flex flex-col items-start justify-start gap-1">
-						<Input
-							bind:value={state.searchProduct}
-							placeholder="Search Product"
-							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
-						/>
-					</div>
-					<div class="flex flex-col items-start justify-start gap-1">
-						<Input
-							type="number"
-							bind:value={state.amountPaid}
-							placeholder="Amount Received"
-							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
-						/>
-					</div>
-					<div class="flex flex-col items-start justify-start gap-1">
-						<Input
-							type="number"
-							bind:value={state.discount}
-							placeholder="Discount (%)"
-							class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm transition outline-none"
-						/>
+				<div class="grid w-full grid-cols-5 flex-row items-end justify-center gap-3">
+					<div class="flex w-full flex-col items-start justify-start gap-1">
+						<div class="text-sm font-medium text-gray-500">Phone Number</div>
+						<div class="w-full rounded-lg border border-gray-300 p-1">
+							<Input
+								type="tel"
+								bind:value={state.customerNumber}
+								placeholder="Phone Number"
+								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm font-medium shadow-none transition outline-none"
+							/>
+						</div>
 					</div>
 
-					<!-- BUTTON -->
+					<div class="flex flex-col items-start justify-start gap-1">
+						<div class="text-sm font-medium text-gray-500">Customer Name</div>
+						<div class="relative w-full rounded-lg border border-gray-300 p-1">
+							<Input
+								bind:value={state.customerName}
+								placeholder="Customer Name"
+								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 pr-8 text-sm font-medium shadow-none transition outline-none"
+							/>
+							{#if state.isFetchingCustomer}
+								<Icon
+									icon="eos-icons:loading"
+									class="absolute top-1/2 right-3 -translate-y-1/2 animate-spin text-gray-400"
+									width="18"
+									height="18"
+								/>
+							{/if}
+						</div>
+					</div>
+
+					<div class="flex flex-col items-start justify-start gap-1">
+						<div class="text-sm font-medium text-gray-500">Amount Received</div>
+						<div class="w-full rounded-lg border border-gray-300 p-1">
+							<Input
+								type="text"
+								oninput={handleAmountInput}
+								value={formatIDR(state.amountPaid)}
+								placeholder="Amount Received"
+								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-left text-sm font-medium shadow-none transition outline-none"
+							/>
+						</div>
+					</div>
+
+					<div class="flex flex-col items-start justify-start gap-1">
+						<div class="text-sm font-medium text-gray-500">Discount (%)</div>
+						<div class="w-full rounded-lg border border-gray-300 p-1">
+							<Input
+								type="number"
+								bind:value={state.discount}
+								placeholder="Discount (%)"
+								class="hover:bg-primary/5 h-10 w-full border-none px-3 py-2 text-sm font-medium shadow-none transition outline-none"
+							/>
+						</div>
+					</div>
+
+					<div class="hidden flex-col items-start justify-start gap-1">
+						<div class="text-sm font-medium text-gray-500">Scan Item</div>
+						<div class="w-full rounded-lg border border-gray-300 p-1">
+							<Input
+								bind:value={state.searchProduct}
+								placeholder="Scan Item"
+								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm font-medium shadow-none transition outline-none"
+							/>
+						</div>
+					</div>
+
 					<Button
 						onclick={handlePurchase}
-						class={cn('h-10 w-full flex-none text-lg', {})}
+						class={cn('h-12 w-full flex-none text-lg', { 'min-h-11': variant === 'default' })}
 						size="lg"
 					>
+						<Icon icon="solar:printer-bold" width="20" height="20" class="mr-1" />
 						<span class="ml-1">Purchase</span>
 					</Button>
 				</div>
-			</div>
-		</section>
-	</Select.Root>
-
-	<!-- ==== VARIANT DEFAULT ==== -->
-{:else}
-	<Select.Root type="single" bind:value={state.paymentMethod} bind:open={state.paymentMethodeOpen}>
-		<section class="w-full">
-			<Card.Root>
-				<Card.Content class="flex w-full flex-col items-start space-y-2">
-					<div class="flex w-full flex-1 grid-cols-5 flex-row items-end justify-start gap-5">
-						<div class="flex flex-col items-start justify-start gap-1">
-							<div
-								class="text-primary bg-primary/10 flex h-9 w-fit items-center gap-2 rounded-md p-1 px-4 text-sm font-medium"
-							>
-								<Icon icon="solar:user-linear" width="14" height="14" class="text-primary" />
-								{state.username}
-							</div>
-						</div>
-						<div class="flex w-48 flex-col items-start justify-center gap-1">
-							<div
-								class="text-primary bg-primary/10 flex h-9 w-full items-center justify-center rounded-md p-1 px-4 text-center text-sm font-medium"
-							>
-								{state.currentTime}
-							</div>
-						</div>
-						<div class="flex flex-col items-start justify-start gap-1">
-							<Select.Trigger
-								class="text-primary bg-primary/10 relative flex h-auto w-fit cursor-pointer items-center space-x-2 rounded-md border-none p-1 px-4 text-sm font-medium shadow-none"
-							>
-								<span>{paymentOptions.find((p) => p.value === state.paymentMethod)?.label}</span>
-							</Select.Trigger>
-							<Select.Content>
-								<Select.Group>
-									{#each paymentOptions as option (option.value)}
-										<Select.Item value={option.value}>{option.label}</Select.Item>
-									{/each}
-								</Select.Group>
-							</Select.Content>
-						</div>
-					</div>
-
-					<!-- FORM INPUT -->
-					<div class="grid w-full flex-1 grid-cols-6 flex-row items-end justify-center gap-5">
-						<div class="flex flex-col items-start justify-start gap-1">
-							<div class="text-sm font-medium text-gray-500">Phone Number</div>
-							<div class=" rounded-lg border border-gray-300 p-1">
-								<Input
-									type="tel"
-									bind:value={state.customerNumber}
-									placeholder="Phone Number"
-									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
-								/>
-							</div>
-						</div>
-
-						<div class="flex flex-col items-start justify-start gap-1">
-							<div class="text-sm font-medium text-gray-500">Customer Name</div>
-							<div class=" rounded-lg border border-gray-300 p-1">
-								<Input
-									bind:value={state.customerName}
-									placeholder="Customer Name"
-									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
-								/>
-							</div>
-						</div>
-
-						<div class="flex flex-col items-start justify-start gap-1">
-							<div class="text-sm font-medium text-gray-500">Amount Received</div>
-							<div class=" rounded-lg border border-gray-300 p-1">
-								<Input
-									disabled={state.paymentMethod === 'DEBIT'}
-									type="number"
-									bind:value={state.amountPaid}
-									placeholder="Amount Received"
-									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
-								/>
-							</div>
-						</div>
-
-						<div class="flex flex-col items-start justify-start gap-1">
-							<div class="text-sm font-medium text-gray-500">Discount (%)</div>
-							<div class=" rounded-lg border border-gray-300 p-1">
-								<Input
-									type="number"
-									bind:value={state.discount}
-									placeholder="Discount (%)"
-									class="hover:bg-primary/5 h-10 w-full border-none  px-3 py-2 text-sm shadow-none transition outline-none"
-								/>
-							</div>
-						</div>
-						<div class="flex flex-col items-start justify-start gap-1">
-							<div class="text-sm font-medium text-gray-500">Scan Item</div>
-							<div class=" rounded-lg border border-gray-300 p-1">
-								<Input
-									bind:value={state.searchProduct}
-									placeholder="Scan Item"
-									class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm shadow-none transition outline-none"
-								/>
-							</div>
-						</div>
-
-						<Button
-							onclick={handlePurchase}
-							class={cn('h-12 w-full flex-none text-lg', { 'min-h-11': variant === 'default' })}
-							size="lg"
-						>
-							<span class="ml-1">Purchase</span>
-						</Button>
-					</div>
-				</Card.Content>
-			</Card.Root>
-		</section>
-	</Select.Root>
-{/if}
+			</Card.Content>
+		</Card.Root>
+	</section>
+</Select.Root>
 
 <style>
 	:global {
