@@ -38,82 +38,77 @@
 		{ value: 'DEBIT', label: 'DEBIT' }
 	];
 
+	function formatCurrency(num: number) {
+		return new Intl.NumberFormat('id-ID', {
+			style: 'currency',
+			currency: 'IDR',
+			maximumFractionDigits: 0
+		}).format(num || 0);
+	}
 	// 🔹 Fungsi Print Nota Thermal
 	function printThermalNota() {
 		if (!browser) return;
 
 		// === DATA NOTA ===
-		const toko = 'DA.ALUS H.IJAB';
-		const alamat = 'Jl. Nolati No. 45, Jakarta';
+		const toko = 'DA.ALUS HIJAB';
+		const alamat = 'Jl. Melati No. 45, Jakarta';
 		const telp = 'Telp: 0812-9876-5432';
 		const tanggal = pageState.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
 		const kasir = pageState.username || 'Admin';
 		const customer = pageState.customerName || 'Guest';
-		const member = pageState.memberId || '2023';
-		const point = pageState.points || '120';
+		const member = '2023';
+		const point = '120';
 
 		// Data items - sesuaikan dengan data cart Anda
-		const items = [
-			['Hijab Segi Empat', 75000, 2],
-			['Pashmina Wolfis', 85000, 1],
-			['Jilbab Instan', 45000, 3],
-			['Inner Rajut', 25000, 2]
-		];
+		// const items = [
+		// 	['Hijab Segi Empat', 75000, 2],
+		// 	['Pashmina Wolfis', 85000, 1],
+		// 	['Jilbab Instan', 45000, 3]
+		// ];
 
-		// === FORMAT STRUK SESUAI GAMBAR ===
+		// === FORMAT STRUK DALAM TEKS ===
 		let nota = '';
+		nota += '         DA.ALUS HIJAB         \n';
+		nota += '   Jl. Melati No. 45, Jakarta   \n';
+		nota += '     Telp: 0812-9876-5432      \n';
+		nota += '--------------------------------\n';
+		nota += `Tanggal : ${tanggal}\n`;
+		nota += `Kasir   : ${kasir}\n`;
+		nota += `Customer: ${customer}\n`;
+		nota += `Member  : ${member}   Point: ${point}\n`;
+		nota += '--------------------------------\n';
+		nota += 'Item                  Hrg   Qty\n';
+		nota += '--------------------------------\n';
 
-		// Header
-		nota += toko.toUpperCase() + '\n';
-		nota += alamat + '\n';
-		nota += telp + '\n';
-		nota += '\n';
-
-		// Info transaksi
-		nota += `Tanggal    ${tanggal}\n`;
-		nota += `Kasir      ${kasir}\n`;
-		nota += `Customer   ${customer}\n`;
-		nota += `Member     ${member}\n`;
-		nota += `Poin       ${point}\n`;
-		nota += '\n';
-
-		// Items - format seperti gambar
 		let subtotal = 0;
-		for (const [name, price, qty] of items) {
-			const total = price * qty;
+		for (const [name, harga_jual] of pageState.itemTable) {
+			const total = harga_jual * 1;
 			subtotal += total;
-
-			// Format nama item (kiri)
-			const nama = String(name);
-			// Format harga per item (tengah) dan qty (kanan)
-			const hargaFormatted = `Rp ${price.toLocaleString('id-ID')}`;
-			const totalFormatted = `Rp ${total.toLocaleString('id-ID')}`;
-
-			nota += `${nama}\n`;
-			nota += `${qty}     ${hargaFormatted}\n`;
+			const nama = String(name).substring(0, 18).padEnd(18, ' ');
+			const hrg = String(harga_jual).padStart(6, ' ');
+			nota += `${nama}                  ${hrg}   1\n`;
 		}
 
-		nota += '\n';
-
-		// Perhitungan total
-		const diskonPersen = pageState.discount || 10; // Default 10% seperti di gambar
+		nota += '--------------------------------\n';
+		const diskonPersen = pageState.discount || 0;
 		const diskonNilai = (subtotal * diskonPersen) / 100;
 		const totalBayar = subtotal - diskonNilai;
 
-		nota += `subtotal    Rp ${subtotal.toLocaleString('id-ID')}\n`;
-		nota += `Diskon (${diskonPersen}%)    Rp ${diskonNilai.toLocaleString('id-ID')}\n`;
-		nota += '......\n\n';
-		nota += `TOTAL BAYAR    Rp ${totalBayar.toLocaleString('id-ID')}\n`;
-		nota += `Pembayaran    ${pageState.paymentMethod || 'CASH'}\n`;
-		nota += '\n';
-		nota += '......\n';
-		nota += '    Terima kasih telah berbelanja di\n';
-		nota += '    DA.ALUS HIJAB ♥\n\n';
-		nota += '*** Barang yang sudah dibeli tidak dapat\n';
-		nota += '    dikembalikan\n';
-		nota += '    www.daalushijab.id | ID: @dalushijab\n\n\n\n';
+		nota += `Subtotal    : ${formatCurrency(pageState.totalAll)}\n`;
+		nota += `Diskon      : ${pageState.discount}\n`;
+		nota += `TOTAL BAYAR : ${formatCurrency(pageState.grandTotal)}\n`;
+		nota += `Bayar       : ${formatCurrency(pageState.amountPaid)}\n`;
+		nota += `Kembali     : ${pageState.amountPaid ? formatCurrency((pageState.amountPaid || 0) - (pageState.grandTotal || 0)) : 0}\n`;
+		nota += '--------------------------------\n';
+		nota += `Payment: ${pageState.paymentMethod}\n`;
+		nota += '--------------------------------\n';
+		nota += 'Terima kasih telah berbelanja!\n';
+		nota += 'DA.ALUS HIJAB\n';
+		nota += '         DA.ALUS HIJAB         \n';
+		nota += '*** Barang yang sudah dibeli ***\n';
+		nota += '*** tidak dapat dikembalikan ***\n\n\n\n';
 
-		// === CETAK MENGGUNAKAN RAWBT ===
+		// === CETAK MENGGUNAKAN RAWBT (BLUETOOTH THERMAL) ===
 		try {
 			const encoded = btoa(unescape(encodeURIComponent(nota)));
 			window.location.href = 'rawbt:base64,' + encoded;
@@ -122,6 +117,7 @@
 			alert('Gagal mencetak nota. Pastikan aplikasi RawBT terinstall.');
 		}
 	}
+
 	function handlePurchase() {
 		console.log('Data Transaksi:', {
 			...pageState,
