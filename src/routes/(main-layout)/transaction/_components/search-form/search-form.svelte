@@ -105,7 +105,7 @@
 			const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
 			const hrg = String(harga_jual.toLocaleString('id-ID')).padStart(hargaCol, ' ');
 			const qtyStr = String(qty).padStart(qtyCol, ' ');
-			nota += `${namaBaris1}${hrg}${qtyStr}\n`;
+			nota += `${namaBaris1}        ${hrg}${qtyStr}\n`;
 
 			// Jika nama lebih panjang, cetak sisanya di bawah (hanya nama)
 			for (let i = 1; i < namaPotong.length; i++) {
@@ -129,7 +129,7 @@
 		nota += '--------------------------------\n';
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '        IG @daalushijab		 \n';
-		nota += '      www.daalushijab.id        \n\n';
+		nota += '       www.daalushijab.id        \n\n';
 		nota += ' Terima kasih telah berbelanja! \n';
 		nota += '*** Barang yang sudah dibeli ***\n';
 		nota += '*** tidak dapat dikembalikan ***\n';
