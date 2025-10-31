@@ -81,11 +81,15 @@
 		nota += '--------------------------------\n';
 
 		let subtotal = 0;
-		for (const [name, harga_jual] of pageState.itemTable) {
-			const total = harga_jual * 1;
+		for (const item of pageState.itemTable) {
+			const { name, harga_jual, qty = 1 } = item;
+			const total = harga_jual * qty;
 			subtotal += total;
+
+			// Format nama agar rapi (maks 18 karakter)
 			const nama = String(name).substring(0, 18).padEnd(18, ' ');
 			const hrg = String(harga_jual).padStart(6, ' ');
+
 			nota += `${nama}                  ${hrg}   1\n`;
 		}
 
