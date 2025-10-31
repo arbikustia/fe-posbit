@@ -56,8 +56,8 @@
 		const tanggal = pageState.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
 		const kasir = pageState.username || 'Admin';
 		const customer = pageState.customerName || 'Guest';
-		const member = '2023';
-		const point = '120';
+		const member = pageState.customerData !== null ? 'PREMIUM' :  'REGULAR';
+		const point = pageState.customerData.point || '0';
 
 		// Data items - sesuaikan dengan data cart Anda
 		// const items = [
@@ -87,7 +87,7 @@
 			subtotal += total;
 
 			// Format nama agar rapi (maks 18 karakter)
-			const nama = String(name).substring(0, 18).padEnd(18, ' ');
+			const nama = String(name).substring(0, 11).padEnd(11, ' ');
 			const hrg = String(harga_jual).padStart(6, ' ');
 
 			nota += `${nama}                  ${hrg}   1\n`;
@@ -98,16 +98,16 @@
 		const diskonNilai = (subtotal * diskonPersen) / 100;
 		const totalBayar = subtotal - diskonNilai;
 
-		nota += `Subtotal    : ${formatCurrency(pageState.totalAll)}\n`;
-		nota += `Diskon      : ${pageState.discount}\n`;
-		nota += `TOTAL BAYAR : ${formatCurrency(pageState.grandTotal)}\n`;
-		nota += `Bayar       : ${formatCurrency(pageState.amountPaid)}\n`;
-		nota += `Kembali     : ${pageState.amountPaid ? formatCurrency((pageState.amountPaid || 0) - (pageState.grandTotal || 0)) : 0}\n`;
+		nota += `Subtotal    :${formatCurrency(pageState.totalAll)}\n`;
+		nota += `Diskon      :${pageState.discount}%\n`;
+		nota += `TOTAL BAYAR :${formatCurrency(pageState.grandTotal)}\n`;
+		nota += `Bayar       :${formatCurrency(pageState.amountPaid)}\n`;
+		nota += `Kembali     :${pageState.amountPaid ? formatCurrency((pageState.amountPaid || 0) - (pageState.grandTotal || 0)) : 0}\n`;
 		nota += '--------------------------------\n';
 		nota += `Payment: ${pageState.paymentMethod}\n`;
 		nota += '--------------------------------\n';
 		nota += 'Terima kasih telah berbelanja!\n';
-		nota += 'DA.ALUS HIJAB\n';
+		nota += '                               \n';
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '*** Barang yang sudah dibeli ***\n';
 		nota += '*** tidak dapat dikembalikan ***\n\n\n\n';
