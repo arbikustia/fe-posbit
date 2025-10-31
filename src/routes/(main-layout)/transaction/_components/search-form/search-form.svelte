@@ -43,64 +43,77 @@
 		if (!browser) return;
 
 		// === DATA NOTA ===
-		const toko = '         DA.ALUS HIJAB            ';
-		const alamat = '         Jl. Melati No. 45, Jakarta            ';
-		const telp = '         Telp: 0812-9876-5432            ';
+		const toko = 'DA.ALUS H.IJAB';
+		const alamat = 'Jl. Nolati No. 45, Jakarta';
+		const telp = 'Telp: 0812-9876-5432';
 		const tanggal = pageState.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
 		const kasir = pageState.username || 'Admin';
 		const customer = pageState.customerName || 'Guest';
-		const member = '2023';
-		const point = '120';
+		const member = pageState.memberId || '2023';
+		const point = pageState.points || '120';
 
 		// Data items - sesuaikan dengan data cart Anda
 		const items = [
 			['Hijab Segi Empat', 75000, 2],
 			['Pashmina Wolfis', 85000, 1],
-			['Jilbab Instan', 45000, 3]
+			['Jilbab Instan', 45000, 3],
+			['Inner Rajut', 25000, 2]
 		];
 
-		// === FORMAT STRUK DALAM TEKS ===
+		// === FORMAT STRUK SESUAI GAMBAR ===
 		let nota = '';
-		nota += toko + '\n';
+
+		// Header
+		nota += toko.toUpperCase() + '\n';
 		nota += alamat + '\n';
 		nota += telp + '\n';
-		nota += '--------------------------------\n';
-		nota += `Tanggal : ${tanggal}\n`;
-		nota += `Kasir   : ${kasir}\n`;
-		nota += `Customer: ${customer}\n`;
-		nota += `Member  : ${member}   Point: ${point}\n`;
-		nota += '--------------------------------\n';
-		nota += 'Item                  Hrg   Qty\n';
-		nota += '--------------------------------\n';
+		nota += '\n';
 
+		// Info transaksi
+		nota += `Tanggal    ${tanggal}\n`;
+		nota += `Kasir      ${kasir}\n`;
+		nota += `Customer   ${customer}\n`;
+		nota += `Member     ${member}\n`;
+		nota += `Poin       ${point}\n`;
+		nota += '\n';
+
+		// Items - format seperti gambar
 		let subtotal = 0;
 		for (const [name, price, qty] of items) {
 			const total = price * qty;
 			subtotal += total;
-			const nama = String(name).substring(0, 18).padEnd(18, ' ');
-			const hrg = String(price).padStart(6, ' ');
-			nota += `${nama}${hrg} ${qty}\n`;
+
+			// Format nama item (kiri)
+			const nama = String(name);
+			// Format harga per item (tengah) dan qty (kanan)
+			const hargaFormatted = `Rp ${price.toLocaleString('id-ID')}`;
+			const totalFormatted = `Rp ${total.toLocaleString('id-ID')}`;
+
+			nota += `${nama}\n`;
+			nota += `${qty}     ${hargaFormatted}\n`;
 		}
 
-		nota += '--------------------------------\n';
-		const diskonPersen = pageState.discount || 0;
+		nota += '\n';
+
+		// Perhitungan total
+		const diskonPersen = pageState.discount || 10; // Default 10% seperti di gambar
 		const diskonNilai = (subtotal * diskonPersen) / 100;
 		const totalBayar = subtotal - diskonNilai;
 
-		nota += `Subtotal    : Rp${subtotal.toLocaleString('id-ID')}\n`;
-		nota += `Diskon ${diskonPersen}% : Rp${diskonNilai.toLocaleString('id-ID')}\n`;
-		nota += `TOTAL BAYAR : Rp${totalBayar.toLocaleString('id-ID')}\n`;
-		nota += `Bayar       : Rp${pageState.amountPaid.toLocaleString('id-ID')}\n`;
-		nota += `Kembali     : Rp${(pageState.amountPaid - totalBayar).toLocaleString('id-ID')}\n`;
-		nota += '--------------------------------\n';
-		nota += `Payment: ${pageState.paymentMethod}\n`;
-		nota += '--------------------------------\n';
-		nota += 'Terima kasih telah berbelanja!\n';
-		nota += 'DA.ALUS HIJAB\n';
-		nota += '*** Barang yang sudah dibeli ***\n';
-		nota += '*** tidak dapat dikembalikan ***\n\n\n\n';
+		nota += `subtotal    Rp ${subtotal.toLocaleString('id-ID')}\n`;
+		nota += `Diskon (${diskonPersen}%)    Rp ${diskonNilai.toLocaleString('id-ID')}\n`;
+		nota += '......\n\n';
+		nota += `TOTAL BAYAR    Rp ${totalBayar.toLocaleString('id-ID')}\n`;
+		nota += `Pembayaran    ${pageState.paymentMethod || 'CASH'}\n`;
+		nota += '\n';
+		nota += '......\n';
+		nota += '    Terima kasih telah berbelanja di\n';
+		nota += '    DA.ALUS HIJAB ♥\n\n';
+		nota += '*** Barang yang sudah dibeli tidak dapat\n';
+		nota += '    dikembalikan\n';
+		nota += '    www.daalushijab.id | ID: @dalushijab\n\n\n\n';
 
-		// === CETAK MENGGUNAKAN RAWBT (BLUETOOTH THERMAL) ===
+		// === CETAK MENGGUNAKAN RAWBT ===
 		try {
 			const encoded = btoa(unescape(encodeURIComponent(nota)));
 			window.location.href = 'rawbt:base64,' + encoded;
@@ -109,7 +122,6 @@
 			alert('Gagal mencetak nota. Pastikan aplikasi RawBT terinstall.');
 		}
 	}
-
 	function handlePurchase() {
 		console.log('Data Transaksi:', {
 			...pageState,
@@ -146,7 +158,7 @@
 	function toggleItem(itemValue: string) {
 		console.log(itemValue, 'item value');
 		pageState.searchProduct = itemValue;
-		closeAndFocusTrigger()
+		closeAndFocusTrigger();
 	}
 
 	function closeAndFocusTrigger() {
@@ -193,7 +205,7 @@
 							</Select.Group>
 						</Select.Content>
 					</div>
-					<div class="flex flex-col w-72 items-start justify-start gap-1">
+					<div class="flex w-72 flex-col items-start justify-start gap-1">
 						<Popover.Root bind:open>
 							<Popover.Trigger bind:ref={triggerRef} class="h-fit w-full">
 								{#snippet child({ props })}
@@ -252,7 +264,7 @@
 								type="tel"
 								bind:value={pageState.customerNumber}
 								placeholder="Phone Number"
-								class="hover:bg-primary/5 placeholder:text-gray-400 placeholder:text-xs h-10 w-full rounded-md border-none px-3 py-2 text-sm font-medium shadow-none transition outline-none"
+								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm font-medium shadow-none transition outline-none placeholder:text-xs placeholder:text-gray-400"
 							/>
 						</div>
 					</div>
@@ -263,7 +275,7 @@
 							<Input
 								bind:value={pageState.customerName}
 								placeholder="Customer Name"
-								class="hover:bg-primary/5 placeholder:text-gray-400 placeholder:text-xs h-10 w-full rounded-md border-none px-3 py-2 pr-8 text-sm font-medium shadow-none transition outline-none"
+								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 pr-8 text-sm font-medium shadow-none transition outline-none placeholder:text-xs placeholder:text-gray-400"
 							/>
 							{#if pageState.isFetchingCustomer}
 								<Icon
@@ -286,7 +298,7 @@
 								oninput={handleAmountInput}
 								value={formatIDR(pageState.amountPaid)}
 								placeholder="Amount Received"
-								class="hover:bg-primary/5 placeholder:text-gray-400 placeholder:text-xs h-10 w-full rounded-md border-none px-3 py-2 text-left text-sm font-medium shadow-none transition outline-none"
+								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-left text-sm font-medium shadow-none transition outline-none placeholder:text-xs placeholder:text-gray-400"
 							/>
 						</div>
 					</div>
@@ -298,7 +310,7 @@
 								type="number"
 								bind:value={pageState.discount}
 								placeholder="Discount (%)"
-								class="hover:bg-primary/5 placeholder:text-gray-400 placeholder:text-xs h-10 w-full border-none px-3 py-2 text-sm font-medium shadow-none transition outline-none"
+								class="hover:bg-primary/5 h-10 w-full border-none px-3 py-2 text-sm font-medium shadow-none transition outline-none placeholder:text-xs placeholder:text-gray-400"
 							/>
 						</div>
 					</div>
