@@ -10,7 +10,7 @@ export const customerSchema = z.object({
 	point: z.preprocess((val) => {
 		if (typeof val === 'string') return val.trim() === '' ? NaN : Number(val);
 		return val;
-	}, z.number().gt(0, 'Point Value must be > 0')),
+	}, z.number().default(0)),
 	type: z.enum(['REGULAR', 'PREMIUM']).default('REGULAR')
 });
 

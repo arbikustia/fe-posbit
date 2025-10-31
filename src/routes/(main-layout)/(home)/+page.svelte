@@ -9,6 +9,7 @@
 	import dayjs from 'dayjs';
 	import { useDashboardPage } from '../dashboard/_components/use-dashboard-page.svelte';
 	// import * as Popover from '$lib/components/ui/popover/index.js';
+	import { onMount } from 'svelte';
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
 	// ✅ Ambil semua state & handler langsung dari useDashboardPage
@@ -33,6 +34,7 @@
 			df.format(dayjs(state.startDate).toDate()) + ' - ' + df.format(dayjs(state.endDate).toDate())
 		);
 	}
+
 </script>
 
 <svelte:head>

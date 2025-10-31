@@ -8,9 +8,9 @@ export const itemService = {
             `/item/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
         );
     },
-    getListitemToko: () => {
+    getPagedItemToko: (params: { PageNumber: number, PageSize: number, SearchTerm: string }) => {
         return apiClient.get<RestApiResponse<unknown>>(
-            `/view/stok-toko`
+            `/view/paged-stock-toko?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
         );
     },
     getListitemGudang: () => {

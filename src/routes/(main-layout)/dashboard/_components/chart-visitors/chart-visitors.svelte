@@ -6,7 +6,7 @@
 	import dayjs from 'dayjs';
 	const { state } = $props();
 
-	// Data pemasukan per hari	
+	// Data pemasukan per hari
 	const chartData = $derived(
 		state.chart?.labels?.map((label: string, i: number) => ({
 			date: new Date(label),
@@ -22,6 +22,23 @@
 	const chartConfig = {
 		total: { label: 'Total Pemasukan', color: '#3b82f6' }
 	} satisfies Chart.ChartConfig;
+
+	const formatCurrencyID = (value: number) => {
+		const numInThousands = value; // value sudah dalam ribuan
+
+		if (numInThousands >= 1000000) {
+			// Jika >= 1 juta (karena 1000 * 1000 = 1.000.000)
+			return `Rp ${(numInThousands / 1000).toFixed(0)}Jt`;
+		} else {
+			return `${formatTooltip(numInThousands)}`;
+		}
+	};
+
+	// Format untuk tooltip (tampilkan nilai penuh)
+	const formatTooltip = (value: number) => {
+		const actualValue = value; // Konversi ke nilai sebenarnya
+		return `Rp ${actualValue.toLocaleString('id-ID')}`;
+	};
 </script>
 
 <div class="w-full space-y-6">
@@ -35,7 +52,7 @@
 			</div>
 		</Card.Header>
 
-		<Card.Content class="px-5 pt-4 sm:px-10 sm:pt-6">
+		<Card.Content class="pt-4 md:pl-20 sm:px-10 sm:pt-6">
 			<Chart.Container config={chartConfig} class="aspect-auto h-[300px] w-full">
 				<AreaChart
 					legend={false}
@@ -56,7 +73,7 @@
 						},
 						yAxis: {
 							label: 'Total Pemasukan',
-							format: (v) => `${v}K`,
+							format: formatCurrencyID,
 							ticks: 5
 						}
 					}}
@@ -83,7 +100,7 @@
 							{#snippet formatter({ value })}
 								<div class="">
 									<div class="text-gray-500">Total Penjualan</div>
-									<div class="text-md">Rp {value?.toLocaleString()}.000</div>
+									<div class="text-md">{formatTooltip(value as any)}</div>
 								</div>
 							{/snippet}
 						</Chart.Tooltip>

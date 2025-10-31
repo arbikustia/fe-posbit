@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { cn } from '$lib/utils';
 	import { currentPage } from '$lib/helpers/page-helper';
-	import { Flight, Hotel, Train, Insurance, Home, User, Document, DashboardIcon, PurchaseIcon } from '$lib/components/icons';
+	import { Flight, Hotel, Train, Insurance, Home, User, Document, DashboardIcon, PurchaseIcon, TransactionIcon } from '$lib/components/icons';
 	import * as m from '$lib/paraglide/messages.js';
 
 	const navbarItems = [
@@ -12,9 +12,9 @@
 			href: '/dashboard'
 		},
 		{
-			icon: PurchaseIcon,
-			label: "Purchase",
-			href: '/purchase'
+			icon: TransactionIcon,
+			label: "Transaction",
+			href: '/transaction'
 		},
 		{
 			icon: User,

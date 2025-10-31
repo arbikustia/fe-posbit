@@ -63,9 +63,7 @@ export function useCustomerPage() {
 
 	$effect(() => {
 		(async () => {
-			if (state.searchTerm) {
-				handleGetPaged(1, state.searchTerm);
-			}
+			handleGetPaged(1, state.searchTerm);
 		})();
 	});
 
@@ -120,7 +118,8 @@ export function useCustomerPage() {
 			is_member: values.is_member,
 			member_since: values.member_since,
 			member_code: values.member_code ?? '',
-			point: Number(values.point)
+			point: Number(values.point),
+			type: values.is_member ? 'PREMIUM' : 'REGULAR'
 		};
 
 		try {
@@ -132,7 +131,8 @@ export function useCustomerPage() {
 					is_member: body.is_member,
 					member_since: body.member_since,
 					member_code: body.member_code,
-					point: body.point
+					point: body.point,
+					type: values.is_member ? 'PREMIUM' : 'REGULAR'
 				});
 				toast.success('Customer updated successfully');
 			} else {

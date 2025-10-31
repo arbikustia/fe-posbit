@@ -22,6 +22,10 @@ export function useMasterItemPage() {
 		searchEl: HTMLInputElement | null;
 		showDeleteModal: boolean;
 		selectedItem: null | any;
+		currentPage: number;
+		pageSize: number;
+		totalPages: number;
+		totalCount: number;
 		isLoading: boolean;
 		searchTerm: string;
 	};
@@ -34,6 +38,10 @@ export function useMasterItemPage() {
 		searchEl: null,
 		showDeleteModal: false,
 		selectedItem: null,
+		currentPage: 1,
+		pageSize: 10,
+		totalPages: 0,
+		totalCount: 0,
 		isLoading: false,
 		searchTerm: ''
 	});
@@ -51,16 +59,31 @@ export function useMasterItemPage() {
 			open: true
 		}));
 	}
+	let debounceTimer: NodeJS.Timeout;
+
+	// 🔹 Efek: pencarian otomatis
+	$effect(() => {
+		(async () => {
+			await handleGetPaged(1, state.searchTerm);
+		})();
+	});
 
 	// 🔹 Pagination handler
-	async function handleGetPaged() {
+	async function handleGetPaged(pageNumber = state.currentPage, searchTerm = state.searchTerm) {
 		try {
 			state.isLoading = true;
 
-			const res: any = await itemService.getListitemToko();
+			const res: any = await itemService.getPagedItemToko({
+				PageNumber: pageNumber,
+				PageSize: state.pageSize,
+				SearchTerm: searchTerm
+			});
 
 			if (res?.data?.data) {
 				state.table = transformItemData(res.data.data);
+				state.currentPage = res.data.page_number ?? pageNumber;
+				state.totalPages = res.data.total_pages ?? 1;
+				state.totalCount = res.data.total_count ?? state.table.length;
 			} else {
 				state.table = [];
 			}
@@ -75,10 +98,25 @@ export function useMasterItemPage() {
 
 	// 🔹 Ganti halaman
 	async function handlePageChange(pageNum: number) {
-		await handleGetPaged();
+		if (pageNum < 1 || pageNum > state.totalPages) return;
+		state.currentPage = pageNum;
+		await handleGetPaged(pageNum);
 	}
 
+	// 🔹 Submit handler
+	async function handleSubmit() {
+		try {
+			const result = await validateForm({ update: true });
+			if (!result.valid) {
+				toast.error('Please check your input');
+				return;
+			}
 
+		} catch (err) {
+			console.error('Failed to save item:', err);
+			toast.error('Failed to save item');
+		}
+	}
 
 	onMount(() => {
 		handleGetPaged();
@@ -112,6 +150,7 @@ export function useMasterItemPage() {
 		state,
 		form,
 		errors,
+		handleSubmit,
 		handleGetPaged,
 		handlePageChange
 	};

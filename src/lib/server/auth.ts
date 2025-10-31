@@ -25,7 +25,7 @@ export function setAuthCookie(event: RequestEvent, response: any): void {
 
 	// Simpan access token ke cookie (JWT)
 	event.cookies.set(authTokenCookieKey, accessToken, {
-		httpOnly: true,
+		httpOnly: false,
 		path: '/',
 		secure: true,
 		sameSite: 'lax',
@@ -34,7 +34,7 @@ export function setAuthCookie(event: RequestEvent, response: any): void {
 
 	// Simpan refresh token ke cookie
 	event.cookies.set(refreshTokenCookieKey, refreshToken, {
-		httpOnly: true,
+		httpOnly: false,
 		path: '/',
 		secure: true,
 		sameSite: 'lax',

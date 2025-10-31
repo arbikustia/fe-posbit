@@ -158,7 +158,7 @@
 		{/if}
 
 		<!-- POINT -->
-		<Form.Field {form} name="point" class="mt-4">
+		<!-- <Form.Field {form} name="point" class="mt-4">
 			<Form.Control>
 				<Form.Label class="text-sm font-medium text-gray-700">Point</Form.Label>
 				<Input
@@ -170,7 +170,7 @@
 				/>
 			</Form.Control>
 			<Form.FieldErrors class="mt-1 text-sm text-red-600" />
-		</Form.Field>
+		</Form.Field> -->
 
 		<!-- BUTTONS -->
 		<div class="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">

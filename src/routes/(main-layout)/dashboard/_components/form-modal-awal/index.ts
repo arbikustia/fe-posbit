@@ -1,0 +1,1 @@
+export {default as FormModalAwal} from './form.svelte';

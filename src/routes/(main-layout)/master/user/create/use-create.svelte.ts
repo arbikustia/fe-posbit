@@ -134,9 +134,7 @@ export function useUserPage() {
 
 	$effect(() => {
 		(async () => {
-			if (state.searchTerm) {
 				handleGetPaged(1, state.searchTerm);
-			}
 		})();
 	});
 

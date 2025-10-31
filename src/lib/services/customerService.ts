@@ -24,7 +24,8 @@ export const customerService = {
         is_member: boolean,
         member_since: string | null | undefined,
         member_code: string | null | undefined,
-        point: number
+        point: number,
+        type:string
     }) => {
         return apiClient.post<RestApiResponse<unknown>>(
             `/customer`, body
@@ -37,7 +38,8 @@ export const customerService = {
         is_member: boolean,
         member_since: string | null | undefined,
         member_code: string | null | undefined,
-        point: number
+        point: number,
+        type: string
     }) => {
         return apiClient.put<RestApiResponse<unknown>>(
             `/customer/${body.id}`, body

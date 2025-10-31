@@ -8,9 +8,10 @@
 	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 	import type { PageData } from '../../$types';
 	import * as Alert from '$lib/components/ui/alert';
-	import  CircleAlert from '@lucide/svelte/icons/circle-alert';
+	import CircleAlert from '@lucide/svelte/icons/circle-alert';
 	import { fly, slide } from 'svelte/transition';
 	import Icon from '@iconify/svelte';
+	import { onMount } from 'svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -31,6 +32,25 @@
 	});
 
 	const { form: formData, enhance, submitting } = form;
+
+	onMount(() => {
+		try {
+			const el = document.documentElement;
+
+			// 🔹 Fullscreen untuk semua browser
+			if (el.requestFullscreen) {
+				el.requestFullscreen();
+			} else if ((el as any).webkitRequestFullscreen) {
+				// Safari / iPadOS / older WebKit
+				(el as any).webkitRequestFullscreen();
+			} else if ((el as any).msRequestFullscreen) {
+				// Old Microsoft Edge / IE
+				(el as any).msRequestFullscreen();
+			}
+		} catch (e) {
+			console.warn('Gagal masuk fullscreen:', e);
+		}
+	});
 </script>
 
 <div

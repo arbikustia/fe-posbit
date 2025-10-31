@@ -1,19 +1,74 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import type { UserInfo } from '$lib/types/UserLogin';
-	import type { SubmitFunction } from '@sveltejs/kit';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
-	import { goto } from '$app/navigation';
+	import Loader from '@lucide/svelte/icons/loader';
+
 	let { userInfo }: { userInfo: UserInfo | undefined } = $props();
 
-	const logout: SubmitFunction = () => {
-		return async ({ result }) => {
-			if (result.type === 'redirect') {
-				window.location.href = result.location;
+	// Gunakan $state() untuk reactive state
+	let isLoading = $state(false);
+
+	// Fungsi untuk menghapus cookies dari client side
+	const deleteClientCookies = () => {
+		document.cookie.split(';').forEach((cookie) => {
+			const name = cookie.split('=')[0].trim();
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.${window.location.hostname}`;
+		});
+
+		const cookiesToDelete = ['user_info', 'username', 'theme', 'language'];
+		cookiesToDelete.forEach((name) => {
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+		});
+	};
+
+	// Fungsi untuk menghapus semua storage
+	const clearAllStorage = () => {
+		localStorage.clear();
+		sessionStorage.clear();
+
+		if ('indexedDB' in window) {
+			indexedDB.databases?.().then((databases) => {
+				databases.forEach((db) => {
+					if (db.name) indexedDB.deleteDatabase(db.name);
+				});
+			});
+		}
+	};
+
+	// Logout function lengkap
+	const handleLogout = async () => {
+		if (isLoading) return;
+
+		try {
+			// Set loading state - ini akan trigger reaksi
+			isLoading = true;
+
+			// Beri sedikit delay agar UI sempat update
+			await new Promise((resolve) => setTimeout(resolve, 50));
+
+			// 1. Hapus client-side data
+			clearAllStorage();
+			deleteClientCookies();
+
+			// 2. Panggil server untuk hapus httpOnly cookies
+			const response = await fetch('/?/logout', {
+				method: 'POST'
+			});
+
+			if (response.ok) {
+				window.location.href = '/auth/login';
+			} else {
+				window.location.href = '/auth/login';
 			}
-		};
+		} catch (error) {
+			console.error('Logout error:', error);
+			window.location.href = '/auth/login';
+		}
+		// Hapus finally block karena redirect akan terjadi
 	};
 </script>
 
@@ -56,18 +111,18 @@
 			</div>
 		</DropdownMenu.Label>
 		<DropdownMenu.Separator />
-		<DropdownMenu.Group>
-			<!-- <DropdownMenu.Item onclick={() => goto('/profile')}>Profile</DropdownMenu.Item> -->
-			<DropdownMenu.Item>Settings</DropdownMenu.Item>
-		</DropdownMenu.Group>
-		<DropdownMenu.Separator />
-		<DropdownMenu.Item>
-			{#snippet child({ props })}
-				<form {...props} method="POST" use:enhance={logout} action="/api/logout">
-					<button type="submit" class="w-full text-left focus-visible:outline-hidden">Logout</button
-					>
-				</form>
-			{/snippet}
+
+		<DropdownMenu.Item disabled={isLoading}>
+			<button
+				onclick={handleLogout}
+				class="flex w-full items-center justify-between gap-2 p-2 text-left font-normal focus-visible:outline-hidden"
+				disabled={isLoading}
+			>
+				<span>{isLoading ? 'Logging out...' : 'Logout'}</span>
+				{#if isLoading}
+					<Loader class="size-4 animate-spin" />
+				{/if}
+			</button>
 		</DropdownMenu.Item>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

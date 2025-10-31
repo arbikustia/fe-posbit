@@ -135,9 +135,7 @@ export function usePointPage() {
 
     $effect(() => {
         (async () => {
-            if (state.searchTerm) {
-                handleGetPaged(1, state.searchTerm);
-            }
+            handleGetPaged(1, state.searchTerm);
         })();
     });
 

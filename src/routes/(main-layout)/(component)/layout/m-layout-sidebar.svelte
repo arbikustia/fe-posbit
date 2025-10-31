@@ -19,8 +19,12 @@
 	} from '$lib/components/icons';
 	import MLanguageSwitch from '../language-switch/m-language-switch.svelte';
 	import { themeConfigStore } from '$lib/stores/themeConfigStore';
+	import Loader from '@lucide/svelte/icons/loader';
 
 	let { open = $bindable() } = $props();
+
+	// State untuk loading logout
+	let isLoading = $state(false);
 
 	// Sidebar items with subpages
 	const sidebarItems = [
@@ -73,13 +77,96 @@
 		open = false;
 	}
 
+	// Fungsi untuk menghapus cookies dari client side
+	const deleteClientCookies = () => {
+		// Hapus cookies yang tidak httpOnly
+		document.cookie.split(';').forEach((cookie) => {
+			const name = cookie.split('=')[0].trim();
+			// Hapus dengan berbagai path dan domain
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.${window.location.hostname}`;
+		});
+
+		// Hapus specific cookies
+		const cookiesToDelete = ['user_info', 'username', 'theme', 'language'];
+		cookiesToDelete.forEach((name) => {
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+		});
+	};
+
+	// Fungsi untuk menghapus semua storage
+	const clearAllStorage = () => {
+		// Local Storage
+		localStorage.clear();
+
+		// Session Storage
+		sessionStorage.clear();
+
+		// IndexedDB (optional)
+		if ('indexedDB' in window) {
+			indexedDB.databases?.().then((databases) => {
+				databases.forEach((db) => {
+					if (db.name) indexedDB.deleteDatabase(db.name);
+				});
+			});
+		}
+	};
+
 	const logout: SubmitFunction = () => {
 		return async ({ result }) => {
-			if (result.type === 'redirect') {
-				window.location.href = result.location;
-				handleClose();
+			if (isLoading) return;
+			
+			try {
+				isLoading = true;
+				
+				// Beri sedikit delay agar UI sempat update
+				await new Promise(resolve => setTimeout(resolve, 50));
+				
+				// Hapus client-side data
+				clearAllStorage();
+				deleteClientCookies();
+				
+				if (result.type === 'redirect') {
+					window.location.href = result.location;
+					handleClose();
+				}
+			} catch (error) {
+				console.error('Logout error:', error);
+				if (result.type === 'redirect') {
+					window.location.href = result.location;
+				}
 			}
 		};
+	};
+
+	// Manual logout function sebagai fallback
+	const manualLogout = async () => {
+		if (isLoading) return;
+
+		try {
+			isLoading = true;
+			await new Promise(resolve => setTimeout(resolve, 50));
+
+			// Hapus client-side data
+			clearAllStorage();
+			deleteClientCookies();
+
+			// Panggil server logout
+			const response = await fetch('/api/logout', {
+				method: 'POST'
+			});
+
+			if (response.ok) {
+				window.location.href = '/auth/login';
+			} else {
+				window.location.href = '/auth/login';
+			}
+			handleClose();
+		} catch (error) {
+			console.error('Logout error:', error);
+			window.location.href = '/auth/login';
+		}
 	};
 
 	const logoSrc = $derived(themeSrcLogo($themeConfigStore.logoType));
@@ -174,11 +261,40 @@
 					<div class="space-y-2 p-2">
 						<!-- <MLanguageSwitch /> -->
 						<!-- <ThemeCostumizer /> -->
-						<form method="POST" use:enhance={logout} action="/api/logout">
-							<Button type="submit" variant="outline" class="mt-5 w-full text-red-500"
-								>Logout</Button
+						
+						<!-- Method 1: Form dengan loading -->
+						<!-- <form method="POST" use:enhance={logout} action="/api/logout" class="w-full">
+							<Button 
+								type="submit" 
+								variant="outline" 
+								class="mt-5 w-full text-red-500 flex items-center justify-center gap-2"
+								disabled={isLoading}
 							>
-						</form>
+								{#if isLoading}
+									<Loader class="h-4 w-4 animate-spin" />
+									<span>Logging out...</span>
+								{:else}
+									<span>Logout</span>
+								{/if}
+							</Button>
+						</form> -->
+
+						<!-- Method 2: Atau gunakan button manual -->
+						
+						<Button 
+							variant="outline" 
+							class="mt-5 w-full text-red-500 flex items-center justify-center gap-2"
+							onclick={manualLogout}
+							disabled={isLoading}
+						>
+							{#if isLoading}
+								<Loader class="h-4 w-4 animate-spin" />
+								<span>Logging out...</span>
+							{:else}
+								<span>Logout</span>
+							{/if}
+						</Button>
+						
 					</div>
 				</div>
 			</div>

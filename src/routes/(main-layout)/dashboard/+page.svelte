@@ -8,22 +8,35 @@
 	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
 	import dayjs from 'dayjs';
 	import { useDashboardPage } from '../dashboard/_components/use-dashboard-page.svelte';
-	// import * as Popover from '$lib/components/ui/popover/index.js';
+	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { onMount } from 'svelte';
+	import { modalService } from '@/services/modalService';
+	import { FormModalAwal } from './_components/form-modal-awal';
+	
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
 	// ✅ Ambil semua state & handler langsung dari useDashboardPage
 	const { state, handleGetSummary, handleGetChart } = useDashboardPage();
-
+	let popoverOpen = false;
+	
 	// ✅ Ubah tanggal → update di state & fetch ulang data
 	function handleDateChange(v: any) {
+		console.log('Date changed:', v);
+		
+		// Cek apakah start dan end sudah terisi
 		if (v?.start && v?.end) {
+			// Update state dengan tanggal baru
 			state.startDate = dayjs(v.start.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
 			state.endDate = dayjs(v.end.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
 
-			// Fetch ulang data dari dashboard service
+			console.log('Fetching data for:', state.startDate, state.endDate);
+
+			// Fetch ulang data
 			handleGetSummary(state.startDate, state.endDate);
 			handleGetChart(state.startDate, state.endDate, state.filter);
+
+			// Tutup Popover otomatis setelah end date dipilih
+			popoverOpen = false;
 		}
 	}
 
@@ -35,25 +48,17 @@
 		);
 	}
 
-onMount(() => {
-	try {
-		const el = document.documentElement;
+	let showModalAwal = false;
 
-		// 🔹 Fullscreen untuk semua browser
-		if (el.requestFullscreen) {
-			el.requestFullscreen();
-		} else if ((el as any).webkitRequestFullscreen) {
-			// Safari / iPadOS / older WebKit
-			(el as any).webkitRequestFullscreen();
-		} else if ((el as any).msRequestFullscreen) {
-			// Old Microsoft Edge / IE
-			(el as any).msRequestFullscreen();
-		}
-	} catch (e) {
-		console.warn('Gagal masuk fullscreen:', e);
-	}
-});
-
+	onMount(() => {
+		modalService.getStatusModalAwal()
+			.then((res: any) => {
+				if (res.data?.data == null) {
+					showModalAwal = true;
+				}
+				console.log(res.data,'ofofo')
+			});
+	});
 </script>
 
 <svelte:head>
@@ -64,7 +69,7 @@ onMount(() => {
 	<div class="@container/main flex flex-1 flex-col gap-4">
 		<!-- 🔹 Kalender -->
 		<div class="grid max-w-65 gap-2">
-			<!-- <Popover.Root>
+			<Popover.Root bind:open={popoverOpen}>
 				<Popover.Trigger class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}>
 					<CalendarIcon class="mr-2 size-4" />
 					{formatDateText()}
@@ -72,7 +77,7 @@ onMount(() => {
 				<Popover.Content class="w-auto p-0" align="start">
 					<RangeCalendar
 						numberOfMonths={2}
-						onchange={handleDateChange}
+						onValueChange={handleDateChange}
 						value={{
 							start: new CalendarDate(
 								Number(dayjs(state.startDate).format('YYYY')),
@@ -87,13 +92,16 @@ onMount(() => {
 						}}
 					/>
 				</Popover.Content>
-			</Popover.Root> -->
+			</Popover.Root>
 		</div>
 
 		<!-- 🔹 Konten utama -->
 		<div class="flex flex-col gap-4 md:gap-6">
 			<HighlightCard {state} />
 			<ChartVisitors {state} />
+			{#if showModalAwal}
+				<FormModalAwal type="create" {showModalAwal} />
+			{/if}
 		</div>
 	</div>
 </div>

@@ -19,7 +19,7 @@ export const userService = {
 		return response.data;
 	},
 
-	getPaged: (params: { PageNumber: number, PageSize: number, SearchTerm: string }) => {
+	getPaged: (params: { PageNumber: number, PageSize: number, SearchTerm?: string }) => {
 		return apiClient.get<RestApiResponse<unknown>>(
 			`/users/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
 		);
