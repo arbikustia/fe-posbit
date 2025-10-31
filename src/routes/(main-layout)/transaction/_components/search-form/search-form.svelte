@@ -87,8 +87,8 @@
 			subtotal += total;
 
 			// Format nama agar rapi (maks 18 karakter)
-			const nama = String(name).substring(0, 11).padEnd(5, ' ');
-			const hrg = String(harga_jual).padStart(0, ' ');
+			const nama = String(name).substring(0, 11).padEnd(0, '');
+			const hrg = String(harga_jual).padStart(0, '');
 
 			nota += `${nama}                  ${hrg}   1\n`;
 		}
@@ -107,12 +107,13 @@
 		nota += '--------------------------------\n';
 		nota += `Payment: ${pageState.paymentMethod}\n`;
 		nota += '--------------------------------\n';
-		nota += 'Terima kasih telah berbelanja!\n';
-		nota += '                               \n';
 		nota += '         DA.ALUS HIJAB         \n';
+		nota += '        IG @daalushijab		 \n';
+		nota += '        www.daalushijab.id        \n';
+		nota += '                               \n';
+		nota += 'Terima kasih telah berbelanja!\n';
 		nota += '*** Barang yang sudah dibeli ***\n';
 		nota += '*** tidak dapat dikembalikan ***\n';
-		nota += 'www.daalushijab.id | IG @daalushijab\n\n';
 
 		// === CETAK MENGGUNAKAN RAWBT (BLUETOOTH THERMAL) ===
 		try {
