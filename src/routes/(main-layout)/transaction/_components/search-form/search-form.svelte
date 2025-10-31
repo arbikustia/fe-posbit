@@ -86,11 +86,31 @@
 			const total = harga_jual * qty;
 			subtotal += total;
 
-			// Format nama agar rapi (maks 18 karakter)
-			const nama = String(name).substring(0, 11).padEnd(0, '');
-			const hrg = String(harga_jual).padStart(0, '');
+			// Lebar maksimum kertas thermal (misal 32 karakter total)
+			const namaCol = 12; // lebar kolom nama
+			const hargaCol = 8;
+			const qtyCol = 3;
+			const totalCol = 9;
 
-			nota += `${nama}                  ${hrg}   1\n`;
+			// Bagi nama jadi beberapa baris (setiap baris maks 12 karakter)
+			const namaPotong = [];
+			let sisa = String(name);
+
+			while (sisa.length > 0) {
+				namaPotong.push(sisa.substring(0, namaCol));
+				sisa = sisa.substring(namaCol);
+			}
+
+			// Baris pertama (nama + angka)
+			const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
+			const hrg = String(harga_jual.toLocaleString('id-ID')).padStart(hargaCol, ' ');
+			const qtyStr = String(qty).padStart(qtyCol, ' ');
+			nota += `${namaBaris1}${hrg}${qtyStr}\n`;
+
+			// Jika nama lebih panjang, cetak sisanya di bawah (hanya nama)
+			for (let i = 1; i < namaPotong.length; i++) {
+				nota += `${namaPotong[i]}\n`;
+			}
 		}
 
 		nota += '--------------------------------\n';
@@ -109,9 +129,8 @@
 		nota += '--------------------------------\n';
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '        IG @daalushijab		 \n';
-		nota += '        www.daalushijab.id        \n';
-		nota += '                               \n';
-		nota += 'Terima kasih telah berbelanja!\n';
+		nota += '      www.daalushijab.id        \n\n';
+		nota += ' Terima kasih telah berbelanja! \n';
 		nota += '*** Barang yang sudah dibeli ***\n';
 		nota += '*** tidak dapat dikembalikan ***\n';
 
