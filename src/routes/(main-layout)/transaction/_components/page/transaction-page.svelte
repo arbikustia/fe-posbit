@@ -46,7 +46,7 @@
 <div class="flex gap-4">
 	<div class="mx-auto w-full max-w-7xl">
 		<!-- TABLE -->
-		<div class="overflow-x-auto overflow-y-scroll h-96 rounded-lg border border-gray-200 shadow-sm">
+		<div class=" h-96 rounded-lg border border-gray-200 shadow-sm">
 			<table class="min-w-full divide-y divide-gray-200">
 				<thead class="bg-gray-100 sticky top-0 z-10">
 					<tr class="text-left text-sm font-medium text-gray-700">
@@ -60,7 +60,7 @@
 					</tr>
 				</thead>
 
-				<tbody class="divide-y divide-gray-200 bg-white">
+				<tbody class="divide-y overflow-y-auto divide-gray-200 ">
 					{#if state.itemTable.length === 0}
 						<tr>
 							<td colspan="7" class="py-4 text-center text-sm text-gray-500">

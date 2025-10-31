@@ -13,6 +13,7 @@
 	import * as Command from '$lib/components/ui/command/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
+	import { saleService } from '@/services/saleService';
 
 	let { variant = 'default', state: pageState = $bindable() }: any = $props();
 	let timer: NodeJS.Timeout | null = null;
@@ -54,8 +55,8 @@
 		const alamat = 'Jl. Melati No. 45, Jakarta';
 		const telp = 'Telp: 0812-9876-5432';
 		const tanggal = pageState.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
-		const kasir = pageState.username || 'Admin';
-		const customer = pageState.customerName || 'Guest';
+		const kasir = pageState.username || '';
+		const customer = pageState.customerName || '';
 		const member = pageState?.customerData !== null ? 'PREMIUM' : 'REGULAR';
 		const point = pageState?.customerData?.point || 0;
 
@@ -105,7 +106,7 @@
 			const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
 			const hrg = String(harga_jual.toLocaleString('id-ID')).padStart(hargaCol, ' ');
 			const qtyStr = String(qty).padStart(qtyCol, ' ');
-			nota += `${namaBaris1}        ${hrg}${qtyStr}\n`;
+			nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
 
 			// Jika nama lebih panjang, cetak sisanya di bawah (hanya nama)
 			for (let i = 1; i < namaPotong.length; i++) {
@@ -129,7 +130,7 @@
 		nota += '--------------------------------\n';
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '        IG @daalushijab		 \n';
-		nota += '       www.daalushijab.id        \n\n';
+		nota += '       www.daalushijab.id        \n';
 		nota += ' Terima kasih telah berbelanja! \n';
 		nota += '*** Barang yang sudah dibeli ***\n';
 		nota += '*** tidak dapat dikembalikan ***\n';
@@ -149,9 +150,32 @@
 			...pageState,
 			time: pageState.currentTime
 		});
+		saleService
+			.create({
+				customer_id: pageState?.customerData?.id || '',
+				customer_name: pageState.customerName || '',
+				phone: pageState.customerNumber || '',
+				is_member: pageState?.customerData !== null ? true : false,
+				cashier_id: pageState.username,
+				total_amount: pageState.totalAll || 0,
+				discount_amount: pageState.discount || 0,
+				final_amount: pageState.grandTotal || 0,
+				point_used: 0,
+				point_earned: 0,
+				payment_method: pageState.paymentMethod || 'CASH',
+				amount_receive: pageState.amountPaid || 0,
+				chance: pageState.amountPaid - pageState.grandTotal,
+				details: pageState.itemTable.map((item: any) => ({
+					barcode_id: item.barcode_id,
+					item_id: item.item_id,
+					qty: 1
+				}))
+			})
+			.then((res) => {
+				printThermalNota();
+			});
 
 		// Panggil fungsi print nota
-		printThermalNota();
 	}
 
 	// 🔹 Fungsi format ke IDR
