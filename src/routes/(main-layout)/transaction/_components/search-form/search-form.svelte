@@ -7,11 +7,14 @@
 	import { goto } from '$app/navigation';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import dayjs from 'dayjs';
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, tick } from 'svelte';
 	import { useTransactionForm } from '../../form.svelte';
 	import { browser } from '$app/environment';
+	import * as Command from '$lib/components/ui/command/index.js';
+	import * as Popover from '$lib/components/ui/popover/index.js';
+	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 
-	let { variant = 'default', state = $bindable() }: any = $props();
+	let { variant = 'default', state: pageState = $bindable() }: any = $props();
 	let timer: NodeJS.Timeout | null = null;
 
 	function getCookie(name: string) {
@@ -23,9 +26,9 @@
 	}
 
 	onMount(() => {
-		state.username = getCookie('username') || 'superadmin';
+		pageState.username = getCookie('username') || 'superadmin';
 		timer = setInterval(() => {
-			state.currentTime = dayjs().format('DD-MM-YYYY HH:mm:ss');
+			pageState.currentTime = dayjs().format('DD-MM-YYYY HH:mm:ss');
 		}, 1000);
 	});
 	onDestroy(() => timer && clearInterval(timer));
@@ -40,12 +43,12 @@
 		if (!browser) return;
 
 		// === DATA NOTA ===
-		const toko = 'DA.ALUS HIJAB';
-		const alamat = 'Jl. Melati No. 45, Jakarta';
-		const telp = 'Telp: 0812-9876-5432';
-		const tanggal = state.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
-		const kasir = state.username || 'Admin';
-		const customer = state.customerName || 'Guest';
+		const toko = '         DA.ALUS HIJAB            ';
+		const alamat = '         Jl. Melati No. 45, Jakarta            ';
+		const telp = '         Telp: 0812-9876-5432            ';
+		const tanggal = pageState.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
+		const kasir = pageState.username || 'Admin';
+		const customer = pageState.customerName || 'Guest';
 		const member = '2023';
 		const point = '120';
 
@@ -80,17 +83,17 @@
 		}
 
 		nota += '--------------------------------\n';
-		const diskonPersen = state.discount || 0;
+		const diskonPersen = pageState.discount || 0;
 		const diskonNilai = (subtotal * diskonPersen) / 100;
 		const totalBayar = subtotal - diskonNilai;
 
 		nota += `Subtotal    : Rp${subtotal.toLocaleString('id-ID')}\n`;
 		nota += `Diskon ${diskonPersen}% : Rp${diskonNilai.toLocaleString('id-ID')}\n`;
 		nota += `TOTAL BAYAR : Rp${totalBayar.toLocaleString('id-ID')}\n`;
-		nota += `Bayar       : Rp${state.amountPaid.toLocaleString('id-ID')}\n`;
-		nota += `Kembali     : Rp${(state.amountPaid - totalBayar).toLocaleString('id-ID')}\n`;
+		nota += `Bayar       : Rp${pageState.amountPaid.toLocaleString('id-ID')}\n`;
+		nota += `Kembali     : Rp${(pageState.amountPaid - totalBayar).toLocaleString('id-ID')}\n`;
 		nota += '--------------------------------\n';
-		nota += `Payment: ${state.paymentMethod}\n`;
+		nota += `Payment: ${pageState.paymentMethod}\n`;
 		nota += '--------------------------------\n';
 		nota += 'Terima kasih telah berbelanja!\n';
 		nota += 'DA.ALUS HIJAB\n';
@@ -109,8 +112,8 @@
 
 	function handlePurchase() {
 		console.log('Data Transaksi:', {
-			...state,
-			time: state.currentTime
+			...pageState,
+			time: pageState.currentTime
 		});
 
 		// Panggil fungsi print nota
@@ -132,36 +135,55 @@
 	function handleAmountInput(event: Event) {
 		const target = event.target as HTMLInputElement;
 		const rawValue = target.value.replace(/[^\d]/g, '');
-		state.amountPaid = Number(rawValue || 0);
+		pageState.amountPaid = Number(rawValue || 0);
 		target.value = formatIDR(rawValue);
+	}
+
+	let triggerRef = $state<HTMLButtonElement>(null!);
+	const itemOptions = $derived(pageState.listItem ?? []);
+	let open = $state(false);
+
+	function toggleItem(itemValue: string) {
+		console.log(itemValue, 'item value');
+		pageState.searchProduct = itemValue;
+		closeAndFocusTrigger()
+	}
+
+	function closeAndFocusTrigger() {
+		open = false;
+		tick().then(() => triggerRef?.focus());
 	}
 </script>
 
-<Select.Root type="single" bind:value={state.paymentMethod} bind:open={state.paymentMethodeOpen}>
+<Select.Root
+	type="single"
+	bind:value={pageState.paymentMethod}
+	bind:open={pageState.paymentMethodeOpen}
+>
 	<section class="w-full">
 		<Card.Root>
-			<Card.Content class="flex  w-full flex-col items-start space-y-2">
+			<Card.Content class="flex  w-full flex-col items-start space-y-4">
 				<div class="flex w-full flex-1 grid-cols-5 flex-row items-end justify-start gap-5">
 					<div class="flex flex-col items-start justify-start gap-1">
 						<div
 							class="text-primary bg-primary/10 flex h-9 w-fit items-center gap-2 rounded-md p-1 px-4 text-sm font-medium"
 						>
 							<Icon icon="solar:user-linear" width="14" height="14" class="text-primary" />
-							{state.username}
+							{pageState.username}
 						</div>
 					</div>
 					<div class="flex w-48 flex-col items-start justify-center gap-1">
 						<div
 							class="text-primary bg-primary/10 flex h-9 w-full items-center justify-center rounded-md p-1 px-4 text-center text-sm font-medium"
 						>
-							{state.currentTime}
+							{pageState.currentTime}
 						</div>
 					</div>
 					<div class="flex flex-col items-start justify-start gap-1">
 						<Select.Trigger
 							class="text-primary bg-primary/10 relative flex h-auto w-fit cursor-pointer items-center space-x-2 rounded-md border-none p-1 px-4 text-sm font-medium shadow-none"
 						>
-							<span>{paymentOptions.find((p) => p.value === state.paymentMethod)?.label}</span>
+							<span>{paymentOptions.find((p) => p.value === pageState.paymentMethod)?.label}</span>
 						</Select.Trigger>
 						<Select.Content>
 							<Select.Group>
@@ -170,6 +192,54 @@
 								{/each}
 							</Select.Group>
 						</Select.Content>
+					</div>
+					<div class="flex flex-col w-72 items-start justify-start gap-1">
+						<Popover.Root bind:open>
+							<Popover.Trigger bind:ref={triggerRef} class="h-fit w-full">
+								{#snippet child({ props })}
+									<Button
+										variant="outline"
+										class="min-h-[2.5rem] w-full justify-between text-left font-normal"
+										{...props}
+										role="combobox"
+									>
+										<div class="flex flex-1 flex-wrap gap-1.5">
+											<span class="text-muted-foreground">Search item...</span>
+										</div>
+										<ChevronsUpDownIcon class="ml-2 size-4 shrink-0 opacity-50" />
+									</Button>
+								{/snippet}
+							</Popover.Trigger>
+
+							<Popover.Content class="w-[300px] p-0">
+								<Command.Root>
+									<Command.Input placeholder="Search items..." class="h-9" />
+									<Command.List>
+										<Command.Empty>No items found.</Command.Empty>
+										<Command.Group>
+											{#each itemOptions as item}
+												<Command.Item
+													value={item.label}
+													keywords={[item.label, item.value]}
+													onSelect={() => toggleItem(item.value)}
+													class="flex items-center justify-between"
+												>
+													<div class="flex items-center gap-2">
+														<div class="flex flex-col">
+															<span class="text-xs font-medium">{item.label}</span>
+															<span class="text-muted-foreground text-xs">
+																{item.value}
+															</span>
+														</div>
+													</div>
+													<span class="text-muted-foreground text-xs">Stock: {item.stock}</span>
+												</Command.Item>
+											{/each}
+										</Command.Group>
+									</Command.List>
+								</Command.Root>
+							</Popover.Content>
+						</Popover.Root>
 					</div>
 				</div>
 
@@ -180,9 +250,9 @@
 						<div class="w-full rounded-lg border border-gray-300 p-1">
 							<Input
 								type="tel"
-								bind:value={state.customerNumber}
+								bind:value={pageState.customerNumber}
 								placeholder="Phone Number"
-								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm font-medium shadow-none transition outline-none"
+								class="hover:bg-primary/5 placeholder:text-gray-400 placeholder:text-xs h-10 w-full rounded-md border-none px-3 py-2 text-sm font-medium shadow-none transition outline-none"
 							/>
 						</div>
 					</div>
@@ -191,11 +261,11 @@
 						<div class="text-sm font-medium text-gray-500">Customer Name</div>
 						<div class="relative w-full rounded-lg border border-gray-300 p-1">
 							<Input
-								bind:value={state.customerName}
+								bind:value={pageState.customerName}
 								placeholder="Customer Name"
-								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 pr-8 text-sm font-medium shadow-none transition outline-none"
+								class="hover:bg-primary/5 placeholder:text-gray-400 placeholder:text-xs h-10 w-full rounded-md border-none px-3 py-2 pr-8 text-sm font-medium shadow-none transition outline-none"
 							/>
-							{#if state.isFetchingCustomer}
+							{#if pageState.isFetchingCustomer}
 								<Icon
 									icon="eos-icons:loading"
 									class="absolute top-1/2 right-3 -translate-y-1/2 animate-spin text-gray-400"
@@ -214,9 +284,9 @@
 								inputmode="numeric"
 								pattern="[0-9]*"
 								oninput={handleAmountInput}
-								value={formatIDR(state.amountPaid)}
+								value={formatIDR(pageState.amountPaid)}
 								placeholder="Amount Received"
-								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-left text-sm font-medium shadow-none transition outline-none"
+								class="hover:bg-primary/5 placeholder:text-gray-400 placeholder:text-xs h-10 w-full rounded-md border-none px-3 py-2 text-left text-sm font-medium shadow-none transition outline-none"
 							/>
 						</div>
 					</div>
@@ -226,9 +296,9 @@
 						<div class="w-full rounded-lg border border-gray-300 p-1">
 							<Input
 								type="number"
-								bind:value={state.discount}
+								bind:value={pageState.discount}
 								placeholder="Discount (%)"
-								class="hover:bg-primary/5 h-10 w-full border-none px-3 py-2 text-sm font-medium shadow-none transition outline-none"
+								class="hover:bg-primary/5 placeholder:text-gray-400 placeholder:text-xs h-10 w-full border-none px-3 py-2 text-sm font-medium shadow-none transition outline-none"
 							/>
 						</div>
 					</div>
@@ -237,7 +307,7 @@
 						<div class="text-sm font-medium text-gray-500">Scan Item</div>
 						<div class="w-full rounded-lg border border-gray-300 p-1">
 							<Input
-								bind:value={state.searchProduct}
+								bind:value={pageState.searchProduct}
 								placeholder="Scan Item"
 								class="hover:bg-primary/5 h-10 w-full rounded-md border-none px-3 py-2 text-sm font-medium shadow-none transition outline-none"
 							/>

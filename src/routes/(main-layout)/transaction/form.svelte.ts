@@ -21,7 +21,8 @@ export function useTransactionForm() {
 		amountPaid: null,
 		totalAll: 0,
 		isFetchingCustomer: false,
-		
+		listItem: [],
+
 		// 🔹 Untuk auto-scan
 		scanBuffer: '',
 		scanInputRef: null as HTMLInputElement | null
@@ -144,6 +145,37 @@ export function useTransactionForm() {
 		}
 	}
 
+	// ✅ FETCH DATA ITEM GUDANG
+	async function handleGetListItemGudang() {
+		try {
+			state.isLoading = true;
+			const res: any = await itemService.getListitemBarcode({
+				PageNumber: 1,
+				PageSize: 10,
+				SearchTerm: ""
+			});
+
+			if (res?.data?.data) {
+				// Map data API ke bentuk yang cocok dipakai di komponen (value, label, stock, price)
+				state.listItem = res.data.data.map((item: any, index: number) => ({
+					value: item.barcode_id ?? `item-${index}`,
+					label: item.name ?? 'Unknown Item',
+					stock: item.label_name ?? 0,
+					price: item.harga_beli ?? 0
+				}));
+			} else {
+				state.listItem = [];
+			}
+		} catch (err) {
+			console.error('Failed to fetch gudang items:', err);
+			toast.error('Failed to load items from gudang');
+			state.listItem = [];
+		} finally {
+			state.isLoading = false;
+		}
+	}
+
+
 	// 🔹 Effect: Fetch customer data jika nomor diinput
 	$effect(() => {
 		(async () => {
@@ -172,12 +204,19 @@ export function useTransactionForm() {
 		})();
 	});
 
+	$effect(() => {
+		(async () => {
+			handleSearchProduct(state.searchProduct);
+		})()
+	})
+
 	onMount(() => {
+		handleGetListItemGudang();
 		console.log('🟢 useTransactionForm mounted');
-		
+
 		// Tambahkan global keyboard listener
 		document.addEventListener('keydown', handleGlobalKeydown);
-		
+
 		return () => {
 			document.removeEventListener('keydown', handleGlobalKeydown);
 			if (scanTimer) clearTimeout(scanTimer);
