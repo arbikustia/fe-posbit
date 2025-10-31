@@ -56,8 +56,8 @@
 		const tanggal = pageState.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
 		const kasir = pageState.username || 'Admin';
 		const customer = pageState.customerName || 'Guest';
-		const member = pageState.customerData !== null ? 'PREMIUM' :  'REGULAR';
-		const point = pageState.customerData.point || '0';
+		const member = pageState?.customerData !== null ? 'PREMIUM' : 'REGULAR';
+		const point = pageState?.customerData?.point || 0;
 
 		// Data items - sesuaikan dengan data cart Anda
 		// const items = [
@@ -98,11 +98,12 @@
 		const diskonNilai = (subtotal * diskonPersen) / 100;
 		const totalBayar = subtotal - diskonNilai;
 
-		nota += `Subtotal    :Rp ${pageState.totalAll.toLocaleString('id-ID')}\n`;
-		nota += `Diskon      :Rp ${pageState.discount}%\n`;
-		nota += `TOTAL BAYAR :Rp ${pageState.grandTotal.toLocaleString('id-ID')}\n`;
-		nota += `Bayar       :Rp ${pageState.amountPaid.toLocaleString('id-ID')}\n`;
-		nota += `Kembali     :Rp ${pageState.amountPaid ? (pageState.amountPaid || 0) - (pageState.grandTotal || 0).toLocaleString('id-ID') : 0}\n`;
+		nota += `Subtotal    :Rp${pageState.totalAll?.toLocaleString('id-ID')}\n`;
+		nota += `Diskon      :${pageState.discount || 0}%\n`;
+		nota += `Total Bayar :Rp${pageState.grandTotal?.toLocaleString('id-ID')}\n`;
+		nota += `Bayar       :Rp${pageState.amountPaid?.toLocaleString('id-ID')}\n`;
+		nota += `Kembali     :Rp${((pageState.amountPaid || 0) - (pageState.grandTotal || 0))?.toLocaleString('id-ID')}\n`;
+
 		nota += '--------------------------------\n';
 		nota += `Payment: ${pageState.paymentMethod}\n`;
 		nota += '--------------------------------\n';
