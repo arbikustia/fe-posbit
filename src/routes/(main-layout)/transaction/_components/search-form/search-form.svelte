@@ -87,8 +87,8 @@
 			subtotal += total;
 
 			// Format nama agar rapi (maks 18 karakter)
-			const nama = String(name).substring(0, 11).padEnd(11, ' ');
-			const hrg = String(harga_jual).padStart(6, ' ');
+			const nama = String(name).substring(0, 11).padEnd(5, ' ');
+			const hrg = String(harga_jual).padStart(0, ' ');
 
 			nota += `${nama}                  ${hrg}   1\n`;
 		}
@@ -98,11 +98,11 @@
 		const diskonNilai = (subtotal * diskonPersen) / 100;
 		const totalBayar = subtotal - diskonNilai;
 
-		nota += `Subtotal    :${formatCurrency(pageState.totalAll)}\n`;
-		nota += `Diskon      :${pageState.discount}%\n`;
-		nota += `TOTAL BAYAR :${formatCurrency(pageState.grandTotal)}\n`;
-		nota += `Bayar       :${formatCurrency(pageState.amountPaid)}\n`;
-		nota += `Kembali     :${pageState.amountPaid ? formatCurrency((pageState.amountPaid || 0) - (pageState.grandTotal || 0)) : 0}\n`;
+		nota += `Subtotal    :Rp ${pageState.totalAll.toLocaleString('id-ID')}\n`;
+		nota += `Diskon      :Rp ${pageState.discount}%\n`;
+		nota += `TOTAL BAYAR :Rp ${pageState.grandTotal.toLocaleString('id-ID')}\n`;
+		nota += `Bayar       :Rp ${pageState.amountPaid.toLocaleString('id-ID')}\n`;
+		nota += `Kembali     :Rp ${pageState.amountPaid ? (pageState.amountPaid || 0) - (pageState.grandTotal || 0).toLocaleString('id-ID') : 0}\n`;
 		nota += '--------------------------------\n';
 		nota += `Payment: ${pageState.paymentMethod}\n`;
 		nota += '--------------------------------\n';
@@ -110,7 +110,8 @@
 		nota += '                               \n';
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '*** Barang yang sudah dibeli ***\n';
-		nota += '*** tidak dapat dikembalikan ***\n\n\n\n';
+		nota += '*** tidak dapat dikembalikan ***\n';
+		nota += 'www.daalushijab.id | IG @daalushijab\n\n';
 
 		// === CETAK MENGGUNAKAN RAWBT (BLUETOOTH THERMAL) ===
 		try {
