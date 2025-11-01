@@ -25,6 +25,10 @@
 		);
 	});
 
+	$effect(() => {
+		pageState.discountNominal = (pageState.totalAll || 0) * ((pageState.discount || 0) / 100);
+	});
+
 	// 🔹 Hitung grand total mengikuti diskon persen
 	$effect(() => {
 		const discountRate = (pageState.discount || 0) / 100;
@@ -129,6 +133,13 @@
 				<div class="flex justify-between">
 					<span class="font-medium text-gray-700">Discount (%)</span>
 					<span class="font-semibold text-red-600">{pageState.discount || 0}%</span>
+				</div>
+
+				<div class="flex justify-between">
+					<span class="font-medium text-gray-700">Discount (Rp)</span>
+					<span class="font-semibold text-red-600"
+						>{formatCurrency(pageState.discountNominal || 0)}</span
+					>
 				</div>
 
 				<hr class="my-3 border-gray-200" />

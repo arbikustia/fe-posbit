@@ -22,6 +22,7 @@ export function useTransactionForm() {
 		totalAll: 0,
 		isFetchingCustomer: false,
 		listItem: [],
+		isPurchasing: false,
 
 		// 🔹 Untuk auto-scan
 		scanBuffer: '',
@@ -190,19 +191,28 @@ export function useTransactionForm() {
 						state.customerName = res.data.data.customer_name ?? '';
 						console.log('✅ Customer found:', state.customerData);
 					} else {
+						// 🔹 Reset jika customer tidak ditemukan
 						state.customerData = null;
+						state.customerName = '';
 						toast.error('Customer not found');
 					}
 				} catch (err) {
 					console.error('❌ Error fetching customer:', err);
+					// 🔹 Reset jika error
 					state.customerData = null;
+					state.customerName = '';
 					toast.error('Customer not found');
 				} finally {
 					state.isFetchingCustomer = false;
 				}
+			} else {
+				// 🔹 Reset jika input kosong
+				state.customerData = null;
+				state.customerName = '';
 			}
 		})();
 	});
+
 
 	$effect(() => {
 		(async () => {

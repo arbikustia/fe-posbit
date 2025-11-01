@@ -81,19 +81,26 @@ export function usePurchasePage() {
     function transformPurchaseData(apiData: any[]) {
         return apiData.map((item, index) => ({
             no: index + 1,
+            id: item.id ?? '-',
             inv_number: item.inv_number ?? '-',
-            customer_name: item.customer?.customer_name ?? '-',
-            phone: item.customer?.phone ?? '-',
+            person_id: item.person_id ?? '-',
+            customer_name: `${item.person?.firstname ?? '-'} ${item.person?.lastname ?? ''}`.trim(),
+            customer_code: item.person?.supliercustomerid ?? '-',
+            telephone: item.person?.telephone ?? '-',
+            mobile: item.person?.mobile ?? '-',
+            person_type: item.person?.type ?? 'Customer',
             status: item.status ?? '-',
             total_amount: item.total_amount ?? 0,
             final_amount: item.final_amount ?? 0,
             discount_amount: item.discount_amount ?? 0,
             payment_method: item.payment_method ?? '-',
             created_at: item.created_at ?? '-',
+            created_by: item.created_by ?? '-',
             purchase_order_details: item.purchase_order_details ?? [],
-            open: true // ✅ tampilkan action
+            open: true
         }));
     }
+
 
 
 

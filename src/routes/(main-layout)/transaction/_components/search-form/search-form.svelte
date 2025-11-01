@@ -14,6 +14,8 @@
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 	import { saleService } from '@/services/saleService';
+	import { toast } from 'svelte-sonner';
+	import { userService } from '@/services/userService';
 
 	let { variant = 'default', state: pageState = $bindable() }: any = $props();
 	let timer: NodeJS.Timeout | null = null;
@@ -145,18 +147,36 @@
 		}
 	}
 
+	let idCashier = $state('');
+
+	onMount(async () => {
+		await userService
+			.getPaged({
+				PageNumber: 1,
+				PageSize: 1000000,
+				SearchTerm: ''
+			})
+			.then((res: any) => {
+				let cashier = res.data.data.find((u: any) => u.username === pageState.username).id;
+				idCashier = cashier;
+			});
+	});
+
 	function handlePurchase() {
+		pageState.isLoading = true; // optional, spinner loading
+
 		console.log('Data Transaksi:', {
 			...pageState,
 			time: pageState.currentTime
 		});
+
 		saleService
 			.create({
-				customer_id: pageState?.customerData !== null ? pageState?.customerData?.id : null,
+				customer_id: pageState?.customerData?.id || null,
 				customer_name: pageState.customerName || '',
 				phone: pageState.customerNumber || '',
-				is_member: pageState?.customerData !== null ? true : false,
-				cashier_id: pageState.username,
+				is_member: !!pageState.customerData,
+				cashier_id: idCashier,
 				total_amount: pageState.totalAll || 0,
 				discount_amount: pageState.discount || 0,
 				final_amount: pageState.grandTotal || 0,
@@ -164,18 +184,35 @@
 				point_earned: 0,
 				payment_method: pageState.paymentMethod || 'CASH',
 				amount_receive: pageState.amountPaid || 0,
-				chance: pageState.amountPaid - pageState.grandTotal,
+				chance: (pageState.amountPaid || 0) - (pageState.grandTotal || 0),
 				details: pageState.itemTable.map((item: any) => ({
 					barcode_id: item.barcode_id,
 					item_id: item.item_id,
-					qty: 1
+					qty: item.qty || 1
 				}))
 			})
 			.then((res) => {
-				printThermalNota();
-			});
+				printThermalNota(); // cetak nota
 
-		// Panggil fungsi print nota
+				// 🔹 Reset semua data setelah purchase
+				pageState.customerName = '';
+				pageState.customerNumber = null;
+				pageState.customerData = null;
+				pageState.itemTable = [];
+				pageState.amountPaid = null;
+				pageState.totalAll = 0;
+				pageState.grandTotal = 0;
+				pageState.discount = 0;
+				pageState.searchProduct = '';
+				pageState.paymentMethod = 'CASH';
+
+				toast.success('Purchase completed and data cleared');
+			})
+			.catch((err) => {
+				console.error(err);
+				toast.error('Failed to complete purchase');
+			});
+		pageState.isLoading = false;
 	}
 
 	// 🔹 Fungsi format ke IDR
@@ -277,7 +314,7 @@
 										<Command.Group>
 											{#each itemOptions as item}
 												<Command.Item
-													value={item.label}
+													value={item.value}
 													keywords={[item.label, item.value]}
 													onSelect={() => toggleItem(item.value)}
 													class="flex items-center justify-between"
@@ -290,7 +327,7 @@
 															</span>
 														</div>
 													</div>
-													<span class="text-muted-foreground text-xs">Stock: {item.stock}</span>
+													<span class="text-muted-foreground text-xs">{item.stock}</span>
 												</Command.Item>
 											{/each}
 										</Command.Group>
@@ -374,11 +411,17 @@
 
 					<Button
 						onclick={handlePurchase}
+						disabled={pageState.isPurchasing}
 						class={cn('h-12 w-full flex-none text-lg', { 'min-h-11': variant === 'default' })}
 						size="lg"
 					>
-						<Icon icon="solar:printer-bold" width="20" height="20" class="mr-1" />
-						<span class="ml-1">Purchase</span>
+						{#if pageState.isPurchasing}
+							<Icon icon="eos-icons:loading" class="mr-2 animate-spin" width="18" height="18" />
+							<span>Processing...</span>
+						{:else}
+							<Icon icon="solar:printer-bold" width="20" height="20" class="mr-1" />
+							<span class="ml-1">Purchase</span>
+						{/if}
 					</Button>
 				</div>
 			</Card.Content>

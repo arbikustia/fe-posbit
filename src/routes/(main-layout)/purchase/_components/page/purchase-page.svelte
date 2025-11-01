@@ -114,54 +114,20 @@
 					<table class="min-w-full divide-y divide-gray-200">
 						<thead class="bg-gray-100">
 							<tr>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>No</th
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">No</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Invoice No</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Customer</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Status</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Final</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Discount</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Payment</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created By</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created At</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700"
+									>Order Details</th
 								>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Invoice No</th
-								>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Item ID</th
-								>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Customer ID</th
-								>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Point Used</th
-								>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Point Earned</th
-								>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Status</th
-								>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Total</th
-								>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Final</th
-								>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Discount</th
-								>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Payment</th
-								>
-								<th
-									class="px-3 py-2.5 text-center text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-									>Action</th
-								>
+								<th class="px-3 py-2.5 text-center text-xs font-medium text-gray-700">Action</th>
 							</tr>
 						</thead>
 
@@ -170,16 +136,71 @@
 								<tr class="hover:bg-gray-50">
 									<td class="px-3 py-2.5 text-xs text-gray-500">{row.no}</td>
 									<td class="px-3 py-2.5 text-xs">{row.inv_number}</td>
-									<td class="px-3 py-2.5 text-xs">{row.customer_name}</td>
-									<td class="px-3 py-2.5 text-xs">{row.phone}</td>
+									<td class="px-3 py-2.5 text-xs">
+										{#if row.person_id}
+											<Popover>
+												<PopoverTrigger
+													class="cursor-pointer text-xs text-start font-medium text-blue-500 underline hover:text-blue-600"
+												>
+													{row.customer_name}
+												</PopoverTrigger>
+
+												<PopoverContent
+													class="max-h-60 w-64 overflow-y-auto rounded-lg bg-white p-3 shadow-lg"
+												>
+													<p class="mb-2 text-sm font-semibold text-gray-700">Customer Details</p>
+
+													<table class="min-w-full text-xs">
+														<tbody>
+															<tr>
+																<td class="py-1 font-medium text-gray-700">ID</td>
+																<td class="py-1 text-gray-700">{row.person_id}</td>
+															</tr>
+															<tr>
+																<td class="py-1 font-medium text-gray-700">First Name</td>
+																<td class="py-1 text-gray-700">{row.customer_name.split(' ')[0]}</td
+																>
+															</tr>
+															<tr>
+																<td class="py-1 font-medium text-gray-700">Last Name</td>
+																<td class="py-1 text-gray-700"
+																	>{row.customer_name.split(' ').slice(1).join(' ')}</td
+																>
+															</tr>
+															<tr>
+																<td class="py-1 font-medium text-gray-700">Customer Code</td>
+																<td class="py-1 text-gray-700">{row.customer_code}</td>
+															</tr>
+															<tr>
+																<td class="py-1 font-medium text-gray-700">Telephone</td>
+																<td class="py-1 text-gray-700">{row.telephone}</td>
+															</tr>
+															<tr>
+																<td class="py-1 font-medium text-gray-700">Mobile</td>
+																<td class="py-1 text-gray-700">{row.mobile}</td>
+															</tr>
+															<tr>
+																<td class="py-1 font-medium text-gray-700">Type</td>
+																<td class="py-1 text-gray-700">{row.person_type ?? 'Customer'}</td>
+															</tr>
+														</tbody>
+													</table>
+												</PopoverContent>
+											</Popover>
+										{:else}
+											<span class="text-xs text-gray-400 italic">No customer</span>
+										{/if}
+									</td>
+
 									<td class="px-3 py-2.5 text-xs">{row.status}</td>
 									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
 									<td class="px-3 py-2.5 text-xs">Rp {row.final_amount.toLocaleString()}</td>
-									<td class="px-3 py-2.5 text-xs">Rp {row.discount_amount.toLocaleString()}</td>
+									<td class="px-3 py-2.5 text-xs">{row.discount_amount.toLocaleString()}%</td>
 									<td class="px-3 py-2.5 text-xs">{row.payment_method}</td>
+									<td class="px-3 py-2.5 text-xs">{row.created_by}</td>
 									<td class="px-3 py-2.5 text-xs">{row.created_at}</td>
 
-									<!-- 🔹 Popover Order Detail -->
+									<!-- 🔹 Order Details Popover -->
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.purchase_order_details?.length > 0}
 											<Popover>
@@ -197,14 +218,16 @@
 													<table class="min-w-full text-xs">
 														<thead>
 															<tr class="border-b border-gray-200 text-gray-500">
-																<th class="py-1 text-left">Item</th>
-																<th class="py-1 text-left">Description</th>
+																<th class="py-1 text-left">Item ID</th>
+																<th class="py-1 text-left">Name</th>
+																<th class="py-1 text-left">Desc</th>
 																<th class="py-1 text-left">Qty</th>
 															</tr>
 														</thead>
 														<tbody>
 															{#each row.purchase_order_details as detail}
 																<tr>
+																	<td class="py-1 text-gray-700">{detail.item_id}</td>
 																	<td class="py-1 text-gray-700">{detail.name}</td>
 																	<td class="py-1 text-gray-700">{detail.description}</td>
 																	<td class="py-1 text-gray-700">{detail.qty}</td>
@@ -218,6 +241,8 @@
 											<span class="text-xs text-gray-400 italic">No details</span>
 										{/if}
 									</td>
+
+									<!-- 🔹 Actions -->
 									<td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
 										{#if row.open}
 											<div class="flex items-center justify-center gap-2 md:gap-3">
@@ -225,7 +250,6 @@
 													type="button"
 													onclick={() => openDeleteModal(row)}
 													class="rounded-full p-1.5 transition hover:scale-110 hover:bg-red-50 md:p-2"
-													aria-label="Delete purchase"
 												>
 													<Icon
 														icon="material-symbols-light:delete-rounded"
@@ -239,7 +263,6 @@
 												<button
 													type="button"
 													class="rounded-full p-1.5 transition hover:scale-110 hover:bg-yellow-50 md:p-2"
-													aria-label="Edit purchase"
 													onclick={() => goto(`/purchase/create?id=${encodeURIComponent(row.id)}`)}
 												>
 													<Icon

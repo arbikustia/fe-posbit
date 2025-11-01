@@ -5,7 +5,7 @@ import type { RestApiResponse } from '$lib/types/api/base/RestApi';
 export const purchaseService = {
     getPaged: (params: { PageNumber: number, PageSize: number, SearchTerm: string }) => {
         return apiClient.get<RestApiResponse<unknown>>(
-            `/PurchaseOrder/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
+            `/purchase-order/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
         );
     },
     delete: (id: string) => {

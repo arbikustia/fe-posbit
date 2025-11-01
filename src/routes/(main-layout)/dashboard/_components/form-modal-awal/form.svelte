@@ -109,9 +109,6 @@
       {/if}
 
       <div class="mt-6 flex justify-end gap-3">
-        <Button type="button" onclick={handleClose} class="bg-gray-200 text-gray-800">
-          Cancel
-        </Button>
         <Button type="submit" class="bg-primary text-white">
           Save
         </Button>
