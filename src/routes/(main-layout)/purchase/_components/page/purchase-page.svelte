@@ -209,7 +209,7 @@
 												</PopoverTrigger>
 
 												<PopoverContent
-													class="max-h-60 w-92 overflow-y-auto rounded-lg bg-white p-3 shadow-lg"
+													class="max-h-60 w-[500px] overflow-y-auto rounded-lg bg-white p-3 shadow-lg"
 												>
 													<p class="mb-2 text-sm font-semibold text-gray-700">Order Details</p>
 
@@ -220,6 +220,7 @@
 																<th class="py-1 text-left">Name</th>
 																<th class="py-1 text-left">Desc</th>
 																<th class="py-1 text-left">Qty</th>
+																<th class="py-1 text-left">Qty Keluar</th>
 															</tr>
 														</thead>
 														<tbody>
@@ -229,6 +230,7 @@
 																	<td class="py-1 text-gray-700">{detail.name}</td>
 																	<td class="py-1 text-gray-700">{detail.description}</td>
 																	<td class="py-1 text-gray-700">{detail.qty}</td>
+																	<td class="py-1 text-center text-gray-700">{detail.qty_keluar}</td>
 																</tr>
 															{/each}
 														</tbody>

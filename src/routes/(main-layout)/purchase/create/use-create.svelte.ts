@@ -39,7 +39,7 @@ export function usePurchasePage() {
         totalCount: number;
         isLoading: boolean;
         searchTerm: string;
-        listItem: { value: string; label: string; stock: number; price: number }[];
+        listItem: { value: string; label: string; stock: number; price: number, deskripsi:string ,kode_barang:string}[];
     };
 
     const state = $state<stateProps>({
@@ -67,6 +67,8 @@ export function usePurchasePage() {
                 value: item.kode_barang ?? `item-${index}`,
                 label: item.nama_barang ?? 'Unknown Item',
                 stock: item.jumlah ?? 0,
+                deskripsi: item.deskripsi ?? '',
+                kode_barang: item.kode_barang ?? '',
                 harga: item.harga ?? 0,      // harga default
                 harga_a: item.harga_a ?? item.harga,
                 harga_b: item.harga_b ?? item.harga,

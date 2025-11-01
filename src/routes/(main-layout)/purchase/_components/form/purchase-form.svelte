@@ -228,7 +228,7 @@
 					{/snippet}
 				</Popover.Trigger>
 
-				<Popover.Content class="w-[500px] p-0">
+				<Popover.Content class="w-[500px] p-0" align="start">
 					<Command.Root>
 						<Command.Input placeholder="Search items..." class="h-9" />
 						<Command.List>
@@ -249,9 +249,9 @@
 												)}
 											/>
 											<div class="flex flex-col">
-												<span class="text-sm font-medium">{item.label}</span>
+												<span class="text-xs font-medium">{item.label} - {item.deskripsi}</span>
 												<span class="text-muted-foreground text-xs">
-													<!-- Rp {getItemPriceByQty(item, 50)?.toLocaleString('id-ID')} -->
+													{item.kode_barang}
 													<!-- minimal 50 -->
 												</span>
 											</div>
@@ -356,7 +356,7 @@
 						{/snippet}
 					</Popover.Trigger>
 
-					<Popover.Content class="w-[300px] p-0">
+					<Popover.Content class="w-[300px] p-0" align="start">
 						<Command.Root>
 							<Command.Input placeholder="Search customer..." class="h-9" />
 							<Command.List>
@@ -367,7 +367,7 @@
 											value={customer.label}
 											keywords={[customer.label, customer.value]}
 											onSelect={() => selectCustomer(customer.value)}
-											class="flex items-center gap-2"
+											class="flex text-xs items-center gap-2"
 										>
 											<CheckIcon
 												class={cn(
@@ -420,9 +420,9 @@
 				<Form.Label>Payment Method <span class="text-red-500">*</span></Form.Label>
 				<Select.Root type="single" name="payment_method" bind:value={$formData.payment_method}>
 					<Select.Trigger class="w-full">{paymentLabel}</Select.Trigger>
-					<Select.Content>
+					<Select.Content class="text-xs">
 						{#each paymentOptions as p}
-							<Select.Item value={p.value} label={p.label}>{p.label}</Select.Item>
+							<Select.Item class="text-xs" value={p.value} label={p.label}>{p.label}</Select.Item>
 						{/each}
 					</Select.Content>
 				</Select.Root>
