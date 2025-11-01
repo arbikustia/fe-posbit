@@ -249,6 +249,7 @@ export function useTransactionForm() {
 
 	return {
 		state,
-		handleSearchProduct
+		handleSearchProduct,
+		handleGetListItemGudang // ✅ tambahkan ini
 	};
 }

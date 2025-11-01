@@ -17,7 +17,11 @@
 	import { toast } from 'svelte-sonner';
 	import { userService } from '@/services/userService';
 
-	let { variant = 'default', state: pageState = $bindable() }: any = $props();
+	let {
+		variant = 'default',
+		state: pageState = $bindable(),
+		handleGetListItemGudang
+	}: any = $props();
 	let timer: NodeJS.Timeout | null = null;
 
 	function getCookie(name: string) {
@@ -191,10 +195,10 @@
 					qty: item.qty || 1
 				}))
 			})
-			.then((res) => {
-				printThermalNota(); // cetak nota
+			.then(async (res) => {
+				printThermalNota();
 
-				// 🔹 Reset semua data setelah purchase
+				// 🔹 Reset data form
 				pageState.customerName = '';
 				pageState.customerNumber = null;
 				pageState.customerData = null;
@@ -206,12 +210,16 @@
 				pageState.searchProduct = '';
 				pageState.paymentMethod = 'CASH';
 
-				toast.success('Purchase completed and data cleared');
+				// ✅ Refresh item gudang setelah transaksi
+				await handleGetListItemGudang();
+
+				toast.success('Purchase completed and item list updated');
 			})
 			.catch((err) => {
 				console.error(err);
 				toast.error('Failed to complete purchase');
 			});
+
 		pageState.isLoading = false;
 	}
 

@@ -6,7 +6,7 @@
 	import { cn } from '$lib/utils';
 	import { useTransactionForm } from './form.svelte';
 
-	const { state: statePage, handleSearchProduct } = useTransactionForm();
+	const { state: statePage, handleSearchProduct,handleGetListItemGudang } = useTransactionForm();
 
 	$effect(() => {
 		console.log('🧾 item table page changes:', statePage.itemTable);
@@ -30,6 +30,7 @@
 	<SearchForm
 		{handleSearchProduct}
 		state={statePage}
+		{handleGetListItemGudang}
 		variant={scrollY > 250 ? 'sticky' : 'default'}
 		class="transition-all duration-700 ease-in-out"
 	/>

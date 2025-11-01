@@ -26,15 +26,13 @@
 	let customerOptions = $state([]);
 
 	onMount(() => {
-		customerService
-			.getDataPerson()
-			.then((res: any) => {
-				customerOptions = res.data.data.map((customer: any, index: number) => ({
-					value: customer.id ?? `customer-${index}`,
-					label: customer.firstname + ' ' + customer.lastname
-				}));
-				console.log(res.data, 'ofofo');
-			});
+		customerService.getDataPerson().then((res: any) => {
+			customerOptions = res.data.data.map((customer: any, index: number) => ({
+				value: customer.id ?? `customer-${index}`,
+				label: customer.firstname + ' ' + customer.lastname
+			}));
+			console.log(res.data, 'ofofo');
+		});
 	});
 	const statusOptions = [
 		{ value: 'LUNAS', label: 'Lunas' },
@@ -293,7 +291,7 @@
 
 				<div class="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:justify-between">
 					<div class="flex flex-col">
-						<p class="font-medium">{item?.label}</p>
+						<p class="text-sm font-medium">{item?.label} - {item?.deskripsi}</p>
 						<div class="text-muted-foreground text-sm">
 							Stock: {item?.stock} • Price: Rp {getItemPriceByQty(item, detail.qty)?.toLocaleString(
 								'id-ID'
@@ -310,7 +308,17 @@
 									class="hover:bg-muted px-3 py-1 transition"
 									onclick={() => updateQty(detail.item_id, detail.qty - 1)}>−</button
 								>
-								<div class="bg-muted w-12 py-1 text-center text-sm font-medium">{detail.qty}</div>
+
+								<!-- ✅ Editable input langsung -->
+								<input
+									type="number"
+									min="1"
+									max={item?.stock}
+									class="bg-muted w-16 py-1 text-center text-sm font-medium focus:outline-none"
+									bind:value={detail.qty}
+									onchange={(e) => updateQty(detail.item_id, parseInt(e.currentTarget.value) || 1)}
+								/>
+
 								<button
 									type="button"
 									class="hover:bg-muted px-3 py-1 transition"
@@ -318,7 +326,7 @@
 								>
 							</div>
 						</div>
-						<div class="text-right">
+						<div class="w-32 text-right">
 							<p class="text-muted-foreground text-xs">Subtotal</p>
 							<p class="font-semibold">Rp {subtotal?.toLocaleString('id-ID')}</p>
 						</div>
@@ -367,7 +375,7 @@
 											value={customer.label}
 											keywords={[customer.label, customer.value]}
 											onSelect={() => selectCustomer(customer.value)}
-											class="flex text-xs items-center gap-2"
+											class="flex items-center gap-2 text-xs"
 										>
 											<CheckIcon
 												class={cn(
