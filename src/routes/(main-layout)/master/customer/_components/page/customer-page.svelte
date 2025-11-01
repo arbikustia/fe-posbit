@@ -111,8 +111,8 @@
 							</Select.Trigger>
 							<Select.Content>
 								<Select.Item value="">All</Select.Item>
-								<Select.Item value="REGULER">Regular</Select.Item>
-								<Select.Item value="PREMIUM">Premium</Select.Item>
+								<Select.Item value="REGULER">REGULER</Select.Item>
+								<Select.Item value="PREMIUM">PREMIUM</Select.Item>
 							</Select.Content>
 						</Select.Root>
 					</div>
@@ -193,7 +193,7 @@
 													: 'bg-yellow-500/10 text-yellow-700'
 											)}
 										>
-											{c.is_member ? 'PREMIUM' : 'REGULAR'}
+											{c.is_member ? 'PREMIUM' : 'REGULER'}
 										</span>
 									</td>
 									<td class="px-3 py-2.5 whitespace-nowrap sm:px-4 sm:py-3 md:text-sm">

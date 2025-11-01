@@ -9,38 +9,33 @@
 	import { cn } from '$lib/utils';
 	import { useSalesPage } from '../../create/use-create.svelte';
 
-	const { state, handlePageChange } = useSalesPage();
+	const { state, handlePageChange, handleSearch, toggleRow } = useSalesPage();
 
 	let showSearch = false;
 	let searchEl: HTMLInputElement | null = null;
+	let searchTerm = '';
 
 	async function toggleSearch() {
 		showSearch = !showSearch;
 		if (showSearch) {
 			await tick();
 			searchEl?.focus();
+		} else {
+			searchTerm = '';
+			handleSearch('');
 		}
 	}
 
-	type TableRow = {
-		id: number;
-		item_id: string;
-		qty: number;
-		sale_id: string;
-		open?: boolean;
-	};
+	function onSearchInput(e: Event) {
+		const target = e.target as HTMLInputElement;
+		searchTerm = target.value;
+		handleSearch(searchTerm);
+	}
 
-	let rows: TableRow[] = [
-		{ id: 1, item_id: 'Laptop', qty: 2, sale_id: 'Sale #001', open: true },
-		{ id: 2, item_id: 'Monitor', qty: 1, sale_id: 'Sale #002', open: true },
-		{ id: 3, item_id: 'Keyboard', qty: 3, sale_id: 'Sale #003', open: true }
-	];
-
-	// 🔥 Delete modal
 	let showDeleteModal = false;
-	let selectedSale: TableRow | null = null;
+	let selectedSale: any | null = null;
 
-	function openDeleteModal(row: TableRow) {
+	function openDeleteModal(row: any) {
 		selectedSale = row;
 		showDeleteModal = true;
 	}
@@ -52,9 +47,31 @@
 
 	function confirmDelete() {
 		if (selectedSale) {
-			rows = rows.filter((r) => r.id !== selectedSale?.id);
+			// TODO: Call delete API here
 			closeDeleteModal();
 		}
+	}
+
+	// Format currency
+	function formatCurrency(amount: number) {
+		return new Intl.NumberFormat('id-ID', {
+			style: 'currency',
+			currency: 'IDR',
+			minimumFractionDigits: 0
+		}).format(amount);
+	}
+
+	// Format date
+	function formatDate(dateString: string) {
+		if (!dateString || dateString === '-') return '-';
+		const date = new Date(dateString);
+		return new Intl.DateTimeFormat('id-ID', {
+			day: '2-digit',
+			month: 'short',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit'
+		}).format(date);
 	}
 </script>
 
@@ -78,8 +95,10 @@
 				{#if showSearch}
 					<input
 						bind:this={searchEl}
+						bind:value={searchTerm}
+						oninput={onSearchInput}
 						transition:fly={{ x: 120, duration: 250 }}
-						placeholder="Search item..."
+						placeholder="Search transaction..."
 						class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
 					/>
 				{/if}
@@ -101,130 +120,183 @@
 	</div>
 </header>
 
-<!-- TABLE -->
-<div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-	<div class="inline-block min-w-full align-middle">
-		<div class="overflow-hidden">
-			<table class="min-w-full divide-y divide-gray-200">
-				<thead class="bg-gray-100">
-					<tr>
-						<th
-							class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-							>No</th
-						>
-						<th
-							class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-							>Item</th
-						>
-						<th
-							class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-							>Quantity</th
-						>
-						<th
-							class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-							>Sale</th
-						>
-						<!-- <th
-							class="px-3 py-2.5 text-center text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-							>Action</th
-						> -->
-					</tr>
-				</thead>
-
-				<tbody class="divide-y divide-gray-200 bg-white">
-					{#each state.table as row, index}
-						<tr class="transition hover:bg-gray-50">
-							<td
-								class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm"
-								>{index + 1}</td
-							>
-							<td
-								class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-								>{row.item_id}</td
-							>
-							<td
-								class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-								>{row.qty}</td
-							>
-							<td
-								class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-								>{row.sale_id}</td
-							>
-							<!-- <td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
-								{#if row.open}
-									<div class="flex items-center justify-center gap-2 md:gap-3">
-										<button
-											type="button"
-											onclick={() => openDeleteModal(row)}
-											class="rounded-full p-1.5 transition hover:scale-110 hover:bg-red-50 md:p-2"
-											aria-label="Delete sale"
-										>
-											<Icon
-												icon="material-symbols-light:delete-rounded"
-												width="18"
-												height="18"
-												class="md:h-5 md:w-5"
-												style="color: #ff0f22"
-											/>
-										</button>
-										<button
-											type="button"
-											class="rounded-full p-1.5 transition hover:scale-110 hover:bg-yellow-50 md:p-2"
-											aria-label="Edit sale"
-										>
-											<Icon
-												icon="lucide:edit"
-												width="16"
-												height="16"
-												class="md:h-[18px] md:w-[18px]"
-												style="color: #cea200"
-											/>
-										</button>
-									</div>
-								{/if}
-							</td> -->
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+<!-- LOADING STATE -->
+{#if state.isLoading}
+	<div class="flex items-center justify-center py-12">
+		<div class="flex flex-col items-center gap-3">
+			<Icon icon="eos-icons:loading" width="40" height="40" class="text-primary" />
+			<p class="text-sm text-gray-500">Loading sales data...</p>
 		</div>
 	</div>
-</div>
+{:else}
+	<!-- TABLE -->
+	<div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+		<div class="inline-block min-w-full align-middle">
+			<div class="overflow-hidden">
+				<table class="min-w-full divide-y divide-gray-200">
+					<thead class="bg-gray-100">
+						<tr>
+							<th class="w-8 px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3"></th>
+							<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">No</th>
+							<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Transaction Code</th>
+							<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Customer</th>
+							<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Cashier</th>
+							<th class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Total Amount</th>
+							<th class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Discount</th>
+							<th class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Final Amount</th>
+							<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Payment</th>
+							<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Date</th>
+						</tr>
+					</thead>
 
-<!-- PAGINATION -->
-<div class="w-full">
-	<Pagination.Root count={state.totalCount} perPage={state.pageSize}>
-		{#snippet children({ pages, currentPage })}
-			<div class="mt-4 flex w-full justify-end">
-				<Pagination.Content>
-					<Pagination.Item class="hidden md:block">
-						<Pagination.PrevButton onclick={() => handlePageChange(state.currentPage - 1)} />
-					</Pagination.Item>
-
-					{#each pages as page (page.key)}
-						{#if page.type === 'ellipsis'}
-							<Pagination.Item><Pagination.Ellipsis /></Pagination.Item>
+					<tbody class="divide-y divide-gray-200 bg-white">
+						{#if state.table.length === 0}
+							<tr>
+								<td colspan="10" class="px-4 py-8 text-center text-sm text-gray-500">
+									No sales data found
+								</td>
+							</tr>
 						{:else}
-							<Pagination.Item>
-								<Pagination.Link
-									{page}
-									isActive={currentPage === page.value}
-									onclick={() => handlePageChange(page.value)}
-								>
-									{page.value}
-								</Pagination.Link>
-							</Pagination.Item>
-						{/if}
-					{/each}
+							{#each state.table as row, index}
+								<tr class="transition hover:bg-gray-50">
+									<!-- Expand button -->
+									<td class="px-3 py-2.5 sm:px-4 sm:py-3">
+										<button
+											type="button"
+											onclick={() => toggleRow(row.id)}
+											class="rounded p-1 transition hover:bg-gray-200"
+										>
+											<Icon
+												icon={row.open ? 'mdi:chevron-down' : 'mdi:chevron-right'}
+												width="20"
+												height="20"
+												class="text-gray-600"
+											/>
+										</button>
+									</td>
+									
+									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm">
+										{row.no}
+									</td>
+									<td class="px-3 py-2.5 text-xs whitespace-nowrap font-medium text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+										{row.transaction_code}
+									</td>
+									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+										{row.customer_name}
+									</td>
+									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+										{row.cashier}
+									</td>
+									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-right text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+										{formatCurrency(row.total_amount)}
+									</td>
+									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-right text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+										{formatCurrency(row.discount_amount)}
+									</td>
+									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-right font-semibold text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+										{formatCurrency(row.final_amount)}
+									</td>
+									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+										<span class={cn(
+											"inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
+											row.payment_method === 'CASH' ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"
+										)}>
+											{row.payment_method}
+										</span>
+									</td>
+									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm">
+										{formatDate(row.created_at)}
+									</td>
+								</tr>
 
-					<Pagination.Item class="hidden md:block">
-						<Pagination.NextButton onclick={() => handlePageChange(state.currentPage + 1)} />
-					</Pagination.Item>
-				</Pagination.Content>
+								<!-- Details Row (Expandable) -->
+								{#if row.open === true && row.details && row.details.length > 0}
+									<tr class="bg-gray-50">
+										<td colspan="10" class="px-3 py-4 sm:px-4">
+											<div class="space-y-3">
+												<div class="flex items-center justify-between">
+													<h4 class="text-sm font-semibold text-gray-700">Transaction Details</h4>
+													<div class="flex gap-4 text-xs text-gray-600">
+														<span>Amount Received: <strong class="text-gray-900">{formatCurrency(row.amount_receive)}</strong></span>
+														<span>Change: <strong class="text-gray-900">{formatCurrency(row.change)}</strong></span>
+													</div>
+												</div>
+
+												<div class="overflow-x-auto">
+													<table class="min-w-full text-sm">
+														<thead class="bg-gray-100">
+															<tr>
+																<th class="px-3 py-2 text-left text-xs font-medium text-gray-600">Item</th>
+																<th class="px-3 py-2 text-center text-xs font-medium text-gray-600">Qty</th>
+																<th class="px-3 py-2 text-right text-xs font-medium text-gray-600">Price</th>
+																<th class="px-3 py-2 text-right text-xs font-medium text-gray-600">Subtotal</th>
+															</tr>
+														</thead>
+														<tbody class="divide-y divide-gray-200">
+															{#each row.details as detail}
+																<tr>
+																	<td class="px-3 py-2 text-gray-900">{detail.item_name}</td>
+																	<td class="px-3 py-2 text-center text-gray-900">{detail.qty}</td>
+																	<td class="px-3 py-2 text-right text-gray-900">{formatCurrency(detail.price)}</td>
+																	<td class="px-3 py-2 text-right font-medium text-gray-900">{formatCurrency(detail.subtotal)}</td>
+																</tr>
+															{/each}
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</td>
+									</tr>
+								{/if}
+							{/each}
+						{/if}
+					</tbody>
+				</table>
 			</div>
-		{/snippet}
-	</Pagination.Root>
-</div>
+		</div>
+	</div>
+
+	<!-- PAGINATION -->
+	<div class="w-full">
+		<Pagination.Root count={state.totalCount} perPage={state.pageSize} page={state.currentPage}>
+			{#snippet children({ pages, currentPage })}
+				<div class="mt-4 flex w-full items-center justify-between">
+					<p class="text-sm text-gray-600">
+						Showing <strong>{(state.currentPage - 1) * state.pageSize + 1}</strong> to 
+						<strong>{Math.min(state.currentPage * state.pageSize, state.totalCount)}</strong> of 
+						<strong>{state.totalCount}</strong> results
+					</p>
+
+					<Pagination.Content>
+						<Pagination.Item class="hidden md:block">
+							<Pagination.PrevButton onclick={() => handlePageChange(state.currentPage - 1)} />
+						</Pagination.Item>
+
+						{#each pages as page (page.key)}
+							{#if page.type === 'ellipsis'}
+								<Pagination.Item><Pagination.Ellipsis /></Pagination.Item>
+							{:else}
+								<Pagination.Item>
+									<Pagination.Link
+										{page}
+										isActive={currentPage === page.value}
+										onclick={() => handlePageChange(page.value)}
+									>
+										{page.value}
+									</Pagination.Link>
+								</Pagination.Item>
+							{/if}
+						{/each}
+
+						<Pagination.Item class="hidden md:block">
+							<Pagination.NextButton onclick={() => handlePageChange(state.currentPage + 1)} />
+						</Pagination.Item>
+					</Pagination.Content>
+				</div>
+			{/snippet}
+		</Pagination.Root>
+	</div>
+{/if}
 
 <!-- 🧩 DELETE CONFIRM MODAL -->
 {#if showDeleteModal}
@@ -258,8 +330,8 @@
 			</h2>
 
 			<p class="mb-5 text-center text-sm text-gray-600 sm:mb-6 dark:text-gray-400">
-				Are you sure you want to delete
-				<span class="font-semibold text-gray-800 dark:text-gray-100">{selectedSale?.item_id}</span>?
+				Are you sure you want to delete transaction
+				<span class="font-semibold text-gray-800 dark:text-gray-100">{selectedSale?.transaction_code}</span>?
 				<span class="block sm:inline">This action cannot be undone.</span>
 			</p>
 

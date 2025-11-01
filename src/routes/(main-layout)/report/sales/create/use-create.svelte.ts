@@ -1,3 +1,4 @@
+// useSalesPage.ts
 import { toast } from 'svelte-sonner';
 import { superForm, defaults } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -16,7 +17,7 @@ export function useSalesPage() {
 		resetForm: false
 	});
 
-	type stateProps = {
+	type StateProps = {
 		table: any[];
 		showSearch: boolean;
 		searchEl: HTMLInputElement | null;
@@ -32,7 +33,7 @@ export function useSalesPage() {
 
 	const { form: formData, validateForm, errors } = form;
 
-	const state = $state<stateProps>({
+	const state = $state<StateProps>({
 		table: [],
 		showSearch: false,
 		searchEl: null,
@@ -46,18 +47,52 @@ export function useSalesPage() {
 		searchTerm: ''
 	});
 
-	// 🔹 Transform data dari API ke bentuk table
+	// ✅ Transform sales data dari API
 	function transformSalesData(apiData: any[]) {
-		return apiData.map((item, index) => ({
-			id: item.id || index + 1,
-			item_id: item.item_id ?? '-',
-			qty: item.qty ?? 0,
-			sale_id: item.sale_id ?? '-',
-			open: true
-		}));
+		return apiData.map((item, index) => {
+			// Check if this row was previously open (untuk preserve state saat pagination)
+			const existingRow = state.table.find((r) => r.id === item.id);
+			
+			return {
+				no: index + 1 + (state.currentPage - 1) * state.pageSize,
+				id: item.id ?? `temp-${index}`,
+				transaction_code: item.transaction_code ?? '-',
+				customer_name: item.customer.customer_name ?? 'Walk-in Customer',
+				cashier: item.cashier ?? '-',
+				total_amount: item.total_amount ?? 0,
+				final_amount: item.final_amount ?? 0,
+				discount_amount: item.discount_amount ?? 0,
+				payment_method: item.payment_method ?? 'CASH',
+				amount_receive: item.amount_receive ?? 0,
+				change: item.change ?? 0,
+				created_at: item.created_at ?? '-',
+				details: (item.details || []).map((detail: any) => ({
+					item_name: detail.item_name ?? detail.item_id ?? 'Unknown Item',
+					qty: detail.qty ?? detail.quantity ?? 0,
+					price: detail.price ?? 0,
+					subtotal: (detail.qty ?? detail.quantity ?? 0) * (detail.price ?? 0)
+				})),
+				// PENTING: Default FALSE, hanya preserve jika row sudah ada sebelumnya
+				open: existingRow ? existingRow.open : false
+			};
+		});
 	}
 
-	// 🔹 Pagination handler
+	// ✅ Toggle row details
+	function toggleRow(id: string) {
+		console.log('Toggle row called for id:', id);
+		const rowBefore = state.table.find(r => r.id === id);
+		console.log('Row before toggle:', rowBefore?.open);
+		
+		state.table = state.table.map((row) =>
+			row.id === id ? { ...row, open: !row.open } : row
+		);
+		
+		const rowAfter = state.table.find(r => r.id === id);
+		console.log('Row after toggle:', rowAfter?.open);
+	}
+
+	// ✅ Get paginated sales data
 	async function handleGetPaged(pageNumber = state.currentPage, searchTerm = state.searchTerm) {
 		try {
 			state.isLoading = true;
@@ -77,6 +112,7 @@ export function useSalesPage() {
 				state.totalCount = res.data.total_count ?? state.table.length;
 			} else {
 				state.table = [];
+				console.warn('No sales data received');
 			}
 		} catch (err) {
 			console.error('Pagination fetch failed:', err);
@@ -87,31 +123,45 @@ export function useSalesPage() {
 		}
 	}
 
-	// 🔹 Pindah halaman
+	// ✅ Handle page change
 	async function handlePageChange(pageNum: number) {
 		if (pageNum < 1 || pageNum > state.totalPages) return;
 		state.currentPage = pageNum;
 		await handleGetPaged(pageNum);
 	}
 
-	// 🔹 Submit form
+	// ✅ Handle search
+	async function handleSearch(searchTerm: string) {
+		state.searchTerm = searchTerm;
+		state.currentPage = 1; // Reset to first page
+		await handleGetPaged(1, searchTerm);
+	}
+
+	// ✅ Submit form (for create/update if needed)
 	async function handleSubmit() {
 		const result = await validateForm({ update: true });
 
 		if (!result.valid) {
 			toast.error('Please check your input');
+			console.error('Validation errors:', get(errors));
 			return;
 		}
 
 		const values = get(formData);
 
 		const body = {
-			item_id: values.item_id,
-			qty: values.qty,
-			sale_id: values.sale_id
+			customer_id: values.customer_id,
+			total_amount: values.total_amount ?? 0,
+			final_amount: values.final_amount ?? 0,
+			discount_amount: values.discount_amount ?? 0,
+			payment_method: values.payment_method ?? 'CASH',
+			amount_receive: values.amount_receive ?? 0,
+			details: values.details ?? []
 		};
 
 		try {
+			state.isLoading = true;
+
 			if ((values as any).id) {
 				await saleService.update({
 					id: String((values as any).id),
@@ -123,27 +173,92 @@ export function useSalesPage() {
 				toast.success('Sale created successfully');
 			}
 
-			goto('/master/sales');
-		} catch (err) {
-			toast.error('Failed to save sale');
+			goto('/sales/report');
+		} catch (err: any) {
+			console.error('Failed to save sale:', err);
+			const errorMsg = err?.response?.data?.message || 'Failed to save sale';
+			toast.error(errorMsg);
+		} finally {
+			state.isLoading = false;
 		}
 	}
 
+	// ✅ Handle delete sale
+	async function handleDelete(saleId: string) {
+		try {
+			state.isLoading = true;
+			await saleService.delete(saleId);
+			toast.success('Sale deleted successfully');
+			await handleGetPaged(); // Refresh table
+			state.showDeleteModal = false;
+			state.selectedSale = null;
+		} catch (err: any) {
+			console.error('Failed to delete sale:', err);
+			const errorMsg = err?.response?.data?.message || 'Failed to delete sale';
+			toast.error(errorMsg);
+		} finally {
+			state.isLoading = false;
+		}
+	}
+
+	// ✅ Open delete modal
+	function openDeleteModal(sale: any) {
+		state.selectedSale = sale;
+		state.showDeleteModal = true;
+	}
+
+	// ✅ Close delete modal
+	function closeDeleteModal() {
+		state.showDeleteModal = false;
+		state.selectedSale = null;
+	}
+
+	// ✅ Load sale for edit
+	async function loadSaleForEdit(id: string) {
+		try {
+			state.isLoading = true;
+			const res: any = await saleService.getById(id);
+
+			if (res?.data) {
+				const sale = res.data;
+
+				formData.update((f) => ({
+					...f,
+					id: sale.id,
+					customer_id: sale.customer_id,
+					total_amount: sale.total_amount ?? 0,
+					final_amount: sale.final_amount ?? 0,
+					discount_amount: sale.discount_amount ?? 0,
+					payment_method: sale.payment_method ?? 'CASH',
+					amount_receive: sale.amount_receive ?? 0,
+					details: sale.details?.map((d: any) => ({
+						item_id: d.item_id,
+						qty: d.qty ?? d.quantity,
+						price: d.price
+					})) ?? []
+				}));
+
+				toast.success('Sale loaded for editing');
+			}
+		} catch (err) {
+			console.error('Failed to load sale:', err);
+			toast.error('Failed to load sale data');
+			goto('/sales/report');
+		} finally {
+			state.isLoading = false;
+		}
+	}
+
+	// ✅ ON MOUNT - Initialize data
 	onMount(() => {
 		handleGetPaged();
 
 		const url = get(page).url;
-		const qp = url.searchParams;
-		const hasAny = qp.has('item_id') || qp.has('qty') || qp.has('sale_id') || qp.has('id');
+		const saleId = url.searchParams.get('id');
 
-		if (hasAny) {
-			formData.update((f) => ({
-				...f,
-				item_id: qp.get('item_id') ?? (f as any).item_id,
-				qty: qp.has('qty') ? Number(qp.get('qty')) : (f as any).qty,
-				sale_id: qp.get('sale_id') ?? (f as any).sale_id,
-				id: qp.get('id') ?? (f as any).id
-			}));
+		if (saleId) {
+			// Edit mode
+			loadSaleForEdit(saleId);
 		}
 	});
 
@@ -153,6 +268,12 @@ export function useSalesPage() {
 		errors,
 		handleSubmit,
 		handleGetPaged,
-		handlePageChange
+		handlePageChange,
+		handleSearch,
+		handleDelete,
+		openDeleteModal,
+		closeDeleteModal,
+		loadSaleForEdit,
+		toggleRow
 	};
 }

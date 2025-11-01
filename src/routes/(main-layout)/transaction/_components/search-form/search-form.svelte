@@ -62,16 +62,11 @@
 		const member = pageState?.customerData !== null ? 'PREMIUM' : 'REGULAR';
 		const point = pageState?.customerData?.point || 0;
 
-		// Data items - sesuaikan dengan data cart Anda
-		// const items = [
-		// 	['Hijab Segi Empat', 75000, 2],
-		// 	['Pashmina Wolfis', 85000, 1],
-		// 	['Jilbab Instan', 45000, 3]
-		// ];
-
 		// === FORMAT STRUK DALAM TEKS ===
 		let nota = '';
+		nota += '\x1B\x21\x30';
 		nota += '         DA.ALUS HIJAB         \n';
+		nota += '\x1B\x21\x00';
 		nota += '   Ruko B-15 no 17, Mutiara    \n';
 		nota += 'Gading Timur, Mustikajaya, Bekasi\n';
 		nota += '--------------------------------\n';
@@ -121,7 +116,7 @@
 		const totalBayar = subtotal - diskonNilai;
 
 		nota += `Subtotal    :Rp${pageState.totalAll?.toLocaleString('id-ID')}\n`;
-		nota += `Diskon      :${pageState.discount || 0}%\n`;
+		nota += `Diskon      :${pageState.discount || 0}% (${diskonNilai?.toLocaleString('id-ID')}) \n`;
 		nota += `Total       :Rp${pageState.grandTotal?.toLocaleString('id-ID')}\n`;
 		nota += `Nominal     :Rp${pageState.amountPaid?.toLocaleString('id-ID')}\n`;
 		nota += `Kembalian   :Rp${((pageState.amountPaid || 0) - (pageState.grandTotal || 0))?.toLocaleString('id-ID')}\n`;
@@ -129,9 +124,9 @@
 		nota += '--------------------------------\n';
 		nota += `Payment: ${pageState.paymentMethod}\n`;
 		nota += '--------------------------------\n';
-		nota += '         DA.ALUS HIJAB         \n';
-		nota += '        IG @daalushijab		 \n';
-		nota += '       www.daalushijab.com        \n';
+		nota += '          DA.ALUS HIJAB         \n';
+		nota += '      IG daalushijab.store	     \n';
+		nota += '         TIKTOK  da.alus        \n';
 		nota += ' Terima kasih telah berbelanja! \n';
 		nota += '*** Barang yang sudah dibeli ***\n';
 		nota += '*** tidak dapat dikembalikan ***\n';

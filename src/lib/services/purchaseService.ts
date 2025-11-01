@@ -8,6 +8,11 @@ export const purchaseService = {
             `/purchase-order/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
         );
     },
+    getPagedReport: (params: { PageNumber: number, PageSize: number, SearchTerm: string }) => {
+        return apiClient.get<RestApiResponse<unknown>>(
+            `/purchase-order/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
+        );
+    },
     delete: (id: string) => {
         return apiClient.delete<RestApiResponse<unknown>>(
             `/PurchaseOrder/${id}`

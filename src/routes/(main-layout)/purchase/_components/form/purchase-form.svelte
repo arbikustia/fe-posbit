@@ -148,7 +148,6 @@
 			<Form.Label class="text-sm font-medium text-gray-700"
 				>Items <span class="text-red-500">*</span></Form.Label
 			>
-
 			<Popover.Root bind:open>
 				<Popover.Trigger bind:ref={triggerRef} class="h-fit w-full">
 					{#snippet child({ props })}

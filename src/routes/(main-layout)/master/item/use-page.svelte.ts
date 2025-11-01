@@ -50,6 +50,7 @@ export function useMasterItemPage() {
 	function transformItemData(apiData: any[]) {
 		return apiData.map((item, index) => ({
 			id: item.id || index + 1,
+			kode_barang: item.kode_barang ?? '-',
 			nama_barang: item.nama_barang ?? '-',
 			deskripsi: item.deskripsi ?? '-',
 			qty_stok_toko: item.qty_stok_toko ?? 0,
@@ -124,6 +125,7 @@ export function useMasterItemPage() {
 		const url = get(page).url;
 		const qp = url.searchParams;
 		const hasAny =
+			qp.has('kode_barang') ||
 			qp.has('nama_barang') ||
 			qp.has('deskripsi') ||
 			qp.has('qty_stok_toko') ||
@@ -135,6 +137,7 @@ export function useMasterItemPage() {
 		if (hasAny) {
 			formData.update((f) => ({
 				...f,
+				kode_barang: qp.get('kode_barang') ?? f.kode_barang,
 				nama_barang: qp.get('nama_barang') ?? f.nama_barang,
 				deskripsi: qp.get('deskripsi') ?? f.deskripsi,
 				qty_stok_toko: qp.has('qty_stok_toko') ? Number(qp.get('qty_stok_toko')) : f.qty_stok_toko,
