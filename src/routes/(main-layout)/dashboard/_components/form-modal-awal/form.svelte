@@ -1,138 +1,121 @@
 <script lang="ts">
-	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import * as Form from '$lib/components/ui/form';
-	import Input from '$lib/components/ui/input/input.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
-	import { BITCard } from '@/components/opsigo-ui/card';
-	import type { SuperForm } from 'sveltekit-superforms';
-	import type z from 'zod';
-	import type { modalSchema } from './schema';
-	import { goto } from '$app/navigation';
-	import { useCashierModalPage } from './use-form.svelte';
-	import * as Select from '$lib/components/ui/select/index.js';
-	import { onMount } from 'svelte';
-	import { userService } from '@/services/userService';
-	import { itemService } from '@/services/itemService';
+  import * as Dialog from '$lib/components/ui/dialog/index.js';
+  import * as Form from '$lib/components/ui/form';
+  import Input from '$lib/components/ui/input/input.svelte';
+  import Button from '$lib/components/ui/button/button.svelte';
+  import { useCashierModalPage } from './use-form.svelte';
+  import { userService } from '@/services/userService';
+  import { browser } from '$app/environment';
+  import { onMount } from 'svelte';
 
-	type ModalFormProps = {
-		showModalAwal: boolean;
-		type: string;
-	};
+  type ModalFormProps = {
+    showModalAwal: boolean;
+    type: string;
+  };
 
-	let { showModalAwal, type }: ModalFormProps = $props();
-	const { form, handleSubmit, state:modalState } = useCashierModalPage();
-	const { form: formData, enhance, errors } = form;
-	let dataCashier: { username: string; id: string }[] = $state([]);
+  let username: string = $state('');
+  let modalState = $state({ is_open: false });
+  let { showModalAwal, type }: ModalFormProps = $props();
 
-	onMount(async () => {
-		console.log('showModalAwal:', showModalAwal);
-		const user = await userService
-			.getPaged({ PageNumber: 1, PageSize: 1000000, SearchTerm: '' })
-			.then((res: any) => {
-				console.log('User data:', res.data.data);
-				dataCashier = res.data.data.filter((item: { role: string }) => item.role == 'Cashier');
-			});
-	});
+  const { form, handleSubmit, errors, enhance, closeModal } = useCashierModalPage(type as 'create' | 'update', modalState);
+  const { form: formData } = form;
+  let dataCashier: { username: string; id: string }[] = $state([]);
 
-	$effect(() => {
-		(async () => {
-            modalState.is_open = showModalAwal;
-			console.log(dataCashier, 'dataCashier');
-		})();
-	});
+  function getCookie(name: string) {
+    if (!browser) return null;
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift();
+    return null;
+  }
+
+  onMount(async () => {
+    username = getCookie('username') || 'superadmin';
+    const res = await userService.getPaged({
+      PageNumber: 1,
+      PageSize: 1000000,
+      SearchTerm: ''
+    });
+    dataCashier = res.data.data.filter((u: any) => u.role === 'Cashier');
+
+    const cashier = dataCashier.find((u) => u.username === username);
+    if (cashier) {
+      $formData.cashier_id = cashier.id;
+      console.log('[ModalForm] auto-set cashier_id ->', cashier.id);
+    }
+
+    $formData.is_modal_awal = type === 'create';
+  });
+
+  // Modal only follows initial prop
+  onMount(() => {
+    if (showModalAwal) {
+      modalState.is_open = true;
+    }
+  });
+
+  function handleClose() {
+    closeModal();
+  }
 </script>
 
 <Dialog.Root bind:open={modalState.is_open}>
-	<Dialog.Content class="rounded-2xl sm:max-w-[500px]">
-		<Dialog.Header>
-			<Dialog.Title class="text-lg font-semibold">Tambah Modal Awal</Dialog.Title>
-			<Dialog.Description class="text-sm text-gray-500">
-				Isi data berikut untuk menyimpan informasi modal awal kasir.
-			</Dialog.Description>
-		</Dialog.Header>
+  <Dialog.Content
+    class="rounded-2xl sm:max-w-[500px]"
+    escapeKeydownBehavior="ignore"
+    interactOutsideBehavior="ignore"
+    showCloseButton={false}
+  >
+    <Dialog.Header>
+      <Dialog.Title class="text-lg font-semibold">
+        {type === 'create' ? 'Tambah Modal Awal' : 'Update Actual Earning'}
+      </Dialog.Title>
+      <Dialog.Description class="text-sm text-gray-500">
+        {type === 'create'
+          ? 'Isi data berikut untuk menyimpan informasi modal awal kasir.'
+          : 'Isi data berikut untuk menyimpan informasi actual earning kasir.'}
+      </Dialog.Description>
+    </Dialog.Header>
 
-		<form
-			method="POST"
-			use:enhance
-			onsubmit={handleSubmit}
-			class="container mx-auto w-full px-4 py-4"
-		>
-			<BITCard title="Modal Awal">
-				<!-- CASHIER ID -->
-				<Form.Field {form} name="cashier_id">
-					<Form.Control>
-						<Form.Label class="text-sm font-medium text-gray-700">Cashier Name</Form.Label>
-						<!-- <Input
-							placeholder="Enter cashier ID"
-							bind:value={$formData.cashier_id}
-							class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.cashier_id
-								? 'border-red-500 focus:border-red-500'
-								: ''}"
-						/> -->
-						<Select.Root type="single" bind:value={$formData.cashier_id}>
-							<Select.Trigger class="w-full">{$formData.cashier_id !== '' ? dataCashier.find((item) => item.id == $formData.cashier_id )?.username : "select cashier name"}</Select.Trigger>
-							<Select.Content>
-								{#each dataCashier as item}
-									<Select.Item value={item.id}>{item.username}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
-					</Form.Control>
-					<Form.FieldErrors class="mt-1 text-sm text-red-600" />
-				</Form.Field>
+    <form method="POST" use:enhance on:submit|preventDefault={handleSubmit} class="w-full py-4">
+      <input type="hidden" bind:value={$formData.id} />
+      <input type="hidden" bind:value={$formData.cashier_id} />
+      <input type="hidden" bind:value={$formData.is_modal_awal} />
 
-				{#if type == 'create'}
-					<Form.Field {form} name="modal_awal" class="mt-4">
-						<Form.Control>
-							<Form.Label class="text-sm font-medium text-gray-700">Modal Awal</Form.Label>
-							<Input
-								type="number"
-								placeholder="Enter Modal Awal amount"
-								bind:value={$formData.modal_awal}
-								class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.modal_awal
-									? 'border-red-500 focus:border-red-500'
-									: ''}"
-							/>
-						</Form.Control>
-						<Form.FieldErrors class="mt-1 text-sm text-red-600" />
-					</Form.Field>
-				{:else}
-					<Form.Field {form} name="actual_earning" class="mt-4">
-						<Form.Control>
-							<Form.Label class="text-sm font-medium text-gray-700">Actual Earning</Form.Label>
-							<Input
-								type="number"
-								placeholder="Enter earning amount"
-								bind:value={$formData.actual_earning}
-								class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.actual_earning
-									? 'border-red-500 focus:border-red-500'
-									: ''}"
-							/>
-						</Form.Control>
-						<Form.FieldErrors class="mt-1 text-sm text-red-600" />
-					</Form.Field>
-				{/if}
+      <Form.Field {form} name="cashier_id">
+        <Form.Control>
+          <Form.Label>Cashier Name</Form.Label>
+          <Input disabled value={username} />
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
 
-				<!-- BUTTONS -->
-				<div
-					class="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end"
-				>
-					<Button
-						type="button"
-						variant="outline"
-						class="w-full rounded-full px-4 py-2 text-sm text-gray-500 hover:underline sm:w-auto"
-						onclick={() => goto('/dashboard')}
-					>
-						Cancel
-					</Button>
-					<Button
-						type="submit"
-						class="bg-primary hover:bg-primary-dark w-full rounded-full px-4 py-2 text-sm text-white transition sm:w-auto"
-					>
-						Save
-					</Button>
-				</div>
-			</BITCard>
-		</form>
-	</Dialog.Content>
+      {#if type === 'create'}
+        <Form.Field {form} name="modal_awal" class="mt-4">
+          <Form.Control>
+            <Form.Label>Modal Awal</Form.Label>
+            <Input type="number" bind:value={$formData.modal_awal} placeholder="Enter Modal Awal" />
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+      {:else}
+        <Form.Field {form} name="actual_earning" class="mt-4">
+          <Form.Control>
+            <Form.Label>Actual Earning</Form.Label>
+            <Input type="number" bind:value={$formData.actual_earning} placeholder="Enter Actual Earning" />
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+      {/if}
+
+      <div class="mt-6 flex justify-end gap-3">
+        <Button type="button" onclick={handleClose} class="bg-gray-200 text-gray-800">
+          Cancel
+        </Button>
+        <Button type="submit" class="bg-primary text-white">
+          Save
+        </Button>
+      </div>
+    </form>
+  </Dialog.Content>
 </Dialog.Root>

@@ -152,7 +152,7 @@
 		});
 		saleService
 			.create({
-				customer_id: pageState?.customerData?.id || '',
+				customer_id: pageState?.customerData !== null ? pageState?.customerData?.id : null,
 				customer_name: pageState.customerName || '',
 				phone: pageState.customerNumber || '',
 				is_member: pageState?.customerData !== null ? true : false,

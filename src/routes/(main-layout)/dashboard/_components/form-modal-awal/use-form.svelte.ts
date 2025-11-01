@@ -1,97 +1,156 @@
+// use-form.svelte
 import { toast } from 'svelte-sonner';
-import { superForm, defaults } from 'sveltekit-superforms';
+import { superForm } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { goto } from '$app/navigation';
 import { onMount } from 'svelte';
 import { get } from 'svelte/store';
 import { page } from '$app/stores';
 import { modalService } from '@/services/modalService';
-import { modalSchema } from './schema';
+import { modalCreateSchema, modalUpdateSchema } from './schema';
 
-export function useCashierModalPage() {
-    const form = superForm(defaults(zod(modalSchema)), {
-        SPA: true,
-        validators: zod(modalSchema),
-        dataType: 'json',
-        resetForm: false
-    });
+// import schemas baru
 
-    type stateProps = {
-        table: any[];
-        isLoading: boolean;
-        is_open: boolean;
-    };
 
-    const { form: formData, validateForm, errors } = form;
+export function useCashierModalPage(type: 'create' | 'update', modalState: { is_open: boolean }) {
+  // debug indicator
+  const debug = true;
 
-    const state = $state<stateProps>({
-        table: [],
-        isLoading: false,
-        is_open: false
-    });
+  let idSale = $state('');
 
-    // 🔹 Create / Update logic
-    async function handleSubmit() {
-        const result = await validateForm({ update: true });
-        if (!result.valid) {
-            toast.error('Please check your input');
-            return;
-        }
+  // initial values are generic; specific validations come from selected schema
+  const initialValues = {
+    id: '',
+    cashier_id: '',
+    modal_awal: 0,
+    actual_earning: 0,
+    is_modal_awal: type === 'create'
+  };
 
-        const values = get(formData);
+  // pick schema based on type
+  const chosenSchema = type === 'create' ? modalCreateSchema : modalUpdateSchema;
 
-        try {
-            if ((values as any).id) {
-                // UPDATE MODE
-                const body = {
-                    id: String(values.id),
-                    cashier_id: values.cashier_id,
-                    actual_earning: Number(values.actual_earning) || 0
-                };
+  const form = superForm(initialValues, {
+    SPA: true,
+    validators: zod(chosenSchema),
+    dataType: 'json',
+    resetForm: false
+  });
 
-                await modalService.update(body);
-                toast.success('Cashier modal updated successfully');
-            } else {
-                // CREATE MODE
-                const body = {
-                    cashier_id: values.cashier_id,
-                    modal_awal: Number(values.modal_awal) || 0,
-                    is_modal_awal: true
-                };
+  const { form: formData, validateForm, errors, enhance } = form;
 
-                await modalService.create(body);
-                toast.success('Cashier modal created successfully');
-            }
-            state.is_open = false;
-        } catch (err) {
-            console.error(err);
-            toast.error('Failed to save cashier modal');
-        }
+  // fetch idSale and set to form when available
+  onMount(async () => {
+    try {
+      const res = await modalService.getStatusModalAwal();
+      idSale = res.data?.data?.id || '';
+      if (debug) console.log('[useCashierModalPage] fetched idSale:', idSale);
+      if (idSale) {
+        formData.update((f) => ({ ...f, id: idSale }));
+        if (debug) console.log('[useCashierModalPage] form.id updated ->', idSale);
+      }
+    } catch (err) {
+      console.error('[useCashierModalPage] Failed to get modal status:', err);
+      toast.error('Failed to fetch modal status');
+    }
+  });
+
+  // main submit with extra debug
+  async function handleSubmit(event?: Event) {
+    // prevent default if called via <form on:submit>
+    if (event && typeof event.preventDefault === 'function') event.preventDefault();
+
+    // debug log before validate
+    if (debug) {
+      console.log('[handleSubmit] validateForm about to run. type=', type);
+      console.log('[handleSubmit] current formData (before validate):', get(formData));
     }
 
-    onMount(() => {
-        const url = get(page).url;
-        const qp = url.searchParams;
-        const hasAny =
-            qp.has('cashier_id') || qp.has('modal_awal') || qp.has('actual_earning') || qp.has('id');
+    const result = await validateForm();
 
-        if (hasAny) {
-            formData.update((f) => ({
-                ...f,
-                id: qp.get('id') ?? (f as any).id,
-                cashier_id: qp.get('cashier_id') ?? f.cashier_id,
-                modal_awal: qp.has('modal_awal') ? Number(qp.get('modal_awal')) : f.modal_awal,
-                actual_earning: qp.has('actual_earning')
-                    ? Number(qp.get('actual_earning'))
-                    : f.actual_earning
-            }));
+    // debug validate result
+    if (debug) {
+      console.log('[handleSubmit] validateForm result:', result);
+      console.log('[handleSubmit] errors store:', get(errors));
+    }
+
+    if (!result.valid) {
+      console.log('[handleSubmit] Validation failed:', result.errors);
+      toast.error('Please check your input');
+      return;
+    }
+
+    const values = get(formData);
+    if (debug) console.log('[handleSubmit] values after validation:', values);
+
+    try {
+      if (type === 'create') {
+        // ensure cashier_id & modal_awal exist (redundant with schema but safe)
+        if (!values.cashier_id || values.modal_awal <= 0) {
+          toast.error('Cashier ID and Modal Awal are required');
+          return;
         }
-    });
+        const body = {
+          cashier_id: values.cashier_id,
+          modal_awal: Number(values.modal_awal),
+          is_modal_awal: true
+        };
+        if (debug) console.log('[handleSubmit] create body:', body);
+        await modalService.create(body);
+        toast.success('Cashier modal created successfully');
+      } else {
+        if (!values.id || values.actual_earning <= 0) {
+          toast.error('ID and Actual Earning are required');
+          return;
+        }
+        const body = {
+          id: values.id,
+          cashier_id: values.cashier_id,
+          actual_earning: Number(values.actual_earning)
+        };
+        if (debug) console.log('[handleSubmit] update body:', body);
+        await modalService.update(body);
+        toast.success('Cashier modal updated successfully');
+      }
 
-    return {
-        state,
-        form,
-        errors,
-        handleSubmit
-    };
+      // close modal via parent state (single source of truth)
+      modalState.is_open = false;
+      // reset form after closing
+      form.reset();
+
+      if (debug) console.log('[handleSubmit] modalState.is_open set to false, form.reset called.');
+    } catch (err: any) {
+      console.error('[handleSubmit] Error saving cashier modal:', err);
+      toast.error(err.message || 'Failed to save cashier modal');
+    }
+  }
+
+  function closeModal() {
+    modalState.is_open = false;
+    if (debug) console.log('[closeModal] modalState.is_open = false');
+  }
+
+  // optional: prefill from URL params
+  onMount(() => {
+    const url = get(page).url;
+    const qp = url.searchParams;
+    if (qp.size > 0) {
+      formData.update((f) => ({
+        ...f,
+        id: qp.get('id') || f.id,
+        cashier_id: qp.get('cashier_id') || f.cashier_id,
+        modal_awal: qp.has('modal_awal') ? Number(qp.get('modal_awal')) : f.modal_awal,
+        actual_earning: qp.has('actual_earning') ? Number(qp.get('actual_earning')) : f.actual_earning,
+        is_modal_awal: type === 'create'
+      }));
+      if (debug) console.log('[useCashierModalPage] prefilled from qp ->', get(formData));
+    }
+  });
+
+  return {
+    form,
+    errors,
+    handleSubmit,
+    enhance,
+    closeModal
+  };
 }
