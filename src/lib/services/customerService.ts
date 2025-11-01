@@ -22,8 +22,6 @@ export const customerService = {
         customer_name: string,
         phone: string,
         is_member: boolean,
-        member_since: string | null | undefined,
-        member_code: string | null | undefined,
         point: number,
         type:string
     }) => {
@@ -36,8 +34,6 @@ export const customerService = {
         customer_name: string,
         phone: string,
         is_member: boolean,
-        member_since: string | null | undefined,
-        member_code: string | null | undefined,
         point: number,
         type: string
     }) => {

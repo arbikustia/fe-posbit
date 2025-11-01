@@ -112,51 +112,6 @@
 			<Form.FieldErrors class="mt-1 text-sm text-red-600" />
 		</Form.Field>
 
-		<!-- MEMBER SINCE -->
-		{#if $formData.is_member}
-			<Form.Field {form} name="member_since" class="mt-4">
-				<Form.Control>
-					<Form.Label class="text-sm font-medium text-gray-700">Member Since</Form.Label>
-					<Popover.Root>
-						<Popover.Trigger
-							class={cn(
-								buttonVariants({
-									variant: 'outline',
-									class: 'w-full justify-start text-left font-normal'
-								}),
-								!memberSinceDate && 'text-muted-foreground',
-								$errors.member_since && 'border-red-500'
-							)}
-						>
-							<CalendarIcon class="mr-2 h-4 w-4" />
-							{memberSinceDate
-								? df.format(memberSinceDate.toDate(getLocalTimeZone()))
-								: 'Pick a date'}
-						</Popover.Trigger>
-						<Popover.Content bind:ref={contentRef} class="w-auto p-0">
-							<Calendar type="single" bind:value={memberSinceDate} />
-						</Popover.Content>
-					</Popover.Root>
-				</Form.Control>
-				<Form.FieldErrors class="mt-1 text-sm text-red-600" />
-			</Form.Field>
-
-			<!-- MEMBER CODE -->
-			<Form.Field {form} name="member_code" class="mt-4">
-				<Form.Control>
-					<Form.Label class="text-sm font-medium text-gray-700">Member Code</Form.Label>
-					<Input
-						placeholder="Enter member code"
-						bind:value={$formData.member_code}
-						class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.member_code
-							? 'border-red-500 focus:border-red-500'
-							: ''}"
-					/>
-				</Form.Control>
-				<Form.FieldErrors class="mt-1 text-sm text-red-600" />
-			</Form.Field>
-		{/if}
-
 		<!-- POINT -->
 		<!-- <Form.Field {form} name="point" class="mt-4">
 			<Form.Control>

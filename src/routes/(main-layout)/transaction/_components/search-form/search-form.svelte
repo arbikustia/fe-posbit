@@ -64,11 +64,13 @@
 
 		// === FORMAT STRUK DALAM TEKS ===
 		let nota = '';
-		nota += '\x1B\x21\x30';
+		nota += '\x1B\x21\x15';
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '\x1B\x21\x00';
 		nota += '   Ruko B-15 no 17, Mutiara    \n';
+		nota += '\x1B\x15\x00';
 		nota += 'Gading Timur, Mustikajaya, Bekasi\n';
+		nota += '\x1B\x21\x00';
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;

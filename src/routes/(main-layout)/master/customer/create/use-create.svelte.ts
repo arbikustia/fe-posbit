@@ -129,8 +129,6 @@ export function useCustomerPage() {
 			customer_name: values.customer_name,
 			phone: values.phone,
 			is_member: values.is_member,
-			member_since: values.member_since,
-			member_code: values.member_code ?? '',
 			point: Number(values.point),
 			type: values.is_member ? 'PREMIUM' : 'REGULER'
 		};
@@ -142,8 +140,6 @@ export function useCustomerPage() {
 					customer_name: body.customer_name,
 					phone: body.phone,
 					is_member: body.is_member,
-					member_since: body.member_since,
-					member_code: body.member_code,
 					point: body.point,
 					type: values.is_member ? 'PREMIUM' : 'REGULER'
 				});
@@ -180,8 +176,6 @@ export function useCustomerPage() {
 				phone: qp.get('phone') ?? f.phone,
 				is_member:
 					qp.has('is_member') ? (qp.get('is_member') === 'true' || qp.get('is_member') === '1') : f.is_member,
-				member_since: qp.get('member_since') ?? f.member_since,
-				member_code: qp.get('member_code') ?? f.member_code ?? '',
 				point: qp.has('point') ? Number(qp.get('point')) : f.point,
 				id: qp.get('id') ?? (f as any).id
 			}));

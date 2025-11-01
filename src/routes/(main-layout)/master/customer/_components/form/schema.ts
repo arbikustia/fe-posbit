@@ -5,8 +5,6 @@ export const customerSchema = z.object({
 	customer_name: z.string().min(1, 'Customer name is required'),
 	phone: z.string().min(10, 'Phone number must be at least 10 digits'),
 	is_member: z.boolean().default(false),
-	member_since: z.string().nullable().optional(),
-	member_code: z.string().optional().default(''),
 	point: z.preprocess((val) => {
 		if (typeof val === 'string') return val.trim() === '' ? NaN : Number(val);
 		return val;
