@@ -62,7 +62,7 @@
 		const member = pageState?.customerData !== null ? 'PREMIUM' : 'REGULAR';
 		const point = pageState?.customerData?.point || 0;
 
-		// Helper untuk teks center (panjang 32 karakter)
+		// Helper untuk teks center
 		const center = (text) => {
 			const width = 32;
 			const space = Math.max(0, Math.floor((width - text.length) / 2));
@@ -70,10 +70,16 @@
 		};
 
 		let nota = '';
-		nota += '\x1B\x21\x00';
-		nota += center(toko);
+
+		// === HEADER TOKO (Nama besar, alamat kecil) ===
+		nota += '\x1B\x21\x30'; // Double width + height (besar)
+		nota += center(toko.toUpperCase());
+		nota += '\x1B\x21\x00'; // Kembali ke ukuran normal
 		nota += center(alamat1);
+		nota += '\x1B\x21\x01'; // Font lebih kecil (condensed)
 		nota += center(alamat2);
+		nota += '\x1B\x21\x00'; // Normal lagi
+
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;
@@ -123,6 +129,8 @@
 		nota += '--------------------------------\n';
 		nota += `Payment: ${pageState.paymentMethod}\n`;
 		nota += '--------------------------------\n';
+
+		// === FOOTER ===
 		nota += center('DA.ALUS HIJAB');
 		nota += center('IG: daalushijab.store');
 		nota += center('TIKTOK: da.alus');
