@@ -57,6 +57,35 @@
   function handleClose() {
     closeModal();
   }
+
+  // ================================
+  // 💰 Format Rupiah Handler
+  // ================================
+  function formatIDR(value: number | string) {
+    if (!value) return '';
+    const num = Number(String(value).replace(/[^\d]/g, ''));
+    return num.toLocaleString('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    });
+  }
+
+  // 🔹 Handle input modal_awal
+  function handleModalAwalInput(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const raw = target.value.replace(/[^\d]/g, '');
+    $formData.modal_awal = Number(raw || 0);
+    target.value = formatIDR(raw);
+  }
+
+  // 🔹 Handle input actual_earning
+  function handleActualEarningInput(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const raw = target.value.replace(/[^\d]/g, '');
+    $formData.actual_earning = Number(raw || 0);
+    target.value = formatIDR(raw);
+  }
 </script>
 
 <Dialog.Root bind:open={modalState.is_open}>
@@ -94,7 +123,14 @@
         <Form.Field {form} name="modal_awal" class="mt-4">
           <Form.Control>
             <Form.Label>Modal Awal</Form.Label>
-            <Input type="number" bind:value={$formData.modal_awal} placeholder="Enter Modal Awal" />
+            <Input
+              type="text"
+              inputmode="numeric"
+              placeholder="Enter Modal Awal"
+              value={formatIDR($formData.modal_awal)}
+              oninput={handleModalAwalInput}
+              class="text-left"
+            />
           </Form.Control>
           <Form.FieldErrors />
         </Form.Field>
@@ -102,7 +138,14 @@
         <Form.Field {form} name="actual_earning" class="mt-4">
           <Form.Control>
             <Form.Label>Actual Earning</Form.Label>
-            <Input type="number" bind:value={$formData.actual_earning} placeholder="Enter Actual Earning" />
+            <Input
+              type="text"
+              inputmode="numeric"
+              placeholder="Enter Actual Earning"
+              value={formatIDR($formData.actual_earning)}
+              oninput={handleActualEarningInput}
+              class="text-left"
+            />
           </Form.Control>
           <Form.FieldErrors />
         </Form.Field>
