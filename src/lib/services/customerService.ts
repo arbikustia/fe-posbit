@@ -13,6 +13,11 @@ export const customerService = {
             `/customer/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
         );
     },
+    getDataPerson: () => {
+        return apiClient.get<RestApiResponse<unknown>>(
+            `/view/get-data-person`
+        );
+    },
     delete: (id: string) => {
         return apiClient.delete<RestApiResponse<unknown>>(
             `/customer/${id}`

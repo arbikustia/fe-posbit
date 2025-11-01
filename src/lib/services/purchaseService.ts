@@ -15,7 +15,7 @@ export const purchaseService = {
     },
     delete: (id: string) => {
         return apiClient.delete<RestApiResponse<unknown>>(
-            `/PurchaseOrder/${id}`
+            `/purchase-order/${id}`
         );
     },
     create: (body: {
@@ -34,7 +34,7 @@ export const purchaseService = {
 
     }) => {
         return apiClient.post<RestApiResponse<unknown>>(
-            `/PurchaseOrder`, body
+            `/purchase-order`, body
         );
     },
     update: (body: {
@@ -53,7 +53,7 @@ export const purchaseService = {
         }[]
     }) => {
         return apiClient.put<RestApiResponse<unknown>>(
-            `/PurchaseOrder/${body.id}`, body
+            `/purchase-order/${body.id}`, body
         );
     },
 };

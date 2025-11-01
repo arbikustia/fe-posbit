@@ -4,4 +4,4 @@
 
 const { form ,handleSubmit} = usePurchasePage();
 </script>
-<PurchaseForm {form} {handleSubmit} />
+<PurchaseForm  />

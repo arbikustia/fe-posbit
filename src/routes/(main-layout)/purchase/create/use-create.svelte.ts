@@ -9,6 +9,7 @@ import { onMount } from 'svelte';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { page } from '$app/stores';
+import { browser } from '$app/environment';
 
 export function usePurchasePage() {
     const form = superForm(defaults(zod(invoiceSchema)), {
@@ -17,7 +18,13 @@ export function usePurchasePage() {
         dataType: 'json',
         resetForm: false
     });
-
+    function getCookie(name: string) {
+        if (!browser) return null;
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(';').shift();
+        return null;
+    }
     const { form: formData, validateForm, errors } = form;
 
     type stateProps = {
@@ -60,8 +67,16 @@ export function usePurchasePage() {
                 value: item.kode_barang ?? `item-${index}`,
                 label: item.nama_barang ?? 'Unknown Item',
                 stock: item.jumlah ?? 0,
-                price: item.harga_beli ?? 0
+                harga: item.harga ?? 0,      // harga default
+                harga_a: item.harga_a ?? item.harga,
+                harga_b: item.harga_b ?? item.harga,
+                harga_c: item.harga_c ?? item.harga,
+                harga_d: item.harga_d ?? item.harga,
+                harga_e: item.harga_e ?? item.harga,
+                harga_f: item.harga_f ?? item.harga
             })) || [];
+
+
         } catch (err) {
             console.error('Failed to fetch gudang items:', err);
             toast.error('Failed to load items from gudang');
@@ -138,14 +153,14 @@ export function usePurchasePage() {
 
         // Sesuaikan body payload sesuai API
         const body = {
-            person_id: values.person_id ?? 0,          // wajib sesuai API
+            person_id: values.customer_id ?? 0,          // wajib sesuai API
             status: values.status ?? 'DP',             // default DP jika kosong
             down_payment: values.down_payment ?? 0,    // optional
-            total_amount: values.total_amount ?? 0,    // otomatis dihitung
+            total_amount: values.total_amount  ?? 0,    // otomatis dihitung
             final_amount: values.final_amount ?? 0,    // otomatis dihitung
             discount_amount: values.discount_amount ?? 0,
             payment_method: values.payment_method ?? 'CASH', // default
-            create_by: values.create_by ?? 'system',   // default creator
+            create_by: getCookie('username') || 'superadmin',   // default creator
             keterangan: values.keterangan ?? '',
             details: values.details ?? []              // array { item_id, qty }
         };

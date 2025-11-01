@@ -8,11 +8,12 @@
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { cn } from '$lib/utils.js';
 	import { goto } from '$app/navigation';
 	import { usePurchasePage } from '../../create/use-create.svelte';
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
+	import { customerService } from '@/services/customerService';
 
 	const { form, handleSubmit, state: pageState } = usePurchasePage();
 	const { form: formData, enhance, errors } = form;
@@ -22,14 +23,19 @@
 	// Derived reactive item options
 	const itemOptions = $derived(pageState.listItem ?? []);
 
-	const customerOptions = [
-		{ value: '3fa85f64-5717-4562-b3fc-2c963f66afa6', label: 'John Doe' },
-		{ value: '2fa85f64-5717-4562-b3fc-2c963f66afa6', label: 'Putri Maharani' },
-		{ value: '1fa85f64-5717-4562-b3fc-2c963f66afa6', label: 'Budi Santoso' },
-		{ value: '4fa85f64-5717-4562-b3fc-2c963f66afa6', label: 'Sarah Johnson' },
-		{ value: '5fa85f64-5717-4562-b3fc-2c963f66afa6', label: 'Ahmad Wijaya' }
-	];
+	let customerOptions = $state([]);
 
+	onMount(() => {
+		customerService
+			.getDataPerson()
+			.then((res: any) => {
+				customerOptions = res.data.data.map((customer: any, index: number) => ({
+					value: customer.id ?? `customer-${index}`,
+					label: customer.firstname + ' ' + customer.lastname
+				}));
+				console.log(res.data, 'ofofo');
+			});
+	});
 	const statusOptions = [
 		{ value: 'LUNAS', label: 'Lunas' },
 		{ value: 'DP', label: 'DP' },
@@ -66,19 +72,24 @@
 
 	// === TOGGLE ITEMS ===
 	function toggleItem(itemValue: string) {
-		selectedItems = selectedItems.includes(itemValue)
-			? selectedItems.filter((id) => id !== itemValue)
-			: [...selectedItems, itemValue];
+		if (selectedItems.includes(itemValue)) {
+			selectedItems = selectedItems.filter((id) => id !== itemValue);
+		} else {
+			selectedItems = [...selectedItems, itemValue];
+		}
+		syncSelectedItems(); // 🔥 sync manual
 	}
 
 	function removeItem(itemValue: string, e: Event) {
 		e.stopPropagation();
 		selectedItems = selectedItems.filter((id) => id !== itemValue);
+		syncSelectedItems(); // 🔥 sync manual
 	}
 
 	function clearAll(e: Event) {
 		e.stopPropagation();
 		selectedItems = [];
+		syncSelectedItems(); // 🔥 sync manual
 	}
 
 	function closeAndFocusTrigger() {
@@ -94,44 +105,73 @@
 	}
 
 	// === SYNC SELECTED ITEMS WITH DETAILS ===
-	$effect(() => {
+	function syncSelectedItems() {
 		const mapped = selectedItems.map((id) => {
 			const existing = itemDetails.find((d) => d.item_id === id);
-			return existing ?? { item_id: id, qty: 1 };
+			const item = pageState.listItem.find((i) => i.value === id);
+			const qty = existing?.qty ?? 1;
+			const price = getItemPriceByQty(item, qty);
+			const priceKey = getPriceKey(qty);
+			return { item_id: id, qty, price, priceKey };
 		});
 
-		const changed =
-			mapped.length !== itemDetails.length ||
-			mapped.some((m, i) => m.item_id !== itemDetails[i]?.item_id || m.qty !== itemDetails[i]?.qty);
-
-		if (changed) {
-			itemDetails = mapped;
-			formData.update((f) => ({ ...f, details: mapped }));
-		}
-	});
+		itemDetails = mapped;
+		formData.update((f) => ({ ...f, details: mapped }));
+	}
 
 	// === UPDATE QUANTITY ===
 	function updateQty(id: string, newQty: number) {
-		const updated = itemDetails.map((i) =>
-			i.item_id === id ? { ...i, qty: Math.max(1, newQty) } : i
-		);
+		const item = pageState.listItem.find((i) => i.value === id);
+		if (!item) return;
+
+		const qty = Math.max(1, Math.min(newQty, item.stock));
+		const price = getItemPriceByQty(item, qty);
+		const priceKey = getPriceKey(qty);
+
+		const updated = itemDetails.map((i) => (i.item_id === id ? { ...i, qty, price, priceKey } : i));
 		itemDetails = updated;
 		formData.update((f) => ({ ...f, details: updated }));
 	}
 
 	// === AUTO CALCULATE TOTAL ===
 	$effect(() => {
-		const total = itemDetails.reduce((sum, detail) => {
-			const item = itemOptions.find((i) => i.value === detail.item_id);
-			return sum + (item?.price ?? 0) * detail.qty;
-		}, 0);
-
+		const total = itemDetails.reduce((sum, detail) => sum + (detail.price ?? 0) * detail.qty, 0);
 		formData.update((f) => ({
 			...f,
 			total_amount: total,
 			final_amount: total - (f.discount_amount ?? 0)
 		}));
 	});
+
+	function getPriceKey(qty: number) {
+		if (qty >= 2000) return 'F';
+		if (qty >= 1000) return 'E';
+		if (qty >= 600) return 'D';
+		if (qty >= 300) return 'C';
+		if (qty >= 100) return 'B';
+		if (qty >= 50) return 'A';
+		return 'default';
+	}
+	function getItemPriceByQty(item: any, qty: number) {
+		if (!item) return 0;
+		const key = getPriceKey(qty);
+		switch (key) {
+			case 'F':
+				return item.harga_f;
+			case 'E':
+				return item.harga_e;
+			case 'D':
+				return item.harga_d;
+			case 'C':
+				return item.harga_c;
+			case 'B':
+				return item.harga_b;
+			case 'A':
+				return item.harga_a;
+			default:
+				return item.harga;
+		}
+	}
 </script>
 
 <form
@@ -196,7 +236,7 @@
 							<Command.Group>
 								{#each itemOptions as item}
 									<Command.Item
-										value={item.label}
+										value={item.value}
 										keywords={[item.label, item.value]}
 										onSelect={() => toggleItem(item.value)}
 										class="flex items-center justify-between"
@@ -211,7 +251,8 @@
 											<div class="flex flex-col">
 												<span class="text-sm font-medium">{item.label}</span>
 												<span class="text-muted-foreground text-xs">
-													Rp {item.price.toLocaleString('id-ID')}
+													<!-- Rp {getItemPriceByQty(item, 50)?.toLocaleString('id-ID')} -->
+													<!-- minimal 50 -->
 												</span>
 											</div>
 										</div>
@@ -248,13 +289,15 @@
 		<div class="space-y-3">
 			{#each itemDetails as detail (detail.item_id)}
 				{@const item = itemOptions.find((i) => i.value === detail.item_id)}
-				{@const subtotal = (item?.price ?? 0) * detail.qty}
+				{@const subtotal = (detail.price ?? 0) * detail.qty}
 
 				<div class="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:justify-between">
 					<div class="flex flex-col">
 						<p class="font-medium">{item?.label}</p>
 						<div class="text-muted-foreground text-sm">
-							Stock: {item?.stock} • Price: Rp {item?.price.toLocaleString('id-ID')}
+							Stock: {item?.stock} • Price: Rp {getItemPriceByQty(item, detail.qty)?.toLocaleString(
+								'id-ID'
+							)}
 						</div>
 					</div>
 
@@ -277,7 +320,7 @@
 						</div>
 						<div class="text-right">
 							<p class="text-muted-foreground text-xs">Subtotal</p>
-							<p class="font-semibold">Rp {subtotal.toLocaleString('id-ID')}</p>
+							<p class="font-semibold">Rp {subtotal?.toLocaleString('id-ID')}</p>
 						</div>
 					</div>
 				</div>
@@ -296,12 +339,15 @@
 						{#snippet child({ props })}
 							<Button
 								variant="outline"
-								class="flex w-full items-start justify-between text-start font-normal"
+								class="flex w-full items-start bg-red-600 text-start font-normal"
 								{...props}
 								role="combobox"
 							>
 								<span
-									class={cn(!$formData.customer_id && 'text-muted-foreground w-full text-start')}
+									class={cn(
+										!$formData.customer_id && 'text-muted-foreground w-full text-start',
+										'w-full text-start'
+									)}
 								>
 									{customerLabel}
 								</span>
@@ -357,6 +403,17 @@
 			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
 
+		<!-- DOWN PAYMENT: Hanya muncul jika status DP -->
+		{#if $formData.status === 'DP'}
+			<Form.Field {form} name="down_payment">
+				<Form.Control>
+					<Form.Label>Down Payment</Form.Label>
+					<Input type="number" placeholder="0" bind:value={$formData.down_payment} />
+				</Form.Control>
+				<Form.FieldErrors class="text-sm text-red-600" />
+			</Form.Field>
+		{/if}
+
 		<!-- PAYMENT METHOD -->
 		<Form.Field {form} name="payment_method">
 			<Form.Control>
@@ -374,24 +431,22 @@
 		</Form.Field>
 
 		<!-- DISCOUNT -->
-		<Form.Field {form} name="discount_amount">
+		<!-- <Form.Field {form} name="discount_amount">
 			<Form.Control>
 				<Form.Label>Discount</Form.Label>
 				<Input type="number" placeholder="0" bind:value={$formData.discount_amount} />
 			</Form.Control>
 			<Form.FieldErrors class="text-sm text-red-600" />
-		</Form.Field>
+		</Form.Field> -->
 
 		<!-- KETERANGAN -->
 		<Form.Field {form} name="keterangan">
 			<Form.Control>
 				<Form.Label>Description</Form.Label>
-				<Textarea  placeholder="description" bind:value={$formData.keterangan} />
+				<Textarea placeholder="description" bind:value={$formData.keterangan} />
 			</Form.Control>
 			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
-
-		
 	</div>
 
 	<!-- BUTTONS -->

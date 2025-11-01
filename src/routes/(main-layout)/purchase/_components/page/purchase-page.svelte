@@ -10,6 +10,7 @@
 	import { cn } from '$lib/utils';
 	import { usePurchasePage } from '../../create/use-create.svelte'; // ✅ pastikan path ini benar
 	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover'; // pastikan path sesuai
+	import { purchaseService } from '@/services/purchaseService';
 
 	// ✅ Ambil state & logic dari composable
 	const { state, handleGetPaged, handlePageChange } = usePurchasePage();
@@ -52,6 +53,7 @@
 
 	async function confirmDelete() {
 		if (state.selectedPurchase) {
+			purchaseService.delete(state.selectedPurchase.id);
 			state.table = state.table.filter((r: any) => r.id !== state.selectedPurchase?.id);
 			closeDeleteModal();
 		}
@@ -119,8 +121,6 @@
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Customer</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Status</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
-								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Final</th>
-								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Discount</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Payment</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created By</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created At</th>
@@ -140,7 +140,7 @@
 										{#if row.person_id}
 											<Popover>
 												<PopoverTrigger
-													class="cursor-pointer text-xs text-start font-medium text-blue-500 underline hover:text-blue-600"
+													class="cursor-pointer text-start text-xs font-medium text-blue-500 underline hover:text-blue-600"
 												>
 													{row.customer_name}
 												</PopoverTrigger>
@@ -194,8 +194,6 @@
 
 									<td class="px-3 py-2.5 text-xs">{row.status}</td>
 									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
-									<td class="px-3 py-2.5 text-xs">Rp {row.final_amount.toLocaleString()}</td>
-									<td class="px-3 py-2.5 text-xs">{row.discount_amount.toLocaleString()}%</td>
 									<td class="px-3 py-2.5 text-xs">{row.payment_method}</td>
 									<td class="px-3 py-2.5 text-xs">{row.created_by}</td>
 									<td class="px-3 py-2.5 text-xs">{row.created_at}</td>
@@ -211,7 +209,7 @@
 												</PopoverTrigger>
 
 												<PopoverContent
-													class="max-h-60 w-72 overflow-y-auto rounded-lg bg-white p-3 shadow-lg"
+													class="max-h-60 w-92 overflow-y-auto rounded-lg bg-white p-3 shadow-lg"
 												>
 													<p class="mb-2 text-sm font-semibold text-gray-700">Order Details</p>
 
@@ -263,7 +261,10 @@
 												<button
 													type="button"
 													class="rounded-full p-1.5 transition hover:scale-110 hover:bg-yellow-50 md:p-2"
-													onclick={() => goto(`/purchase/create?id=${encodeURIComponent(row.id)}`)}
+													onclick={() =>
+														goto(
+															`/purchase/create?id=${row.id}&customer_id=${row.customer_id}&status=${row.status}&payment_method=${row.payment_method}&total=${row.total_amount}&final=${row.final_amount}`
+														)}
 												>
 													<Icon
 														icon="lucide:edit"
