@@ -4,11 +4,11 @@ import { superForm, defaults } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { invoiceSchema } from '../_components/form/schema';
 import { purchaseService } from '@/services/purchaseService';
+import { itemService } from '@/services/itemService';
 import { onMount } from 'svelte';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { page } from '$app/stores';
-import { itemService } from '@/services/itemService';
 
 export function usePurchasePage() {
     const form = superForm(defaults(zod(invoiceSchema)), {
@@ -32,7 +32,7 @@ export function usePurchasePage() {
         totalCount: number;
         isLoading: boolean;
         searchTerm: string;
-        listItem: any[]; // ✅ tambahkan ini
+        listItem: { value: string; label: string; stock: number; price: number }[];
     };
 
     const state = $state<stateProps>({
@@ -47,26 +47,21 @@ export function usePurchasePage() {
         totalCount: 0,
         isLoading: false,
         searchTerm: '',
-        listItem: [] // ✅ default kosong
+        listItem: []
     });
 
-    // ✅ FETCH DATA ITEM GUDANG
+    // Fetch items from gudang
     async function handleGetListItemGudang() {
         try {
             state.isLoading = true;
             const res: any = await itemService.getListitemGudang();
 
-            if (res?.data?.data) {
-                // Map data API ke bentuk yang cocok dipakai di komponen (value, label, stock, price)
-                state.listItem = res.data.data.map((item: any, index: number) => ({
-                    value: item.kode_barang ?? `item-${index}`,
-                    label: item.nama_barang ?? 'Unknown Item',
-                    stock: item.jumlah ?? 0,
-                    price: item.harga_beli ?? 0
-                }));
-            } else {
-                state.listItem = [];
-            }
+            state.listItem = res?.data?.data?.map((item: any, index: number) => ({
+                value: item.kode_barang ?? `item-${index}`,
+                label: item.nama_barang ?? 'Unknown Item',
+                stock: item.jumlah ?? 0,
+                price: item.harga_beli ?? 0
+            })) || [];
         } catch (err) {
             console.error('Failed to fetch gudang items:', err);
             toast.error('Failed to load items from gudang');
@@ -76,8 +71,7 @@ export function usePurchasePage() {
         }
     }
 
-    // 🔹 Transformasi data dari API tanpa field yang berhubungan dengan ID
-    // usePurchasePage.ts
+    // Transform API data for table
     function transformPurchaseData(apiData: any[]) {
         return apiData.map((item, index) => ({
             no: index + 1,
@@ -101,13 +95,9 @@ export function usePurchasePage() {
         }));
     }
 
-
-
-
     async function handleGetPaged(pageNumber = state.currentPage, searchTerm = state.searchTerm) {
         try {
             state.isLoading = true;
-
             const res: any = await purchaseService.getPaged({
                 PageNumber: pageNumber,
                 PageSize: state.pageSize,
@@ -139,7 +129,6 @@ export function usePurchasePage() {
 
     async function handleSubmit() {
         const result = await validateForm({ update: true });
-
         if (!result.valid) {
             toast.error('Please check your input');
             return;
@@ -147,24 +136,23 @@ export function usePurchasePage() {
 
         const values = get(formData);
 
+        // Sesuaikan body payload sesuai API
         const body = {
-            customer_id: values.customer_id,
-            point_used: values.point_used,
-            point_earned: values.point_earned,
-            status: values.status,
-            total_amount: values.total_amount,
-            final_amount: values.final_amount,
-            discount_amount: values.discount_amount,
-            payment_method: values.payment_method,
-            details: values.details
+            person_id: values.person_id ?? 0,          // wajib sesuai API
+            status: values.status ?? 'DP',             // default DP jika kosong
+            down_payment: values.down_payment ?? 0,    // optional
+            total_amount: values.total_amount ?? 0,    // otomatis dihitung
+            final_amount: values.final_amount ?? 0,    // otomatis dihitung
+            discount_amount: values.discount_amount ?? 0,
+            payment_method: values.payment_method ?? 'CASH', // default
+            create_by: values.create_by ?? 'system',   // default creator
+            keterangan: values.keterangan ?? '',
+            details: values.details ?? []              // array { item_id, qty }
         };
 
         try {
             if ((values as any).id) {
-                await purchaseService.update({
-                    id: String((values as any).id),
-                    ...body
-                });
+                await purchaseService.update({ id: String((values as any).id), ...body });
                 toast.success('Purchase updated successfully');
             } else {
                 await purchaseService.create(body);
@@ -177,12 +165,10 @@ export function usePurchasePage() {
         }
     }
 
+
     onMount(() => {
         handleGetPaged();
-        handleGetListItemGudang(); // ✅ panggil di sini
-        const url = get(page).url;
-        const qp = url.searchParams;
-        if (qp.has('id')) return;
+        handleGetListItemGudang();
     });
 
     return {
@@ -192,6 +178,6 @@ export function usePurchasePage() {
         handleSubmit,
         handleGetPaged,
         handlePageChange,
-        handleGetListItemGudang // ✅ export juga
+        handleGetListItemGudang
     };
 }

@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import type { UserInfo } from '$lib/types/UserLogin';
+	import { userService } from '@/services/userService';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 	import Loader from '@lucide/svelte/icons/loader';
+	import { onMount } from 'svelte';
 
 	let { userInfo }: { userInfo: UserInfo | undefined } = $props();
 
@@ -70,6 +73,30 @@
 		}
 		// Hapus finally block karena redirect akan terjadi
 	};
+
+	let email = $state('');
+
+	function getCookie(name: string) {
+		if (!browser) return null;
+		const value = `; ${document.cookie}`;
+		const parts = value.split(`; ${name}=`);
+		if (parts.length === 2) return parts.pop()?.split(';').shift();
+		return null;
+	}
+
+	onMount(async () => {
+		let username = getCookie('username') || 'superadmin';
+		await userService
+			.getPaged({
+				PageNumber: 1,
+				PageSize: 1000000,
+				SearchTerm: ''
+			})
+			.then((res: any) => {
+				let user = res.data.data.find((u: any) => u.username === username).email;
+				email = user;
+			});
+	});
 </script>
 
 <DropdownMenu.Root>
@@ -98,7 +125,7 @@
 			</g>
 		</svg>
 
-		<div>{userInfo?.fullName}</div>
+		<div>{getCookie('username') || 'superadmin'}</div>
 
 		<ChevronDown class="size-4 " />
 	</DropdownMenu.Trigger>
@@ -106,8 +133,8 @@
 	<DropdownMenu.Content class="w-56" align="end">
 		<DropdownMenu.Label class="font-normal">
 			<div class="flex flex-col space-y-1">
-				<p class=" leading-none font-medium">{userInfo?.fullName}</p>
-				<p class="text-md text-muted-foreground leading-none">{userInfo?.email}</p>
+				<p class=" leading-none font-medium">{getCookie('username') || 'superadmin'}</p>
+				<p class="text-md text-muted-foreground leading-none">{email}</p>
 			</div>
 		</DropdownMenu.Label>
 		<DropdownMenu.Separator />

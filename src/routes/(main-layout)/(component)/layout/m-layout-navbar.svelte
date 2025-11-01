@@ -17,9 +17,9 @@
 			href: '/transaction'
 		},
 		{
-			icon: User,
-			label: m.my_profile(),
-			href: '/profile'
+			icon: PurchaseIcon,
+			label: "Purchase",
+			href: '/purchase'
 		}
 	];
 

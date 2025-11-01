@@ -8,6 +8,11 @@ export const saleService = {
             `/sale/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
         );
     },
+    getPagedReport: (params: { PageNumber: number, PageSize: number, SearchTerm: string, Start: string, End: string }) => {
+        return apiClient.get<RestApiResponse<unknown>>(
+            `/sale/paged-report-sale?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
+        );
+    },
     delete: (id: string) => {
         return apiClient.delete<RestApiResponse<unknown>>(
             `/sale/${id}`

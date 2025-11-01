@@ -62,10 +62,12 @@ export function useSalesPage() {
 		try {
 			state.isLoading = true;
 
-			const res: any = await saleService.getPaged({
+			const res: any = await saleService.getPagedReport({
 				PageNumber: pageNumber,
 				PageSize: state.pageSize,
-				SearchTerm: searchTerm
+				SearchTerm: searchTerm,
+				Start: '',
+				End: ''
 			});
 
 			if (res?.data?.data) {

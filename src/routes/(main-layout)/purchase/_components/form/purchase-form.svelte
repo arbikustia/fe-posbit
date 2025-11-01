@@ -12,8 +12,9 @@
 	import { cn } from '$lib/utils.js';
 	import { goto } from '$app/navigation';
 	import { usePurchasePage } from '../../create/use-create.svelte';
+	import Textarea from '@/components/ui/textarea/textarea.svelte';
 
-	const { form, handleSubmit, state:pageState } = usePurchasePage();
+	const { form, handleSubmit, state: pageState } = usePurchasePage();
 	const { form: formData, enhance, errors } = form;
 
 	// === OPTIONS ===
@@ -30,16 +31,14 @@
 	];
 
 	const statusOptions = [
-		{ value: 'Pending', label: 'Pending' },
-		{ value: 'Paid', label: 'Paid' },
-		{ value: 'Cancelled', label: 'Cancelled' }
+		{ value: 'LUNAS', label: 'Lunas' },
+		{ value: 'DP', label: 'DP' },
+		{ value: 'CANCEL', label: 'Cancelled' }
 	];
 
 	const paymentOptions = [
-		{ value: 'Cash', label: 'Cash' },
-		{ value: 'Credit Card', label: 'Credit Card' },
-		{ value: 'Transfer', label: 'Transfer' },
-		{ value: 'E-Wallet', label: 'E-Wallet' }
+		{ value: 'CASH', label: 'Cash' },
+		{ value: 'DEBIT', label: 'Debit' }
 	];
 
 	// === STATES ===
@@ -49,7 +48,14 @@
 	let open = $state(false);
 	let triggerRef = $state<HTMLButtonElement>(null!);
 
+	// Customer combobox state
+	let customerOpen = $state(false);
+	let customerTriggerRef = $state<HTMLButtonElement>(null!);
+
 	// Derived labels for display
+	const customerLabel = $derived(
+		customerOptions.find((r) => r.value === $formData.customer_id)?.label ?? 'Select Customer'
+	);
 	const statusLabel = $derived(
 		statusOptions.find((r) => r.value === $formData.status)?.label ?? 'Select Status'
 	);
@@ -78,6 +84,13 @@
 	function closeAndFocusTrigger() {
 		open = false;
 		tick().then(() => triggerRef?.focus());
+	}
+
+	// === CUSTOMER SELECTION ===
+	function selectCustomer(customerId: string) {
+		formData.update((f) => ({ ...f, customer_id: customerId }));
+		customerOpen = false;
+		tick().then(() => customerTriggerRef?.focus());
 	}
 
 	// === SYNC SELECTED ITEMS WITH DETAILS ===
@@ -228,7 +241,7 @@
 				</Popover.Content>
 			</Popover.Root>
 		</Form.Control>
-		<Form.FieldErrors class="mt-1 text-sm text-red-600" />
+		<Form.FieldErrors class=" text-sm text-red-600" />
 	</Form.Field>
 
 	<!-- ITEM DETAILS -->
@@ -275,21 +288,56 @@
 
 	<!-- FORM FIELDS -->
 	<div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-		<!-- CUSTOMER -->
+		<!-- CUSTOMER (SEARCHABLE) -->
 		<Form.Field {form} name="customer_id">
 			<Form.Control>
 				<Form.Label>Customer <span class="text-red-500">*</span></Form.Label>
-				<Select.Root type="single" name="customer_id" bind:value={$formData.customer_id}>
-					<Select.Trigger class="w-full">
-						{customerOptions.find((r) => r.value === $formData.customer_id)?.label ??
-							'Select Customer'}
-					</Select.Trigger>
-					<Select.Content>
-						{#each customerOptions as c}
-							<Select.Item value={c.value} label={c.label}>{c.label}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
+				<Popover.Root bind:open={customerOpen}>
+					<Popover.Trigger bind:ref={customerTriggerRef} class="w-full">
+						{#snippet child({ props })}
+							<Button
+								variant="outline"
+								class="flex w-full items-start justify-between text-start font-normal"
+								{...props}
+								role="combobox"
+							>
+								<span
+									class={cn(!$formData.customer_id && 'text-muted-foreground w-full text-start')}
+								>
+									{customerLabel}
+								</span>
+								<ChevronsUpDownIcon class="ml-2 size-4 shrink-0 opacity-50" />
+							</Button>
+						{/snippet}
+					</Popover.Trigger>
+
+					<Popover.Content class="w-[300px] p-0">
+						<Command.Root>
+							<Command.Input placeholder="Search customer..." class="h-9" />
+							<Command.List>
+								<Command.Empty>No customer found.</Command.Empty>
+								<Command.Group>
+									{#each customerOptions as customer}
+										<Command.Item
+											value={customer.label}
+											keywords={[customer.label, customer.value]}
+											onSelect={() => selectCustomer(customer.value)}
+											class="flex items-center gap-2"
+										>
+											<CheckIcon
+												class={cn(
+													'size-4',
+													$formData.customer_id !== customer.value && 'text-transparent'
+												)}
+											/>
+											<span>{customer.label}</span>
+										</Command.Item>
+									{/each}
+								</Command.Group>
+							</Command.List>
+						</Command.Root>
+					</Popover.Content>
+				</Popover.Root>
 			</Form.Control>
 			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
@@ -335,23 +383,16 @@
 			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
 
-		<!-- POINT USED -->
-		<Form.Field {form} name="point_used">
+		<!-- KETERANGAN -->
+		<Form.Field {form} name="keterangan">
 			<Form.Control>
-				<Form.Label>Point Used</Form.Label>
-				<Input type="number" placeholder="0" bind:value={$formData.point_used} />
+				<Form.Label>Description</Form.Label>
+				<Textarea  placeholder="description" bind:value={$formData.keterangan} />
 			</Form.Control>
 			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
 
-		<!-- POINT EARNED -->
-		<Form.Field {form} name="point_earned">
-			<Form.Control>
-				<Form.Label>Point Earned</Form.Label>
-				<Input type="number" placeholder="0" bind:value={$formData.point_earned} />
-			</Form.Control>
-			<Form.FieldErrors class="text-sm text-red-600" />
-		</Form.Field>
+		
 	</div>
 
 	<!-- BUTTONS -->

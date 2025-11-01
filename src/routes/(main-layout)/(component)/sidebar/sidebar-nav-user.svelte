@@ -61,17 +61,7 @@
 						</div>
 					</div>
 				</DropdownMenu.Label>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Group>
-					<!-- <DropdownMenu.Item onclick={() => goto('/profile')}>
-						<User />
-						Profile
-					</DropdownMenu.Item> -->
-					<DropdownMenu.Item>
-						<Settings />
-						Settings
-					</DropdownMenu.Item>
-				</DropdownMenu.Group>
+				
 				<DropdownMenu.Separator />
 				<DropdownMenu.Item>
 					{#snippet child({ props })}

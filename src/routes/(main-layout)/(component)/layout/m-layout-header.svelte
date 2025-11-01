@@ -25,9 +25,7 @@
 			</a>
 		</div>
 	</div>
-	<Button variant="ghost">
-		<Icon icon="line-md:bell-twotone" width="32" height="32" class="text-(--sidebar-foreground)" />
-	</Button>
+
 </div>
 
 <LayoutSidebar bind:open={isOpenSidebar} />

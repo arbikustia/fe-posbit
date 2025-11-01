@@ -28,6 +28,7 @@ export function useCustomerPage() {
 		totalCount: number;
 		isLoading: boolean;
 		searchTerm: string;
+		typeFilter: string;
 	};
 
 	const { form: formData, validateForm, errors } = form;
@@ -43,8 +44,10 @@ export function useCustomerPage() {
 		totalPages: 0,
 		totalCount: 0,
 		isLoading: false,
-		searchTerm: ''
+		searchTerm: '',
+		typeFilter: '' // <-- tambah ini
 	});
+
 
 	// 🔹 Transform data dari API ke bentuk table
 	function transformCustomerData(apiData: any[]) {
@@ -80,7 +83,16 @@ export function useCustomerPage() {
 			});
 
 			if (res?.data?.data) {
-				state.table = transformCustomerData(res.data.data);
+				let transformed = transformCustomerData(res.data.data);
+
+				// Apply type filter
+				if (state.typeFilter) {
+					transformed = transformed.filter(c =>
+						state.typeFilter === 'PREMIUM' ? c.is_member : !c.is_member
+					);
+				}
+
+				state.table = transformed;
 				state.currentPage = res.data.page_number ?? pageNumber;
 				state.totalPages = res.data.total_pages ?? 1;
 				state.totalCount = res.data.total_count ?? state.table.length;
@@ -95,6 +107,7 @@ export function useCustomerPage() {
 			state.isLoading = false;
 		}
 	}
+
 
 	// 🔹 Ganti halaman
 	async function handlePageChange(pageNum: number) {
@@ -119,7 +132,7 @@ export function useCustomerPage() {
 			member_since: values.member_since,
 			member_code: values.member_code ?? '',
 			point: Number(values.point),
-			type: values.is_member ? 'PREMIUM' : 'REGULAR'
+			type: values.is_member ? 'PREMIUM' : 'REGULER'
 		};
 
 		try {
@@ -132,7 +145,7 @@ export function useCustomerPage() {
 					member_since: body.member_since,
 					member_code: body.member_code,
 					point: body.point,
-					type: values.is_member ? 'PREMIUM' : 'REGULAR'
+					type: values.is_member ? 'PREMIUM' : 'REGULER'
 				});
 				toast.success('Customer updated successfully');
 			} else {

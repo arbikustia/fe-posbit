@@ -7,8 +7,9 @@
 	import { tick, onMount } from 'svelte';
 	import * as Pagination from '$lib/components/ui/pagination/index.js';
 	import { useCustomerPage } from '../../create/use-create.svelte';
+	import * as Select from '$lib/components/ui/select/index.js';
 
-	const { state, handlePageChange } = useCustomerPage();
+	const { state, handlePageChange, handleGetPaged } = useCustomerPage();
 
 	async function toggleSearch() {
 		state.showSearch = !state.showSearch;
@@ -71,31 +72,50 @@
 					<span>New Customer</span>
 				</Button>
 
-				<!-- Search Container -->
-				<div class="relative flex w-full items-center justify-end sm:w-auto">
-					<div class="overflow-hidden">
-						{#if state.showSearch}
-							<input
-								bind:value={state.searchTerm}
-								transition:fly={{ x: 120, duration: 250 }}
-								placeholder="Search customer..."
-								class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
+				<div class="flex gap-2">
+					<!-- Search Container -->
+					<div class="relative flex w-full items-center justify-end sm:w-auto">
+						<div class="overflow-hidden">
+							{#if state.showSearch}
+								<input
+									bind:value={state.searchTerm}
+									transition:fly={{ x: 120, duration: 250 }}
+									placeholder="Search customer..."
+									class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
+								/>
+							{/if}
+						</div>
+
+						<button
+							type="button"
+							class="absolute right-0 rounded-full p-2 transition hover:bg-gray-100 dark:hover:bg-gray-800"
+							onclick={toggleSearch}
+						>
+							<Icon
+								icon="majesticons:search-line"
+								width="20"
+								height="20"
+								class="text-gray-600 md:h-[22px] md:w-[22px]"
 							/>
-						{/if}
+						</button>
 					</div>
 
-					<button
-						type="button"
-						class="absolute right-0 rounded-full p-2 transition hover:bg-gray-100 dark:hover:bg-gray-800"
-						onclick={toggleSearch}
-					>
-						<Icon
-							icon="majesticons:search-line"
-							width="20"
-							height="20"
-							class="text-gray-600 md:h-[22px] md:w-[22px]"
-						/>
-					</button>
+					<div class="ml-3 w-[150px]">
+						<Select.Root
+							type="single"
+							bind:value={state.typeFilter}
+							onValueChange={() => handleGetPaged(1)}
+						>
+							<Select.Trigger class="w-full text-sm">
+								{state.typeFilter || 'All Types'}
+							</Select.Trigger>
+							<Select.Content>
+								<Select.Item value="">All</Select.Item>
+								<Select.Item value="REGULER">Regular</Select.Item>
+								<Select.Item value="PREMIUM">Premium</Select.Item>
+							</Select.Content>
+						</Select.Root>
+					</div>
 				</div>
 			</div>
 		</header>

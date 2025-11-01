@@ -59,8 +59,8 @@
 <div class="flex gap-4">
 	<div class="mx-auto w-full max-w-7xl">
 		<!-- TABLE -->
-		<div class=" h-96 rounded-lg border border-gray-200 shadow-sm">
-			<table class="min-w-full divide-y divide-gray-200">
+		<div class=" h-72 overflow-auto rounded-lg border border-gray-200 shadow-sm">
+			<table class="min-w-full over divide-y divide-gray-200">
 				<thead class="sticky top-0 z-10 bg-gray-100">
 					<tr class="text-left text-sm font-medium text-gray-700">
 						<th class="px-3 py-2.5 text-xs sm:px-4 sm:py-3 md:text-sm">No</th>
@@ -73,7 +73,7 @@
 					</tr>
 				</thead>
 
-				<tbody class="divide-y divide-gray-200 overflow-y-auto">
+				<tbody class="divide-y overflow-auto divide-gray-200 overflow-y-auto">
 					{#if pageState.itemTable.length === 0}
 						<tr>
 							<td colspan="7" class="py-4 text-center text-sm text-gray-500">
@@ -166,6 +166,6 @@
 				</div>
 			</div>
 		</div>
-		<Button variant="outline" onclick={closingFunc}>Closing</Button>
+		<Button variant="danger" onclick={closingFunc}>Closing</Button>
 	</div>
 </div>

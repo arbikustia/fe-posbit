@@ -20,6 +20,9 @@
 	import MLanguageSwitch from '../language-switch/m-language-switch.svelte';
 	import { themeConfigStore } from '$lib/stores/themeConfigStore';
 	import Loader from '@lucide/svelte/icons/loader';
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+	import { userService } from '@/services/userService';
 
 	let { open = $bindable() } = $props();
 
@@ -116,17 +119,17 @@
 	const logout: SubmitFunction = () => {
 		return async ({ result }) => {
 			if (isLoading) return;
-			
+
 			try {
 				isLoading = true;
-				
+
 				// Beri sedikit delay agar UI sempat update
-				await new Promise(resolve => setTimeout(resolve, 50));
-				
+				await new Promise((resolve) => setTimeout(resolve, 50));
+
 				// Hapus client-side data
 				clearAllStorage();
 				deleteClientCookies();
-				
+
 				if (result.type === 'redirect') {
 					window.location.href = result.location;
 					handleClose();
@@ -146,7 +149,7 @@
 
 		try {
 			isLoading = true;
-			await new Promise(resolve => setTimeout(resolve, 50));
+			await new Promise((resolve) => setTimeout(resolve, 50));
 
 			// Hapus client-side data
 			clearAllStorage();
@@ -168,6 +171,30 @@
 			window.location.href = '/auth/login';
 		}
 	};
+
+	let email = $state('');
+
+	function getCookie(name: string) {
+		if (!browser) return null;
+		const value = `; ${document.cookie}`;
+		const parts = value.split(`; ${name}=`);
+		if (parts.length === 2) return parts.pop()?.split(';').shift();
+		return null;
+	}
+
+	onMount(async () => {
+		let username = getCookie('username') || 'superadmin';
+		await userService
+			.getPaged({
+				PageNumber: 1,
+				PageSize: 1000000,
+				SearchTerm: ''
+			})
+			.then((res: any) => {
+				let user = res.data.data.find((u: any) => u.username === username).email;
+				email = user;
+			});
+	});
 
 	const logoSrc = $derived(themeSrcLogo($themeConfigStore.logoType));
 </script>
@@ -208,8 +235,8 @@
 							</g>
 						</svg>
 						<div>
-							<div>{$userStore?.userInfo.fullName}</div>
-							<div class="text-sm text-(--sidebar-foreground)/80">{$userStore?.userInfo.email}</div>
+							<div>{getCookie('username') || 'superadmin'}</div>
+							<div class="text-sm text-(--sidebar-foreground)/80">{email}</div>
 						</div>
 					</div>
 				</div>
@@ -261,7 +288,7 @@
 					<div class="space-y-2 p-2">
 						<!-- <MLanguageSwitch /> -->
 						<!-- <ThemeCostumizer /> -->
-						
+
 						<!-- Method 1: Form dengan loading -->
 						<!-- <form method="POST" use:enhance={logout} action="/api/logout" class="w-full">
 							<Button 
@@ -280,10 +307,10 @@
 						</form> -->
 
 						<!-- Method 2: Atau gunakan button manual -->
-						
-						<Button 
-							variant="outline" 
-							class="mt-5 w-full text-red-500 flex items-center justify-center gap-2"
+
+						<Button
+							variant="outline"
+							class="mt-5 flex w-full items-center justify-center gap-2 text-red-500"
 							onclick={manualLogout}
 							disabled={isLoading}
 						>
@@ -294,7 +321,6 @@
 								<span>Logout</span>
 							{/if}
 						</Button>
-						
 					</div>
 				</div>
 			</div>

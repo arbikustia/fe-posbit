@@ -71,8 +71,22 @@ export function useTransactionForm() {
 			const firstItem = apiData[0];
 			const newItem = transformItemData([firstItem])[0];
 
-			state.itemTable = [...state.itemTable, newItem];
+			// 🔹 CEK APAKAH BARCODE SUDAH ADA
+			const existingItem = state.itemTable.find(
+				(item: any) => item.barcode_id === newItem.barcode_id
+			);
 
+			if (existingItem) {
+				// Jika sudah ada, tolak data dan tampilkan peringatan
+				toast.warning(`${newItem.name} sudah ada di keranjang!`);
+				return;
+			}
+
+			// Jika belum ada, tambahkan item baru dengan qty = 1
+			state.itemTable = [...state.itemTable, newItem];
+			toast.success(`${newItem.name} ditambahkan ke keranjang`);
+
+			// Hitung ulang total amount
 			state.amount = state.itemTable.reduce(
 				(total: number, item: any) => total + item.harga_jual * (item.qty || 1),
 				0
