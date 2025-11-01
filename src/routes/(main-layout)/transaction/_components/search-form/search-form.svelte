@@ -54,23 +54,26 @@
 
 		// === DATA NOTA ===
 		const toko = 'DA.ALUS HIJAB';
-		const alamat = 'Jl. Melati No. 45, Jakarta';
-		const telp = 'Telp: 0812-9876-5432';
+		const alamat1 = 'Ruko B-15 no 17, Mutiara';
+		const alamat2 = 'Gading Timur, Mustikajaya, Bekasi';
 		const tanggal = pageState.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
 		const kasir = pageState.username || '';
 		const customer = pageState.customerName || '';
 		const member = pageState?.customerData !== null ? 'PREMIUM' : 'REGULAR';
 		const point = pageState?.customerData?.point || 0;
 
-		// === FORMAT STRUK DALAM TEKS ===
+		// Helper untuk teks center (panjang 32 karakter)
+		const center = (text) => {
+			const width = 32;
+			const space = Math.max(0, Math.floor((width - text.length) / 2));
+			return ' '.repeat(space) + text + '\n';
+		};
+
 		let nota = '';
-		nota += '\x1B\x21\x15';
-		nota += '         DA.ALUS HIJAB         \n';
 		nota += '\x1B\x21\x00';
-		nota += '   Ruko B-15 no 17, Mutiara    \n';
-		nota += '\x1B\x15\x00';
-		nota += 'Gading Timur, Mustikajaya, Bekasi\n';
-		nota += '\x1B\x21\x00';
+		nota += center(toko);
+		nota += center(alamat1);
+		nota += center(alamat2);
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;
@@ -85,13 +88,10 @@
 			const total = harga_jual * qty;
 			subtotal += total;
 
-			// Lebar maksimum kertas thermal (misal 32 karakter total)
-			const namaCol = 12; // lebar kolom nama
+			const namaCol = 12;
 			const hargaCol = 8;
 			const qtyCol = 3;
-			const totalCol = 9;
 
-			// Bagi nama jadi beberapa baris (setiap baris maks 12 karakter)
 			const namaPotong = [];
 			let sisa = String(name);
 
@@ -100,13 +100,11 @@
 				sisa = sisa.substring(namaCol);
 			}
 
-			// Baris pertama (nama + angka)
 			const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
 			const hrg = String(harga_jual.toLocaleString('id-ID')).padStart(hargaCol, ' ');
 			const qtyStr = String(qty).padStart(qtyCol, ' ');
-			nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
+			nota += `${namaBaris1}   Rp${hrg}${qtyStr}\n`;
 
-			// Jika nama lebih panjang, cetak sisanya di bawah (hanya nama)
 			for (let i = 1; i < namaPotong.length; i++) {
 				nota += `${namaPotong[i]}\n`;
 			}
@@ -115,25 +113,23 @@
 		nota += '--------------------------------\n';
 		const diskonPersen = pageState.discount || 0;
 		const diskonNilai = (subtotal * diskonPersen) / 100;
-		const totalBayar = subtotal - diskonNilai;
 
-		nota += `Subtotal    :Rp${pageState.totalAll?.toLocaleString('id-ID')}\n`;
-		nota += `Diskon      :${pageState.discount || 0}% (${diskonNilai?.toLocaleString('id-ID')}) \n`;
-		nota += `Total       :Rp${pageState.grandTotal?.toLocaleString('id-ID')}\n`;
-		nota += `Nominal     :Rp${pageState.amountPaid?.toLocaleString('id-ID')}\n`;
-		nota += `Kembalian   :Rp${((pageState.amountPaid || 0) - (pageState.grandTotal || 0))?.toLocaleString('id-ID')}\n`;
+		nota += `Subtotal    : Rp${pageState.totalAll?.toLocaleString('id-ID')}\n`;
+		nota += `Diskon      : ${pageState.discount || 0}% (Rp${diskonNilai?.toLocaleString('id-ID')})\n`;
+		nota += `Total       : Rp${pageState.grandTotal?.toLocaleString('id-ID')}\n`;
+		nota += `Nominal     : Rp${pageState.amountPaid?.toLocaleString('id-ID')}\n`;
+		nota += `Kembalian   : Rp${((pageState.amountPaid || 0) - (pageState.grandTotal || 0))?.toLocaleString('id-ID')}\n`;
 
 		nota += '--------------------------------\n';
 		nota += `Payment: ${pageState.paymentMethod}\n`;
 		nota += '--------------------------------\n';
-		nota += '          DA.ALUS HIJAB         \n';
-		nota += '      IG daalushijab.store	     \n';
-		nota += '         TIKTOK  da.alus        \n';
-		nota += ' Terima kasih telah berbelanja! \n';
-		nota += '*** Barang yang sudah dibeli ***\n';
-		nota += '*** tidak dapat dikembalikan ***\n';
+		nota += center('DA.ALUS HIJAB');
+		nota += center('IG: daalushijab.store');
+		nota += center('TIKTOK: da.alus');
+		nota += center('Terima kasih telah berbelanja!');
+		nota += center('*** Barang yang sudah dibeli ***');
+		nota += center('*** tidak dapat dikembalikan ***');
 
-		// === CETAK MENGGUNAKAN RAWBT (BLUETOOTH THERMAL) ===
 		try {
 			const encoded = btoa(unescape(encodeURIComponent(nota)));
 			window.location.href = 'rawbt:base64,' + encoded;
