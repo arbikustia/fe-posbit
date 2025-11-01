@@ -72,13 +72,12 @@
 		// === FORMAT STRUK DALAM TEKS ===
 		let nota = '';
 		nota += '         DA.ALUS HIJAB         \n';
-		nota += '   Jl. Melati No. 45, Jakarta   \n';
-		nota += '     Telp: 0812-9876-5432      \n';
+		nota += '   Ruko B-15 no 17, Mutiara    \n';
+		nota += 'Gading Timur, Mustikajaya, Bekasi\n';
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;
 		nota += `Customer: ${customer}\n`;
-		nota += `Member  : ${member}   Point: ${point}\n`;
 		nota += '--------------------------------\n';
 		nota += 'Item                  Hrg   Qty\n';
 		nota += '--------------------------------\n';
@@ -123,16 +122,16 @@
 
 		nota += `Subtotal    :Rp${pageState.totalAll?.toLocaleString('id-ID')}\n`;
 		nota += `Diskon      :${pageState.discount || 0}%\n`;
-		nota += `Total Bayar :Rp${pageState.grandTotal?.toLocaleString('id-ID')}\n`;
-		nota += `Bayar       :Rp${pageState.amountPaid?.toLocaleString('id-ID')}\n`;
-		nota += `Kembali     :Rp${((pageState.amountPaid || 0) - (pageState.grandTotal || 0))?.toLocaleString('id-ID')}\n`;
+		nota += `Total       :Rp${pageState.grandTotal?.toLocaleString('id-ID')}\n`;
+		nota += `Nominal     :Rp${pageState.amountPaid?.toLocaleString('id-ID')}\n`;
+		nota += `Kembalian   :Rp${((pageState.amountPaid || 0) - (pageState.grandTotal || 0))?.toLocaleString('id-ID')}\n`;
 
 		nota += '--------------------------------\n';
 		nota += `Payment: ${pageState.paymentMethod}\n`;
 		nota += '--------------------------------\n';
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '        IG @daalushijab		 \n';
-		nota += '       www.daalushijab.id        \n';
+		nota += '       www.daalushijab.com        \n';
 		nota += ' Terima kasih telah berbelanja! \n';
 		nota += '*** Barang yang sudah dibeli ***\n';
 		nota += '*** tidak dapat dikembalikan ***\n';
