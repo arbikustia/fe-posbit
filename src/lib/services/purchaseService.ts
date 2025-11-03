@@ -13,6 +13,11 @@ export const purchaseService = {
             `/purchase-order/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
         );
     },
+    getDataPackage: () => {
+        return apiClient.get<RestApiResponse<unknown>>(
+            `/view/get-data-package`
+        );
+    },
     delete: (id: string) => {
         return apiClient.delete<RestApiResponse<unknown>>(
             `/purchase-order/${id}`

@@ -78,7 +78,7 @@
 				</Button>
 
 				<!-- Search Container -->
-				<div class="relative flex w-full items-center justify-end sm:w-auto">
+				<!-- <div class="relative flex w-full items-center justify-end sm:w-auto">
 					<div class="overflow-hidden">
 						{#if state.showSearch}
 							<input
@@ -102,7 +102,7 @@
 							class="text-gray-600 md:h-[22px] md:w-[22px]"
 						/>
 					</button>
-				</div>
+				</div> -->
 			</div>
 		</header>
 

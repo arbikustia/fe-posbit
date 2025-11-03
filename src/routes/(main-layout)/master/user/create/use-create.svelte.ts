@@ -27,6 +27,7 @@ export function useUserPage() {
 		totalPages: number;
 		totalCount: number;
 		isLoading: boolean;
+		isEditing: boolean;
 		searchTerm: string;
 	};
 
@@ -43,7 +44,8 @@ export function useUserPage() {
 		totalPages: 0,
 		totalCount: 0,
 		isLoading: false,
-		searchTerm: ''
+		searchTerm: '',
+		isEditing: false
 	});
 
 	// 🔹 Transform data dari API ke table
@@ -134,7 +136,7 @@ export function useUserPage() {
 
 	$effect(() => {
 		(async () => {
-				handleGetPaged(1, state.searchTerm);
+			handleGetPaged(1, state.searchTerm);
 		})();
 	});
 
@@ -145,7 +147,7 @@ export function useUserPage() {
 		const qp = url.searchParams;
 		const hasAny =
 			qp.has('username') || qp.has('email') || qp.has('role') || qp.has('id') || qp.has('password');
-
+			
 		if (hasAny) {
 			formData.update((f) => ({
 				...f,

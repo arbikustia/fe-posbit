@@ -14,6 +14,7 @@
 	import { usePurchasePage } from '../../create/use-create.svelte';
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
 	import { customerService } from '@/services/customerService';
+	import { purchaseService } from '@/services/purchaseService';
 
 	const { form, handleSubmit, state: pageState } = usePurchasePage();
 	const { form: formData, enhance, errors } = form;
@@ -23,7 +24,8 @@
 	// Derived reactive item options
 	const itemOptions = $derived(pageState.listItem ?? []);
 
-	let customerOptions = $state([]);
+	let customerOptions: { value: string; label: string }[] = $state([]);
+	let packageOptions: { value: string; label: string }[] = $state([]);
 
 	onMount(() => {
 		customerService.getDataPerson().then((res: any) => {
@@ -32,6 +34,16 @@
 				label: customer.firstname + ' ' + customer.lastname
 			}));
 			console.log(res.data, 'ofofo');
+		});
+
+		purchaseService.getDataPackage().then((res: any) => {
+			console.log(res.data.data, 'package');
+			packageOptions = res.data.data.map(
+				(item: { id: string; package_name: string }, index: number) => ({
+					value: item.id,
+					label: item.package_name
+				})
+			);
 		});
 	});
 	const statusOptions = [
@@ -47,7 +59,7 @@
 
 	// === STATES ===
 	let selectedItems = $state<string[]>([]);
-	let itemDetails = $state<{ item_id: string; qty: number }[]>([]);
+	let itemDetails = $state<{ item_id: string; qty: number; price: number; priceKey: string }[]>([]);
 
 	let open = $state(false);
 	let triggerRef = $state<HTMLButtonElement>(null!);
@@ -67,6 +79,33 @@
 		paymentOptions.find((r) => r.value === $formData.payment_method)?.label ??
 			'Select Payment Method'
 	);
+	const packageLabel = $derived(
+		packageOptions.find((r) => r.value === $formData.package_id)?.label ?? 'Select package'
+	);
+
+	// === GET PRICE BY PACKAGE ===
+	function getItemPriceByPackage(item: any, packageName: string) {
+		if (!item) return 0;
+		
+		switch (packageName) {
+			case 'Harga Normal':
+				return item.harga;
+			case 'Harga A':
+				return item.harga_a;
+			case 'Harga B':
+				return item.harga_b;
+			case 'Harga C':
+				return item.harga_c;
+			case 'Harga D':
+				return item.harga_d;
+			case 'Harga E':
+				return item.harga_e;
+			case 'Harga F':
+				return item.harga_f;
+			default:
+				return item.harga;
+		}
+	}
 
 	// === TOGGLE ITEMS ===
 	function toggleItem(itemValue: string) {
@@ -75,19 +114,19 @@
 		} else {
 			selectedItems = [...selectedItems, itemValue];
 		}
-		syncSelectedItems(); // 🔥 sync manual
+		syncSelectedItems();
 	}
 
 	function removeItem(itemValue: string, e: Event) {
 		e.stopPropagation();
 		selectedItems = selectedItems.filter((id) => id !== itemValue);
-		syncSelectedItems(); // 🔥 sync manual
+		syncSelectedItems();
 	}
 
 	function clearAll(e: Event) {
 		e.stopPropagation();
 		selectedItems = [];
-		syncSelectedItems(); // 🔥 sync manual
+		syncSelectedItems();
 	}
 
 	function closeAndFocusTrigger() {
@@ -108,8 +147,8 @@
 			const existing = itemDetails.find((d) => d.item_id === id);
 			const item = pageState.listItem.find((i) => i.value === id);
 			const qty = existing?.qty ?? 1;
-			const price = getItemPriceByQty(item, qty);
-			const priceKey = getPriceKey(qty);
+			const price = getItemPriceByPackage(item, packageLabel);
+			const priceKey = packageLabel;
 			return { item_id: id, qty, price, priceKey };
 		});
 
@@ -123,13 +162,32 @@
 		if (!item) return;
 
 		const qty = Math.max(1, Math.min(newQty, item.stock));
-		const price = getItemPriceByQty(item, qty);
-		const priceKey = getPriceKey(qty);
+		const price = getItemPriceByPackage(item, packageLabel);
+		const priceKey = packageLabel;
 
 		const updated = itemDetails.map((i) => (i.item_id === id ? { ...i, qty, price, priceKey } : i));
 		itemDetails = updated;
 		formData.update((f) => ({ ...f, details: updated }));
 	}
+
+	// === WATCH PACKAGE CHANGES AND RECALCULATE ===
+	let previousPackageId = $state<string | undefined>(undefined);
+	
+	$effect(() => {
+		// Only recalculate if package actually changed
+		if ($formData.package_id !== previousPackageId && itemDetails.length > 0) {
+			previousPackageId = $formData.package_id;
+			
+			const updated = itemDetails.map((detail) => {
+				const item = pageState.listItem.find((i) => i.value === detail.item_id);
+				const price = getItemPriceByPackage(item, packageLabel);
+				return { ...detail, price, priceKey: packageLabel };
+			});
+			
+			itemDetails = updated;
+			formData.update((f) => ({ ...f, details: updated }));
+		}
+	});
 
 	// === AUTO CALCULATE TOTAL ===
 	$effect(() => {
@@ -140,36 +198,6 @@
 			final_amount: total - (f.discount_amount ?? 0)
 		}));
 	});
-
-	function getPriceKey(qty: number) {
-		if (qty >= 2000) return 'F';
-		if (qty >= 1000) return 'E';
-		if (qty >= 600) return 'D';
-		if (qty >= 300) return 'C';
-		if (qty >= 100) return 'B';
-		if (qty >= 50) return 'A';
-		return 'default';
-	}
-	function getItemPriceByQty(item: any, qty: number) {
-		if (!item) return 0;
-		const key = getPriceKey(qty);
-		switch (key) {
-			case 'F':
-				return item.harga_f;
-			case 'E':
-				return item.harga_e;
-			case 'D':
-				return item.harga_d;
-			case 'C':
-				return item.harga_c;
-			case 'B':
-				return item.harga_b;
-			case 'A':
-				return item.harga_a;
-			default:
-				return item.harga;
-		}
-	}
 </script>
 
 <form
@@ -179,108 +207,122 @@
 	class="mx-auto w-full max-w-4xl space-y-6 px-4 py-6 sm:px-6 md:px-8"
 >
 	<h2 class="text-xl font-bold sm:text-2xl">Create New Purchase</h2>
+	<div class="grid grid-cols-2 items-center gap-4">
+		<!-- PACKAGE - Moved to top -->
+		<Form.Field {form} name="package_id">
+			<Form.Control>
+				<Form.Label>Package <span class="text-red-500">*</span></Form.Label>
+				<Select.Root type="single" name="package_id" bind:value={$formData.package_id}>
+					<Select.Trigger class="w-full">{packageLabel}</Select.Trigger>
+					<Select.Content class="text-xs">
+						{#each packageOptions as p}
+							<Select.Item class="text-xs" value={p.value} label={p.label}>{p.label}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			</Form.Control>
+			<Form.FieldErrors class="text-sm text-red-600" />
+		</Form.Field>
 
-	<!-- ITEMS -->
-	<Form.Field {form} name="details">
-		<Form.Control>
-			<Form.Label class="text-sm font-medium text-gray-700"
-				>Items <span class="text-red-500">*</span></Form.Label
-			>
-			<Popover.Root bind:open>
-				<Popover.Trigger bind:ref={triggerRef} class="h-fit w-full">
-					{#snippet child({ props })}
-						<Button
-							variant="outline"
-							class="min-h-[2.5rem] w-full justify-between text-left font-normal"
-							{...props}
-							role="combobox"
-						>
-							<div class="flex flex-1 flex-wrap gap-1.5">
-								{#if selectedItems.length === 0}
-									<span class="text-muted-foreground">Select items...</span>
-								{:else}
-									{#each selectedItems as id}
-										{@const item = itemOptions.find((i) => i.value === id)}
-										<span
-											class="bg-primary/10 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium"
-										>
-											{item?.label}
-											<button
-												type="button"
-												onclick={(e) => removeItem(id, e)}
-												class="hover:text-destructive transition"
+		<!-- ITEMS -->
+		<Form.Field {form} name="details">
+			<Form.Control>
+				<Form.Label>Items <span class="text-red-500">*</span></Form.Label>
+				<Popover.Root bind:open>
+					<Popover.Trigger bind:ref={triggerRef} class="h-fit w-full">
+						{#snippet child({ props })}
+							<Button
+								variant="outline"
+								class="min-h-[2.5rem] w-full justify-between text-left font-normal"
+								{...props}
+								role="combobox"
+							>
+								<div class="flex flex-1 flex-wrap gap-1.5">
+									{#if selectedItems.length === 0}
+										<span class="text-muted-foreground">Select items...</span>
+									{:else}
+										{#each selectedItems as id}
+											{@const item = itemOptions.find((i) => i.value === id)}
+											<span
+												class="bg-primary/10 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium"
 											>
-												<XIcon class="size-3" />
+												{item?.label}
+												<button
+													type="button"
+													onclick={(e) => removeItem(id, e)}
+													class="hover:text-destructive transition"
+												>
+													<XIcon class="size-3" />
+												</button>
+											</span>
+										{/each}
+										{#if selectedItems.length > 3}
+											<button type="button" onclick={clearAll} title="Clear all">
+												<XIcon class="text-destructive ml-1 size-4" />
 											</button>
-										</span>
-									{/each}
-									{#if selectedItems.length > 3}
-										<button type="button" onclick={clearAll} title="Clear all">
-											<XIcon class="text-destructive ml-1 size-4" />
-										</button>
+										{/if}
 									{/if}
-								{/if}
-							</div>
-							<ChevronsUpDownIcon class="ml-2 size-4 shrink-0 opacity-50" />
-						</Button>
-					{/snippet}
-				</Popover.Trigger>
+								</div>
+								<ChevronsUpDownIcon class="ml-2 size-4 shrink-0 opacity-50" />
+							</Button>
+						{/snippet}
+					</Popover.Trigger>
 
-				<Popover.Content class="w-[500px] p-0" align="start">
-					<Command.Root>
-						<Command.Input placeholder="Search items..." class="h-9" />
-						<Command.List>
-							<Command.Empty>No items found.</Command.Empty>
-							<Command.Group>
-								{#each itemOptions as item}
-									<Command.Item
-										value={item.value}
-										keywords={[item.label, item.value]}
-										onSelect={() => toggleItem(item.value)}
-										class="flex items-center justify-between"
-									>
-										<div class="flex items-center gap-2">
-											<CheckIcon
-												class={cn(
-													'size-4',
-													!selectedItems.includes(item.value) && 'text-transparent'
-												)}
-											/>
-											<div class="flex flex-col">
-												<span class="text-xs font-medium">{item.label} - {item.deskripsi}</span>
-												<span class="text-muted-foreground text-xs">
-													{item.kode_barang}
-													<!-- minimal 50 -->
-												</span>
+					<Popover.Content class="w-[500px] p-0" align="start">
+						<Command.Root>
+							<Command.Input placeholder="Search items..." class="h-9" />
+							<Command.List>
+								<Command.Empty>No items found.</Command.Empty>
+								<Command.Group>
+									{#each itemOptions as item}
+										<Command.Item
+											value={item.value}
+											keywords={[item.label, item.value]}
+											onSelect={() => toggleItem(item.value)}
+											class="flex items-center justify-between"
+										>
+											<div class="flex items-center gap-2">
+												<CheckIcon
+													class={cn(
+														'size-4',
+														!selectedItems.includes(item.value) && 'text-transparent'
+													)}
+												/>
+												<div class="flex flex-col">
+													<span class="text-xs font-medium">{item.label} - {item.deskripsi}</span>
+													<span class="text-muted-foreground text-xs">
+														{item.kode_barang}
+													</span>
+												</div>
 											</div>
-										</div>
-										<span class="text-muted-foreground text-xs">Stock: {item.stock}</span>
-									</Command.Item>
-								{/each}
-							</Command.Group>
-						</Command.List>
+											<span class="text-muted-foreground text-xs">Stock: {item.stock}</span>
+										</Command.Item>
+									{/each}
+								</Command.Group>
+							</Command.List>
 
-						{#if selectedItems.length > 0}
-							<div class="flex items-center justify-between border-t p-2">
-								<span class="text-muted-foreground text-xs">
-									{selectedItems.length} selected
-								</span>
-								<Button
-									size="sm"
-									variant="ghost"
-									onclick={closeAndFocusTrigger}
-									class="h-7 text-xs"
-								>
-									Done
-								</Button>
-							</div>
-						{/if}
-					</Command.Root>
-				</Popover.Content>
-			</Popover.Root>
-		</Form.Control>
-		<Form.FieldErrors class=" text-sm text-red-600" />
-	</Form.Field>
+							{#if selectedItems.length > 0}
+								<div class="flex items-center justify-between border-t p-2">
+									<span class="text-muted-foreground text-xs">
+										{selectedItems.length} selected
+									</span>
+									<Button
+										size="sm"
+										variant="ghost"
+										onclick={closeAndFocusTrigger}
+										class="h-7 text-xs"
+									>
+										Done
+									</Button>
+								</div>
+							{/if}
+						</Command.Root>
+					</Popover.Content>
+				</Popover.Root>
+			</Form.Control>
+			<Form.FieldErrors class=" text-sm text-red-600" />
+		</Form.Field>
+	</div>
 
 	<!-- ITEM DETAILS -->
 	{#if selectedItems.length > 0}
@@ -293,9 +335,7 @@
 					<div class="flex flex-col">
 						<p class="text-sm font-medium">{item?.label} - {item?.deskripsi}</p>
 						<div class="text-muted-foreground text-sm">
-							Stock: {item?.stock} • Price: Rp {getItemPriceByQty(item, detail.qty)?.toLocaleString(
-								'id-ID'
-							)}
+							Stock: {item?.stock} • {packageLabel}: Rp {detail.price?.toLocaleString('id-ID')}
 						</div>
 					</div>
 
@@ -309,7 +349,6 @@
 									onclick={() => updateQty(detail.item_id, detail.qty - 1)}>−</button
 								>
 
-								<!-- ✅ Editable input langsung -->
 								<input
 									type="number"
 									min="1"
@@ -347,15 +386,14 @@
 						{#snippet child({ props })}
 							<Button
 								variant="outline"
-								class="flex w-full items-start bg-red-600 text-start font-normal"
+								class="w-full justify-between text-left font-normal"
 								{...props}
 								role="combobox"
 							>
 								<span
 									class={cn(
-										!$formData.customer_id && 'text-muted-foreground w-full text-start',
-										'w-full text-start'
-									)}
+										!$formData.customer_id && 'text-muted-foreground'
+									, 'w-full text-left')}
 								>
 									{customerLabel}
 								</span>
@@ -437,15 +475,6 @@
 			</Form.Control>
 			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
-
-		<!-- DISCOUNT -->
-		<!-- <Form.Field {form} name="discount_amount">
-			<Form.Control>
-				<Form.Label>Discount</Form.Label>
-				<Input type="number" placeholder="0" bind:value={$formData.discount_amount} />
-			</Form.Control>
-			<Form.FieldErrors class="text-sm text-red-600" />
-		</Form.Field> -->
 
 		<!-- KETERANGAN -->
 		<Form.Field {form} name="keterangan">

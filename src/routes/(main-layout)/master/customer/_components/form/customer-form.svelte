@@ -43,24 +43,25 @@
 	// Track previous value untuk avoid infinite loop
 	let previousIsMember = $state($formData.is_member);
 
-	$effect(() => {
-		// Hanya reset jika is_member berubah dari true ke false
-		if (previousIsMember === true && $formData.is_member === false) {
+$effect(() => {
+	if (previousIsMember === true && $formData.is_member === false) {
+		if ($formData.member_since !== null || $formData.member_code !== '') {
 			$formData.member_since = null;
 			$formData.member_code = '';
 			memberSinceDate = undefined;
 		}
-		previousIsMember = $formData.is_member;
-	});
+	}
+	previousIsMember = $formData.is_member;
+});
 
-	// Sync date picker dengan form data
-	$effect(() => {
-		if (memberSinceDate) {
-			$formData.member_since = memberSinceDate.toString();
-		} else if ($formData.is_member) {
-			$formData.member_since = null;
-		}
-	});
+$effect(() => {
+	// Hanya update form jika tanggal berubah benar-benar
+	const newDate = memberSinceDate ? memberSinceDate.toString() : null;
+	if ($formData.member_since !== newDate) {
+		$formData.member_since = newDate;
+	}
+});
+
 </script>
 
 <form
@@ -111,21 +112,6 @@
 			</Form.Control>
 			<Form.FieldErrors class="mt-1 text-sm text-red-600" />
 		</Form.Field>
-
-		<!-- POINT -->
-		<!-- <Form.Field {form} name="point" class="mt-4">
-			<Form.Control>
-				<Form.Label class="text-sm font-medium text-gray-700">Point</Form.Label>
-				<Input
-					type="number"
-					bind:value={$formData.point}
-					class="mt-1 w-full rounded-md border px-3 py-2 text-sm sm:text-base {$errors.point
-						? 'border-red-500 focus:border-red-500'
-						: ''}"
-				/>
-			</Form.Control>
-			<Form.FieldErrors class="mt-1 text-sm text-red-600" />
-		</Form.Field> -->
 
 		<!-- BUTTONS -->
 		<div class="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">

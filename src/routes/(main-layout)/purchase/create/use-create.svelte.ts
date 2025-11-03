@@ -105,6 +105,7 @@ export function usePurchasePage() {
             final_amount: item.final_amount ?? 0,
             discount_amount: item.discount_amount ?? 0,
             payment_method: item.payment_method ?? '-',
+            package_id: item.package_id ?? '-',
             created_at: item.created_at ?? '-',
             created_by: item.created_by ?? '-',
             purchase_order_details: item.purchase_order_details ?? [],
@@ -162,6 +163,7 @@ export function usePurchasePage() {
             final_amount: values.final_amount ?? 0,    // otomatis dihitung
             discount_amount: values.discount_amount ?? 0,
             payment_method: values.payment_method ?? 'CASH', // default
+            package_id: values.package_id ?? 'Harga Normal', // default
             create_by: getCookie('username') || 'superadmin',   // default creator
             keterangan: values.keterangan ?? '',
             details: values.details ?? []              // array { item_id, qty }

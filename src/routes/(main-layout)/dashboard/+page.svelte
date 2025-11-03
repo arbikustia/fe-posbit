@@ -12,17 +12,17 @@
 	import { onMount } from 'svelte';
 	import { modalService } from '@/services/modalService';
 	import { FormModalAwal } from './_components/form-modal-awal';
-	
+
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
 	// ✅ Ambil semua state & handler langsung dari useDashboardPage
 	const { state, handleGetSummary, handleGetChart } = useDashboardPage();
 	let popoverOpen = false;
-	
+
 	// ✅ Ubah tanggal → update di state & fetch ulang data
 	function handleDateChange(v: any) {
 		console.log('Date changed:', v);
-		
+
 		// Cek apakah start dan end sudah terisi
 		if (v?.start && v?.end) {
 			// Update state dengan tanggal baru
@@ -51,13 +51,18 @@
 	let showModalAwal = false;
 
 	onMount(() => {
-		modalService.getStatusModalAwal()
-			.then((res: any) => {
-				if (res.data?.data == null) {
+		modalService.getStatusModalAwal().then((res: any) => {
+			if (res?.data?.data == null) {
+				if (res.data?.data?.shift1 == '0') {
 					showModalAwal = true;
+				} else if (res.data?.data?.shift2 == '0') {
+					showModalAwal = true;
+				} else {
+					showModalAwal = false;
 				}
-				console.log(res.data,'ofofo')
-			});
+			}
+			console.log(res.data, 'ofofo');
+		});
 	});
 </script>
 

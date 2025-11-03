@@ -46,9 +46,16 @@
 	function confirmDelete() {
 		if (state.selectedUser) {
 			console.log('Deleting user:', state.selectedUser);
-			userService.delete(state.selectedUser.id);
-			state.table = state.table.filter((r: any) => r.id !== state.selectedUser?.id);
-			closeDeleteModal();
+			userService
+				.delete(state.selectedUser.id)
+				.then(() => {
+					console.log('User deleted successfully');
+					state.table = state.table.filter((r: any) => r.id !== state.selectedUser?.id);
+					closeDeleteModal();
+				})
+				.catch((error) => {
+					console.error('User already used elsewhere:');
+				});
 		}
 	}
 </script>

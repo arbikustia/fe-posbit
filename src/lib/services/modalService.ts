@@ -5,7 +5,7 @@ import type { RestApiResponse } from '$lib/types/api/base/RestApi';
 export const modalService = {
     getStatusModalAwal: () => {
         return apiClient.get<RestApiResponse<unknown>>(
-            `/view/get-modal-awal`
+            `/view/get-status-modal`
         );
     },
 

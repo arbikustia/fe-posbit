@@ -135,21 +135,34 @@ export function useCustomerPage() {
 
 		try {
 			if ((values as any).id) {
-				await customerService.update({
+				const res = await customerService.update({
 					id: String((values as any).id),
 					customer_name: body.customer_name,
 					phone: body.phone,
 					is_member: body.is_member,
 					point: body.point,
 					type: values.is_member ? 'PREMIUM' : 'REGULER'
-				});
-				toast.success('Customer updated successfully');
+				})
+				.then((res) => {
+						if (res?.data?.messages[0] == "Already exist.") {
+							toast.error('Customer Already exist');
+						} else {
+							toast.success('Customer updated successfully');
+							goto('/master/customer');
+						}
+					})
 			} else {
-				await customerService.create(body);
-				toast.success('Customer created successfully');
+				const res = await customerService.create(body)
+					.then((res) => {
+						if (res?.data?.messages[0] == "Already exist.") {
+							toast.error('Customer Already exist');
+						} else {
+							toast.success('Customer created successfully');
+							goto('/master/customer');
+						}
+					})
 			}
 
-			goto('/master/customer');
 		} catch (err) {
 			toast.error('Failed to save customer');
 		}
