@@ -66,19 +66,12 @@
 		const member = pageState?.customerData !== null ? 'PREMIUM' : 'REGULAR';
 		const point = pageState?.customerData?.point || 0;
 
-		// Data items - sesuaikan dengan data cart Anda
-		// const items = [
-		// 	['Hijab Segi Empat', 75000, 2],
-		// 	['Pashmina Wolfis', 85000, 1],
-		// 	['Jilbab Instan', 45000, 3]
-		// ];
-
 		// === FORMAT STRUK DALAM TEKS ===
 		let nota = '';
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '        Ruko B-15 no 17        \n';
 		nota += '\x1B\x21\x01'; 
-		nota += 'Mutiara Gading Timur, Mustikajaya, Bekasi\n';
+		nota += ' Mutiara Gading Timur, Mustikajaya, Bekasi\n';
 		nota += '\x1B\x21\x08'; 
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;

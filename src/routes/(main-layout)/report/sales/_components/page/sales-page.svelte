@@ -113,87 +113,84 @@
 	}
 
 	// Fungsi print nota thermal untuk report
-	function printThermalNota(row:any) {
+	function printReportNota(sale: any) {
 		if (!browser) return;
 
-		// === DATA NOTA ===
+		// === DATA NOTA DARI SALE ===
 		const toko = 'DA.ALUS HIJAB';
 		const alamat = 'Ruko B-15 no 17, ';
 		const telp = 'Mutiara Gading Timur, Mustikajaya, Bekasi';
-		const tanggal = row.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
-		const kasir = row.username || '';
-		const customer = row.customerName || '';
-		const member = row?.customerData !== null ? 'PREMIUM' : 'REGULAR';
-		const point = row?.customerData?.point || 0;
-
-		// Data items - sesuaikan dengan data cart Anda
-		// const items = [
-		// 	['Hijab Segi Empat', 75000, 2],
-		// 	['Pashmina Wolfis', 85000, 1],
-		// 	['Jilbab Instan', 45000, 3]
-		// ];
+		const tanggal = formatDate(sale.created_at) || dayjs().format('DD/MM/YYYY HH:mm');
+		const kasir = sale.cashier || '';
+		const customer = sale.customer_name || '';
+		const member = sale.customer_type || 'REGULAR';
+		const point = sale.customer_point || 0;
 
 		// === FORMAT STRUK DALAM TEKS ===
 		let nota = '';
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '        Ruko B-15 no 17        \n';
+		nota += ' Mutiara Gading Timur, Mustikajaya, Bekasi\n';
 		nota += '\x1B\x21\x01';
-		nota += 'Mutiara Gading Timur, Mustikajaya, Bekasi\n';
-		nota += '\x1B\x21\x08';
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;
-		nota += `Customer: ${customer}\n`;
+		if (customer) nota += `Customer: ${customer}\n`;
 		nota += '--------------------------------\n';
 		nota += 'Item                  Hrg   Qty\n';
 		nota += '--------------------------------\n';
 
 		let subtotal = 0;
-		for (const item of row.itemTable) {
-			const { name, harga_jual, qty = 1 } = item;
-			const total = harga_jual * qty;
-			subtotal += total;
+		if (sale.details && sale.details.length > 0) {
+			for (const item of sale.details) {
+				const { item_name, price, qty = 1 } = item;
+				const total = price * qty;
+				subtotal += total;
 
-			// Lebar maksimum kertas thermal (misal 32 karakter total)
-			const namaCol = 12; // lebar kolom nama
-			const hargaCol = 8;
-			const qtyCol = 3;
-			const totalCol = 9;
+				// Lebar maksimum kertas thermal (misal 12 karakter nama)
+				const namaCol = 12;
+				const hargaCol = 8;
+				const qtyCol = 3;
 
-			// Bagi nama jadi beberapa baris (setiap baris maks 12 karakter)
-			const namaPotong = [];
-			let sisa = String(name);
+				// Bagi nama menjadi beberapa baris
+				const namaPotong: string[] = [];
+				let sisa = String(item_name);
+				while (sisa.length > 0) {
+					namaPotong.push(sisa.substring(0, namaCol));
+					sisa = sisa.substring(namaCol);
+				}
 
-			while (sisa.length > 0) {
-				namaPotong.push(sisa.substring(0, namaCol));
-				sisa = sisa.substring(namaCol);
-			}
+				// Baris pertama nama + harga + qty
+				const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
+				const hrg = String(price.toLocaleString('id-ID')).padStart(hargaCol, ' ');
+				const qtyStr = String(qty).padStart(qtyCol, ' ');
+				nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
 
-			// Baris pertama (nama + angka)
-			const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
-			const hrg = String(harga_jual.toLocaleString('id-ID')).padStart(hargaCol, ' ');
-			const qtyStr = String(qty).padStart(qtyCol, ' ');
-			nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
-
-			// Jika nama lebih panjang, cetak sisanya di bawah (hanya nama)
-			for (let i = 1; i < namaPotong.length; i++) {
-				nota += `${namaPotong[i]}\n`;
+				// Baris tambahan untuk nama panjang
+				for (let i = 1; i < namaPotong.length; i++) {
+					nota += `${namaPotong[i]}\n`;
+				}
 			}
 		}
 
 		nota += '--------------------------------\n';
-		const diskonPersen = row.discount || 0;
-		const diskonNilai = (subtotal * diskonPersen) / 100;
-		const totalBayar = subtotal - diskonNilai;
 
-		nota += `Subtotal    :Rp${row.totalAll?.toLocaleString('id-ID')}\n`;
-		nota += `Diskon      :${row.discount || 0}% (Rp${diskonNilai})\n`;
-		nota += `Total Bayar :Rp${row.grandTotal?.toLocaleString('id-ID')}\n`;
-		nota += `Bayar       :Rp${row.amountPaid?.toLocaleString('id-ID')}\n`;
-		nota += `Kembali     :Rp${((row.amountPaid || 0) - (row.grandTotal || 0))?.toLocaleString('id-ID')}\n`;
+		const diskonPersen = sale.discount_percent || 0;
+		const diskonNilai = sale.discount_amount || 0;
+		const totalBayar = sale.final_amount || subtotal - diskonNilai;
+		const bayar = sale.amount_receive || totalBayar;
+		const kembali = bayar - totalBayar;
+
+		nota += `Subtotal    :Rp${subtotal.toLocaleString('id-ID')}\n`;
+		if (diskonNilai > 0) {
+			nota += `Diskon      :${diskonPersen}% (Rp${diskonNilai.toLocaleString('id-ID')})\n`;
+		}
+		nota += `Total Bayar :Rp${totalBayar.toLocaleString('id-ID')}\n`;
+		nota += `Bayar       :Rp${bayar.toLocaleString('id-ID')}\n`;
+		nota += `Kembali     :Rp${kembali.toLocaleString('id-ID')}\n`;
 
 		nota += '--------------------------------\n';
-		nota += `Payment: ${row.paymentMethod}\n`;
+		nota += `Payment: ${sale.payment_method || 'CASH'}\n`;
 		nota += '--------------------------------\n';
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '        IG @daalushijab		 \n';
@@ -233,16 +230,16 @@
 				setTimeout(() => {
 					const updatedRow = state.table.find((r) => r.id === row.id);
 					if (updatedRow && updatedRow.details && updatedRow.details.length > 0) {
-						printThermalNota(updatedRow);
+						printReportNota(updatedRow);
 					} else {
 						alert('Tidak dapat memuat detail transaksi untuk dicetak');
 					}
 				}, 500);
 			} else {
-				printThermalNota(row);
+				printReportNota(row);
 			}
 		} else {
-			printThermalNota(row);
+			printReportNota(row);
 		}
 	}
 </script>
