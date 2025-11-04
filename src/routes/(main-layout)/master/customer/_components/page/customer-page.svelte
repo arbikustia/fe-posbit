@@ -8,6 +8,7 @@
 	import * as Pagination from '$lib/components/ui/pagination/index.js';
 	import { useCustomerPage } from '../../create/use-create.svelte';
 	import * as Select from '$lib/components/ui/select/index.js';
+	import { customerService } from '@/services/customerService';
 
 	const { state, handlePageChange, handleGetPaged } = useCustomerPage();
 
@@ -44,6 +45,7 @@
 	function confirmDelete() {
 		if (state.selectedCustomer) {
 			// local remove — service call can be added if needed
+			customerService.delete(state.selectedCustomer.id)
 			state.table = state.table.filter((c: any) => c.id !== state.selectedCustomer?.id);
 			closeDeleteModal();
 		}
