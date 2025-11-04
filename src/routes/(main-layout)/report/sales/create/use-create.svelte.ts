@@ -69,10 +69,11 @@ export function useSalesPage() {
 				discount_amount: item.discount_amount ?? 0,
 				payment_method: item.payment_method ?? 'CASH',
 				amount_receive: item.amount_receive ?? 0,
-				change: item.change ?? 0,
+				change: item.chance ?? 0,
 				created_at: item.created_at ?? '-',
 				details: (item.details || []).map((detail: any) => ({
-					item_name: detail.item_name ?? detail.item_id ?? 'Unknown Item',
+					name: detail.name,
+					item_id: detail.item_id,
 					qty: detail.qty ?? detail.quantity ?? 0,
 					price: detail.price ?? 0,
 					subtotal: (detail.qty ?? detail.quantity ?? 0) * (detail.price ?? 0)

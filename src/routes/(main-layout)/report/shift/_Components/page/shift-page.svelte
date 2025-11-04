@@ -229,7 +229,7 @@
 											<span
 												class="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700"
 											>
-												SHIFT {row.shift}
+												{row.shift}
 											</span>
 										</td>
 										<td
