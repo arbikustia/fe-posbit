@@ -68,8 +68,8 @@
 			href: '/report/sales',
 			children: [
 				{ label: 'Sales', href: '/report/sales' },
-				{ label: 'Purchase', href: '/report/purchase' },
-				{ label: 'Invoice', href: '/report/invoice' }
+				{ label: 'Invoice', href: '/report/purchase' },
+				{ label: 'Summary Shift', href: '/report/shift' }
 			]
 		}
 	];

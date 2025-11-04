@@ -1,0 +1,1 @@
+export {default as ShiftPage} from "./shift-page.svelte"

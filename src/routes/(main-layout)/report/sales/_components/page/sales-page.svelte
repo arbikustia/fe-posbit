@@ -9,6 +9,7 @@
 	import { cn } from '$lib/utils';
 	import { useSalesPage } from '../../create/use-create.svelte';
 	import { browser } from '$app/environment';
+	import dayjs from 'dayjs';
 
 	const { state, handlePageChange, handleSearch, toggleRow } = useSalesPage();
 
@@ -345,7 +346,7 @@
 									</td>
 									<td
 										onclick={() => handlePrintNota(row)}
-										class="px-3 py-2.5 text-xs font-medium whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+										class="px-3 py-2.5 text-primary underline cursor-pointer text-xs font-medium whitespace-nowrap sm:px-4 sm:py-3 md:text-sm"
 									>
 										{row.transaction_code}
 									</td>
