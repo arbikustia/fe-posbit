@@ -117,10 +117,10 @@
 		if (!browser) return;
 
 		// === KONFIGURASI LEBAR NOTA ===
-		const PAPER_WIDTH = 32; // Lebar karakter untuk printer 58mm
+		const PAPER_WIDTH = 48; // Lebar full untuk printer 58mm
 		const COLUMN_WIDTH = {
-			ITEM: 16, // Lebar kolom item
-			PRICE: 8, // Lebar kolom harga
+			ITEM: 24, // Lebar kolom item lebih longgar
+			PRICE: 10, // Lebar kolom harga
 			QTY: 4, // Lebar kolom quantity
 			TOTAL: 10 // Lebar kolom total
 		};
@@ -152,9 +152,7 @@
 		nota += center(toko);
 		nota += '\x1B\x21\x01'; // Kembali ke ukuran normal
 		nota += center(alamat1);
-		nota += '\x1B\x21\x00'; // Font condensed untuk alamat yang panjang
 		nota += center(alamat2);
-		nota += '\x1B\x21\x01'; // Normal lagi
 
 		nota += separator();
 		nota += `Tanggal : ${tanggal}\n`;
@@ -201,9 +199,9 @@
 
 				// Baris pertama dengan harga dan quantity
 				const namaBaris1 = namaPotong[0].padEnd(COLUMN_WIDTH.ITEM, ' ');
-				const priceStr = `Rp${priceFormatted}`.padStart(COLUMN_WIDTH.PRICE + 2, ' ');
+				const priceStr = `Rp${priceFormatted}`.padStart(COLUMN_WIDTH.PRICE, ' ');
 				const qtyStr = qtyFormatted.padStart(COLUMN_WIDTH.QTY, ' ');
-				const totalStr = `Rp${totalFormatted}`.padStart(COLUMN_WIDTH.TOTAL + 2, ' ');
+				const totalStr = `Rp${totalFormatted}`.padStart(COLUMN_WIDTH.TOTAL, ' ');
 
 				nota += `${namaBaris1}${priceStr}${qtyStr}${totalStr}\n`;
 
@@ -228,19 +226,30 @@
 		};
 
 		// Tampilkan subtotal, diskon, dan total
-		nota += `Subtotal     : Rp${formatCurrency(totalAmount).padStart(PAPER_WIDTH - 13)}\n`;
+		const labelWidth = 14;
+		const valueWidth = PAPER_WIDTH - labelWidth;
+
+		nota +=
+			`Subtotal`.padEnd(labelWidth) +
+			`: Rp${formatCurrency(totalAmount).padStart(valueWidth - 3)}\n`;
 		if (diskonNilai > 0) {
-			nota += `Diskon       : ${diskonPersen.toFixed(1)}% (Rp${formatCurrency(diskonNilai).padStart(PAPER_WIDTH - 22)})\n`;
+			nota +=
+				`Diskon`.padEnd(labelWidth) +
+				`: ${diskonPersen.toFixed(1)}% (Rp${formatCurrency(diskonNilai)})\n`;
 		}
-		nota += `Total        : Rp${formatCurrency(finalAmount).padStart(PAPER_WIDTH - 13)}\n`;
+		nota +=
+			`Total`.padEnd(labelWidth) + `: Rp${formatCurrency(finalAmount).padStart(valueWidth - 3)}\n`;
 
 		// Informasi pembayaran jika ada
 		if (sale.amount_receive) {
 			const amountReceive = sale.amount_receive || 0;
 			const change = sale.change || 0;
 
-			nota += `Dibayar     : Rp${formatCurrency(amountReceive).padStart(PAPER_WIDTH - 14)}\n`;
-			nota += `Kembalian   : Rp${formatCurrency(change).padStart(PAPER_WIDTH - 15)}\n`;
+			nota +=
+				`Dibayar`.padEnd(labelWidth) +
+				`: Rp${formatCurrency(amountReceive).padStart(valueWidth - 3)}\n`;
+			nota +=
+				`Kembalian`.padEnd(labelWidth) + `: Rp${formatCurrency(change).padStart(valueWidth - 3)}\n`;
 		}
 
 		nota += separator();
@@ -248,6 +257,7 @@
 		nota += separator();
 
 		// === FOOTER ===
+		nota += '\x1B\x21\x00'; // Font condensed untuk footer
 		nota += center('DA.ALUS HIJAB');
 		nota += center('IG: daalushijab.store');
 		nota += center('TIKTOK: da.alus');
@@ -255,6 +265,7 @@
 		nota += center('Terima kasih telah berbelanja!');
 		nota += center('*** Barang yang sudah dibeli ***');
 		nota += center('*** tidak dapat dikembalikan ***');
+		nota += '\x1B\x21\x01'; // Kembali ke normal
 
 		try {
 			const encoded = btoa(unescape(encodeURIComponent(nota)));
