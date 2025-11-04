@@ -55,7 +55,7 @@
 			doc.setFontSize(10);
 			doc.setFont('helvetica', 'normal');
 			doc.text('Ruko B-15 no 17', pageWidth - margin, y + 15, { align: 'right' });
-			doc.text('Mutiara Gading Timur, Mustikajaya, Bekasi', pageWidth - margin, y + 20, { align: 'right' });
+			doc.text('Mutiara Gading Timur, Mustikajaya, Bekasi', pageWidth - margin, y + 25, { align: 'right' });
 
 			// Header line
 			doc.setDrawColor(0, 0, 0);
@@ -70,7 +70,7 @@
 			doc.text('TO', margin, y);
 			doc.setFont('helvetica', 'normal');
 			doc.text(row.customer_name || 'FIONA', margin, y + 15);
-			doc.text(row.telephone || '', margin, y + 15);
+			doc.text(row.telephone || '', margin, y + 35);
 
 			// Right side info
 			doc.setFont('helvetica', 'bold');
