@@ -20,7 +20,7 @@
 
 	async function generateInvoice() {
 		if (isGenerating) return;
-		
+
 		try {
 			isGenerating = true;
 
@@ -47,20 +47,21 @@
 			doc.setFont('helvetica', 'bold');
 			doc.setTextColor(0, 0, 0);
 			doc.text('INVOICE', margin, y);
-			
+
 			// Right side header
 			doc.setFontSize(14);
 			doc.setFont('helvetica', 'bold');
 			doc.text('DA.ALUS', pageWidth - margin, y, { align: 'right' });
 			doc.setFontSize(10);
 			doc.setFont('helvetica', 'normal');
-			doc.text('RUKO MGT BLOK 6733', pageWidth - margin, y + 15, { align: 'right' });
-			
+			doc.text('Ruko B-15 no 17', pageWidth - margin, y + 15, { align: 'right' });
+			doc.text('Mutiara Gading Timur, Mustikajaya, Bekasi', pageWidth - margin, y + 20, { align: 'right' });
+
 			// Header line
 			doc.setDrawColor(0, 0, 0);
 			doc.setLineWidth(1);
 			doc.line(margin, y + 30, pageWidth - margin, y + 30);
-			
+
 			y += 60;
 
 			// === Invoice & Customer Info ===
@@ -69,14 +70,13 @@
 			doc.text('TO', margin, y);
 			doc.setFont('helvetica', 'normal');
 			doc.text(row.customer_name || 'FIONA', margin, y + 15);
-			doc.text(row.customer_address || 'MGT BLOK A14', margin, y + 30);
 			doc.text(row.telephone || '', margin, y + 45);
-			
+
 			// Right side info
 			doc.setFont('helvetica', 'bold');
 			doc.text('TANGGAL :', pageWidth - margin, y, { align: 'right' });
 			doc.setFont('helvetica', 'normal');
-			
+
 			// Format tanggal
 			const formatDate = (dateString: string) => {
 				if (!dateString) return 'Senin, 23 Oktober 2025';
@@ -92,19 +92,19 @@
 					return 'Senin, 23 Oktober 2025';
 				}
 			};
-			
+
 			doc.text(formatDate(row.created_at), pageWidth - margin, y + 15, { align: 'right' });
-			
+
 			doc.setFont('helvetica', 'bold');
 			doc.text('NO INVOICE :', pageWidth - margin, y + 45, { align: 'right' });
 			doc.setFont('helvetica', 'normal');
 			doc.text(row.inv_number || '001', pageWidth - margin, y + 60, { align: 'right' });
-			
+
 			y += 90;
 
 			// === TABLE HEADER ===
 			doc.setFillColor(240, 240, 240);
-			doc.rect(margin, y - 10, pageWidth - (margin * 2), 20,);
+			doc.rect(margin, y - 10, pageWidth - margin * 2, 20);
 			doc.setTextColor(0, 0, 0);
 			doc.setFont('helvetica', 'bold');
 			doc.setFontSize(10);
@@ -112,7 +112,7 @@
 			doc.text('HARGA', 260, y + 5);
 			doc.text('JML', 380, y + 5);
 			doc.text('TOTAL', 450, y + 5);
-			
+
 			y += 20;
 
 			// === TABLE ITEMS ===
@@ -129,9 +129,10 @@
 				// Handle long item names
 				const itemName = item.name || item.description || '';
 				const maxNameLength = 40;
-				const truncatedName = itemName.length > maxNameLength 
-					? itemName.substring(0, maxNameLength - 3) + '...' 
-					: itemName;
+				const truncatedName =
+					itemName.length > maxNameLength
+						? itemName.substring(0, maxNameLength - 3) + '...'
+						: itemName;
 
 				doc.text(truncatedName, margin + 5, y);
 				doc.text(`RP ${price.toLocaleString('id-ID')}`, 260, y);
@@ -154,7 +155,7 @@
 
 			// === PAYMENT INFO ===
 			doc.setFont('helvetica', 'normal');
-			doc.text('PEMBAYARAN :', margin, y);
+			doc.text(`PEMBAYARAN : ${row.payment_method}`, margin, y);
 			doc.text(`Nama : ${row.payment_name || 'Bintaya Zahristi Khayah'}`, margin, y + 15);
 			doc.text(`No Rek : ${row.account_number || '0030903617'}`, margin, y + 30);
 
@@ -165,38 +166,37 @@
 			doc.setFont('helvetica', 'normal');
 			doc.text('SUB TOTAL :', 420, y);
 			doc.text(`RP ${subtotal.toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
-			
-			y += 15;
-			doc.text('SISA :', 420, y);
-			doc.text(`RP ${sisa.toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
-			
+
 			y += 15;
 			doc.setFont('helvetica', 'bold');
-			doc.text('TOTAL :', 420, y);
-			doc.text(`RP ${grandTotal.toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
+			doc.text('DP :', 420, y);
+			doc.text(`RP ${row.down_payment.toLocaleString('id-ID')}`, pageWidth - margin, y, {
+				align: 'right'
+			});
+			y += 15;
+			doc.text('SISA :', 420, y);
+			doc.text(`RP ${subtotal - row.down_payment.toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
+
 			y += 40;
 
 			// === FOOTER SIGNATURE ===
 			const footerY = 650;
-			
+
 			doc.setFont('helvetica', 'bold');
 			doc.setFontSize(10);
-			doc.text('TERIMAKASIH ATAS', margin, footerY);
+			doc.text('TERIMAKASIH ATAS', pageWidth, footerY, { align: 'center' });
 			doc.text('PEMBELIAN ANDA', margin, footerY + 15);
-			
+
 			// Signature area on the right
 			doc.setFont('helvetica', 'italic');
+
 			doc.setFontSize(20);
 			doc.text('', pageWidth - margin, footerY + 30, { align: 'right' });
-			
-			doc.setFont('helvetica', 'normal');
-			doc.setFontSize(10);
-			doc.text('Juliana Silva', pageWidth - margin, footerY + 50, { align: 'right' });
 
 			// Open PDF
 			const pdfBlob = doc.output('blob');
 			const blobUrl = URL.createObjectURL(pdfBlob);
-			
+
 			// Create download link
 			const link = document.createElement('a');
 			link.href = blobUrl;
@@ -204,10 +204,9 @@
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);
-			
+
 			// Clean up
 			setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-
 		} catch (error) {
 			console.error('Error generating invoice:', error);
 			alert('Gagal membuat invoice. Silakan coba lagi.');
@@ -219,7 +218,7 @@
 
 <button
 	onclick={generateInvoice}
-	class="cursor-pointer underline text-primary disabled:opacity-50 disabled:cursor-not-allowed"
+	class="text-primary cursor-pointer underline disabled:cursor-not-allowed disabled:opacity-50"
 	disabled={isGenerating}
 >
 	{isGenerating ? 'Loading...' : row.inv_number}
