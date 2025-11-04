@@ -8,6 +8,7 @@ import { goto } from '$app/navigation';
 import { page } from '$app/stores';
 import { salesSchema } from '../_components/form/schema';
 import { saleService } from '@/services/saleService';
+import dayjs from 'dayjs';
 
 export function useSalesPage() {
 	const form = superForm(defaults(zod(salesSchema)), {
@@ -29,6 +30,8 @@ export function useSalesPage() {
 		totalCount: number;
 		isLoading: boolean;
 		searchTerm: string;
+		startDate: string,
+		endDate: string,
 	};
 
 	const { form: formData, validateForm, errors } = form;
@@ -42,6 +45,8 @@ export function useSalesPage() {
 		currentPage: 1,
 		pageSize: 10,
 		totalPages: 0,
+		startDate: dayjs().startOf('month').format('YYYY-MM-DD'),
+		endDate: dayjs().endOf('month').format('YYYY-MM-DD'),
 		totalCount: 0,
 		isLoading: false,
 		searchTerm: ''
@@ -52,7 +57,7 @@ export function useSalesPage() {
 		return apiData.map((item, index) => {
 			// Check if this row was previously open (untuk preserve state saat pagination)
 			const existingRow = state.table.find((r) => r.id === item.id);
-			
+
 			return {
 				no: index + 1 + (state.currentPage - 1) * state.pageSize,
 				id: item.id ?? `temp-${index}`,
@@ -83,11 +88,11 @@ export function useSalesPage() {
 		console.log('Toggle row called for id:', id);
 		const rowBefore = state.table.find(r => r.id === id);
 		console.log('Row before toggle:', rowBefore?.open);
-		
+
 		state.table = state.table.map((row) =>
 			row.id === id ? { ...row, open: !row.open } : row
 		);
-		
+
 		const rowAfter = state.table.find(r => r.id === id);
 		console.log('Row after toggle:', rowAfter?.open);
 	}
@@ -101,8 +106,8 @@ export function useSalesPage() {
 				PageNumber: pageNumber,
 				PageSize: state.pageSize,
 				SearchTerm: searchTerm,
-				Start: '',
-				End: ''
+				Start: state.startDate,
+				End: state.endDate
 			});
 
 			if (res?.data?.data) {

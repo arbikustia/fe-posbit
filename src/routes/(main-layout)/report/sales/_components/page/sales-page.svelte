@@ -6,12 +6,48 @@
 	import { goto } from '$app/navigation';
 	import { tick } from 'svelte';
 	import { fly } from 'svelte/transition';
-	import { cn } from '$lib/utils';
 	import { useSalesPage } from '../../create/use-create.svelte';
 	import { browser } from '$app/environment';
+
+	import CalendarIcon from '@lucide/svelte/icons/calendar';
+	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date';
+	import { cn } from '$lib/utils.js';
+	import { buttonVariants } from '$lib/components/ui/button/index.js';
+	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
 	import dayjs from 'dayjs';
+	import * as Popover from '$lib/components/ui/popover/index.js';
 
 	const { state, handlePageChange, handleSearch, toggleRow } = useSalesPage();
+
+	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
+
+	// ✅ Ambil semua state & handler langsung dari useDashboardPage
+	let popoverOpen = false;
+
+	// ✅ Ubah tanggal → update di state & fetch ulang data
+	function handleDateChange(v: any) {
+		console.log('Date changed:', v);
+
+		// Cek apakah start dan end sudah terisi
+		if (v?.start && v?.end) {
+			// Update state dengan tanggal baru
+			state.startDate = dayjs(v.start.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
+			state.endDate = dayjs(v.end.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
+
+			console.log('Fetching data for:', state.startDate, state.endDate);
+
+			// Tutup Popover otomatis setelah end date dipilih
+			popoverOpen = false;
+		}
+	}
+
+	// ✅ Helper untuk tampilkan teks tanggal dengan aman
+	function formatDateText() {
+		if (!state.startDate || !state.endDate) return 'Pick a date';
+		return (
+			df.format(dayjs(state.startDate).toDate()) + ' - ' + df.format(dayjs(state.endDate).toDate())
+		);
+	}
 
 	let showSearch = false;
 	let searchEl: HTMLInputElement | null = null;
@@ -99,8 +135,8 @@
 		let nota = '';
 
 		// === HEADER TOKO ===
-		nota += '\x1B\x21\x30'; // Double width + height
-		nota += center(toko.toUpperCase());
+		nota += '\x1B\x21\x08'; // Double width + height
+		nota += center(toko);
 		nota += '\x1B\x21\x00'; // Kembali ke ukuran normal
 		nota += center(alamat1);
 		nota += '\x1B\x21\x01'; // Font lebih kecil (condensed)
@@ -224,33 +260,59 @@
 			</div>
 		</Button>
 
-		<!-- Search Container -->
-		<div class="relative flex w-full items-center justify-end sm:w-auto">
-			<div class="overflow-hidden">
-				{#if showSearch}
-					<input
-						bind:this={searchEl}
-						bind:value={searchTerm}
-						oninput={onSearchInput}
-						transition:fly={{ x: 120, duration: 250 }}
-						placeholder="Search transaction..."
-						class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
-					/>
-				{/if}
-			</div>
+		<div class="flex gap-2">
+			<!-- Search Container -->
+			<div class="relative flex w-full items-center justify-end sm:w-auto">
+				<div class="overflow-hidden">
+					{#if showSearch}
+						<input
+							bind:this={searchEl}
+							bind:value={searchTerm}
+							oninput={onSearchInput}
+							transition:fly={{ x: 120, duration: 250 }}
+							placeholder="Search transaction..."
+							class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
+						/>
+					{/if}
+				</div>
 
-			<button
-				type="button"
-				class="absolute right-0 rounded-full p-2 transition hover:bg-gray-100 dark:hover:bg-gray-800"
-				onclick={toggleSearch}
-			>
-				<Icon
-					icon="majesticons:search-line"
-					width="20"
-					height="20"
-					class="text-gray-600 md:h-[22px] md:w-[22px]"
-				/>
-			</button>
+				<button
+					type="button"
+					class="absolute right-0 rounded-full p-2 transition hover:bg-gray-100 dark:hover:bg-gray-800"
+					onclick={toggleSearch}
+				>
+					<Icon
+						icon="majesticons:search-line"
+						width="20"
+						height="20"
+						class="text-gray-600 md:h-[22px] md:w-[22px]"
+					/>
+				</button>
+			</div>
+			<Popover.Root bind:open={popoverOpen}>
+				<Popover.Trigger class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}>
+					<CalendarIcon class="mr-2 size-4" />
+					{formatDateText()}
+				</Popover.Trigger>
+				<Popover.Content class="w-auto p-0" align="start">
+					<RangeCalendar
+						numberOfMonths={2}
+						onValueChange={handleDateChange}
+						value={{
+							start: new CalendarDate(
+								Number(dayjs(state.startDate).format('YYYY')),
+								Number(dayjs(state.startDate).format('M')),
+								Number(dayjs(state.startDate).format('D'))
+							),
+							end: new CalendarDate(
+								Number(dayjs(state.endDate).format('YYYY')),
+								Number(dayjs(state.endDate).format('M')),
+								Number(dayjs(state.endDate).format('D'))
+							)
+						}}
+					/>
+				</Popover.Content>
+			</Popover.Root>
 		</div>
 	</div>
 </header>
@@ -346,7 +408,7 @@
 									</td>
 									<td
 										onclick={() => handlePrintNota(row)}
-										class="px-3 py-2.5 text-primary underline cursor-pointer text-xs font-medium whitespace-nowrap sm:px-4 sm:py-3 md:text-sm"
+										class="text-primary cursor-pointer px-3 py-2.5 text-xs font-medium whitespace-nowrap underline sm:px-4 sm:py-3 md:text-sm"
 									>
 										{row.transaction_code}
 									</td>

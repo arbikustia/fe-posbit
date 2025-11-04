@@ -66,61 +66,30 @@
 		const member = pageState?.customerData !== null ? 'PREMIUM' : 'REGULAR';
 		const point = pageState?.customerData?.point || 0;
 
-		// Constants untuk lebar printer thermal (biasanya 32-48 karakter)
-		const PRINT_WIDTH = 32;
-
-		// Helper untuk teks center yang lebih presisi
-		const center = (text, width = PRINT_WIDTH) => {
+		// Helper untuk teks center
+		const center = (text) => {
+			const width = 32;
 			const space = Math.max(0, Math.floor((width - text.length) / 2));
 			return ' '.repeat(space) + text + '\n';
 		};
 
-		// Helper untuk teks center dengan ESC/POS commands
-		const centerWithStyle = (text, isBold = false, isLarge = false) => {
-			let result = '';
-
-			// Apply styling
-			if (isLarge) {
-				result += '\x1B\x21\x30'; // Double width + height
-			} else if (isBold) {
-				result += '\x1B\x21\x08'; // Bold normal size
-			} else {
-				result += '\x1B\x21\x00'; // Normal
-			}
-
-			result += center(text);
-
-			// Reset to normal
-			result += '\x1B\x21\x00';
-			return result;
-		};
-
 		let nota = '';
 
-		// === HEADER TOKO ===
-		nota += centerWithStyle(toko.toUpperCase(), true, true); // BESAR & BOLD
-
-		// Alamat dengan font kecil
-		nota += '\x1B\x21\x01'; // Font condensed kecil
+		// === HEADER TOKO (Nama besar, alamat kecil) ===
+		nota += '\x1B\x21\x30'; // Double width + height (besar)
+		nota += center(toko.toUpperCase());
+		nota += '\x1B\x21\x00'; // Kembali ke ukuran normal
 		nota += center(alamat1);
+		nota += '\x1B\x21\x01'; // Font lebih kecil (condensed)
 		nota += center(alamat2);
-		nota += '\x1B\x21\x00'; // Kembali ke normal
+		nota += '\x1B\x21\x00'; // Normal lagi
 
 		nota += '--------------------------------\n';
-
-		// Info transaksi dengan alignment yang rapi
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;
 		nota += `Customer: ${customer}\n`;
-		if (pageState?.customerData) {
-			nota += `Member  : ${member}\n`;
-			nota += `Point   : ${point}\n`;
-		}
 		nota += '--------------------------------\n';
-
-		// Header tabel item dengan alignment yang presisi
-		// Format: "Item" (20 chars) + "Harga" (6 chars) + "Qty" (3 chars) + "Total" (7 chars)
-		nota += 'Item                Harga  Qty  Total\n';
+		nota += 'Item                  Hrg   Qty\n';
 		nota += '--------------------------------\n';
 
 		let subtotal = 0;
@@ -129,13 +98,10 @@
 			const total = harga_jual * qty;
 			subtotal += total;
 
-			// Kolom widths yang lebih presisi
-			const namaCol = 18; // Reduced untuk memberi space lebih ke harga & total
-			const hargaCol = 6;
+			const namaCol = 12;
+			const hargaCol = 8;
 			const qtyCol = 3;
-			const totalCol = 7;
 
-			// Handle nama item yang panjang (word wrap)
 			const namaPotong = [];
 			let sisa = String(name);
 
@@ -144,66 +110,37 @@
 				sisa = sisa.substring(namaCol);
 			}
 
-			// Baris pertama dengan harga, qty, dan total
 			const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
 			const hrg = String(harga_jual.toLocaleString('id-ID')).padStart(hargaCol, ' ');
 			const qtyStr = String(qty).padStart(qtyCol, ' ');
-			const totalStr = String(total.toLocaleString('id-ID')).padStart(totalCol, ' ');
+			nota += `${namaBaris1}   Rp${hrg}${qtyStr}\n`;
 
-			nota += `${namaBaris1} Rp${hrg} ${qtyStr} Rp${totalStr}\n`;
-
-			// Baris tambahan untuk nama yang panjang
 			for (let i = 1; i < namaPotong.length; i++) {
 				nota += `${namaPotong[i]}\n`;
 			}
 		}
 
 		nota += '--------------------------------\n';
-
-		// Perhitungan dengan alignment yang rapi
 		const diskonPersen = pageState.discount || 0;
 		const diskonNilai = (subtotal * diskonPersen) / 100;
-		const subtotalValue = pageState.totalAll || subtotal;
-		const grandTotal = pageState.grandTotal || subtotalValue - diskonNilai;
-		const amountPaid = pageState.amountPaid || 0;
-		const kembalian = amountPaid - grandTotal;
 
-		// Format angka dengan alignment yang konsisten
-		const formatRupiah = (amount) => {
-			return String(amount.toLocaleString('id-ID')).padStart(10, ' ');
-		};
-
-		nota += `Subtotal    : Rp${formatRupiah(subtotalValue)}\n`;
-		if (diskonPersen > 0) {
-			nota += `Diskon ${diskonPersen}%  : Rp${formatRupiah(diskonNilai)}\n`;
-		}
-		nota += `Total       : Rp${formatRupiah(grandTotal)}\n`;
-		nota += `Tunai       : Rp${formatRupiah(amountPaid)}\n`;
-		nota += `Kembalian   : Rp${formatRupiah(kembalian)}\n`;
+		nota += `Subtotal    : Rp${pageState.totalAll?.toLocaleString('id-ID')}\n`;
+		nota += `Diskon      : ${pageState.discount || 0}% (Rp${diskonNilai?.toLocaleString('id-ID')})\n`;
+		nota += `Total       : Rp${pageState.grandTotal?.toLocaleString('id-ID')}\n`;
+		nota += `Nominal     : Rp${pageState.amountPaid?.toLocaleString('id-ID')}\n`;
+		nota += `Kembalian   : Rp${((pageState.amountPaid || 0) - (pageState.grandTotal || 0))?.toLocaleString('id-ID')}\n`;
 
 		nota += '--------------------------------\n';
 		nota += `Payment: ${pageState.paymentMethod}\n`;
 		nota += '--------------------------------\n';
 
 		// === FOOTER ===
-		nota += '\n'; // Spasi sebelum footer
-
-		// Nama toko di footer dengan style yang konsisten
-		nota += centerWithStyle('DA.ALUS HIJAB', true, false); // Bold tapi normal size
-
-		nota += '\x1B\x21\x01'; // Font condensed untuk social media
+		nota += center('DA.ALUS HIJAB');
 		nota += center('IG: daalushijab.store');
 		nota += center('TIKTOK: da.alus');
-		nota += '\x1B\x21\x00'; // Kembali ke normal
-
-		nota += '\n';
 		nota += center('Terima kasih telah berbelanja!');
-		nota += '\n';
 		nota += center('*** Barang yang sudah dibeli ***');
 		nota += center('*** tidak dapat dikembalikan ***');
-
-		// Tambahan spasi di akhir untuk memastikan cetakan selesai
-		nota += '\n\n\n\n';
 
 		try {
 			const encoded = btoa(unescape(encodeURIComponent(nota)));
