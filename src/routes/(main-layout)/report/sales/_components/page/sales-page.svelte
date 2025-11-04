@@ -127,7 +127,7 @@
 
 		// Helper untuk teks center
 		const center = (text: string) => {
-			const width = 36;
+			const width = 34;
 			const space = Math.max(0, Math.floor((width - text.length) / 2));
 			return ' '.repeat(space) + text + '\n';
 		};
@@ -135,11 +135,11 @@
 		let nota = '';
 
 		// === HEADER TOKO ===
-		nota += '\x1B\x21\x30'; // Double width + height
+		nota += '\x1B\x21\x08'; // Double width + height
 		nota += center(toko);
-		nota += '\x1B\x21\x08'; // Kembali ke ukuran normal
+		nota += '\x1B\x21\x01'; // Kembali ke ukuran normal
 		nota += center(alamat1);
-		nota += '\x1B\x21\x08'; // Font lebih kecil (condensed)
+		nota += '\x1B\x21\x01'; // Font lebih kecil (condensed)
 		nota += center(alamat2);
 		nota += '\x1B\x21\x08'; // Normal lagi
 
@@ -172,9 +172,9 @@
 					sisa = sisa.substring(namaCol);
 				}
 
-				const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
+				const namaBaris1 = namaPotong[0].padEnd(namaCol, '');
 				const hrg = String(price.toLocaleString('id-ID')).padStart(hargaCol, '');
-				const qtyStr = String(qty).padStart(qtyCol, ' ');
+				const qtyStr = String(qty).padStart(qtyCol, '');
 				nota += `${namaBaris1}   Rp${hrg}  ${qtyStr}\n`;
 
 				for (let i = 1; i < namaPotong.length; i++) {
