@@ -135,19 +135,18 @@
 		let nota = '';
 
 		// === HEADER TOKO ===
-		nota += '\x1B\x21\x08'; // Double width + height
+		nota += '\x1B\x21\x30'; // Double width + height
 		nota += center(toko);
-		nota += '\x1B\x21\x00'; // Kembali ke ukuran normal
+		nota += '\x1B\x21\x08'; // Kembali ke ukuran normal
 		nota += center(alamat1);
-		nota += '\x1B\x21\x01'; // Font lebih kecil (condensed)
+		nota += '\x1B\x21\x08'; // Font lebih kecil (condensed)
 		nota += center(alamat2);
-		nota += '\x1B\x21\x00'; // Normal lagi
+		nota += '\x1B\x21\x08'; // Normal lagi
 
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;
 		nota += `Customer: ${customer}\n`;
-		nota += `No. Trans: ${transactionCode}\n`;
 		nota += '--------------------------------\n';
 		nota += 'Item                  Hrg   Qty\n';
 		nota += '--------------------------------\n';
@@ -174,9 +173,9 @@
 				}
 
 				const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
-				const hrg = String(price.toLocaleString('id-ID')).padStart(hargaCol, ' ');
+				const hrg = String(price.toLocaleString('id-ID')).padStart(hargaCol, '');
 				const qtyStr = String(qty).padStart(qtyCol, ' ');
-				nota += `${namaBaris1}   Rp${hrg}${qtyStr}\n`;
+				nota += `${namaBaris1}   Rp${hrg}  ${qtyStr}\n`;
 
 				for (let i = 1; i < namaPotong.length; i++) {
 					nota += `${namaPotong[i]}\n`;
@@ -207,7 +206,8 @@
 		// === FOOTER ===
 		nota += center('DA.ALUS HIJAB');
 		nota += center('IG: daalushijab.store');
-		nota += center('TIKTOK: da.alus');
+		nota += center('TIKTOK: da.alus\n');
+		nota += '\x1B\x21\x01'; // Normal lagi
 		nota += center('Terima kasih telah berbelanja!');
 		nota += center('*** Barang yang sudah dibeli ***');
 		nota += center('*** tidak dapat dikembalikan ***');
