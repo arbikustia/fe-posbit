@@ -32,11 +32,6 @@
 	// Sidebar items with subpages
 	const sidebarItems = [
 		{
-			icon: User,
-			label: 'My Profile',
-			href: '/profile'
-		},
-		{
 			icon: DashboardIcon,
 			label: 'Dashboard',
 			href: '/dashboard'

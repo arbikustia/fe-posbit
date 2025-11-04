@@ -30,13 +30,13 @@
 					<div class="mt-2 text-sm font-semibold">RSP (Reka Sinergi Pratama)</div>
 				</div>
 				<nav class="space-y-2 py-4 text-sm">
-					<Button
+					<!-- <Button
 						variant={currentTab == 'my-profile' ? 'link' : 'ghost'}
 						onclick={() => (currentTab = 'my-profile')}
 						class={`${currentTab == 'my-profile' ? 'bg-gray-100 font-bold' : ''} block w-full rounded px-3 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800`}
 					>
 						My Profile
-					</Button>
+					</Button> -->
 					<Button
 						variant={currentTab == 'security' ? 'link' : 'ghost'}
 						onclick={() => (currentTab = 'security')}

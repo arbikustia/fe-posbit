@@ -95,7 +95,7 @@ export function useTransactionForm() {
 			console.log('💰 Total Amount:', state.amount);
 		} catch (err) {
 			console.error('❌ Error fetching product:', err);
-			toast.error('Gagal mengambil data produk');
+			// toast.error('Gagal mengambil data produk');
 		} finally {
 			state.searchProduct = '';
 			state.isLoading = false;
@@ -183,7 +183,7 @@ export function useTransactionForm() {
 			}
 		} catch (err) {
 			console.error('Failed to fetch gudang items:', err);
-			toast.error('Failed to load items from gudang');
+			// toast.error('Failed to load items from gudang');
 			state.listItem = [];
 		} finally {
 			state.isLoading = false;
@@ -208,14 +208,14 @@ export function useTransactionForm() {
 						// 🔹 Reset jika customer tidak ditemukan
 						state.customerData = null;
 						state.customerName = '';
-						toast.error('Customer not found');
+						// toast.error('Customer not found');
 					}
 				} catch (err) {
 					console.error('❌ Error fetching customer:', err);
 					// 🔹 Reset jika error
 					state.customerData = null;
 					state.customerName = '';
-					toast.error('Customer not found');
+					// toast.error('Customer not found');
 				} finally {
 					state.isFetchingCustomer = false;
 				}
