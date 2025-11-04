@@ -199,15 +199,20 @@
 							<tr>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">No</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Invoice No</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Package Name</th
+								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Customer</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Status</th>
-								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Down Payment</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Down Payment</th
+								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Payment</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created By</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created At</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700"
 									>Order Details</th
+								>
+								<th class="px-3 py-2.5 text-center text-xs font-medium text-gray-700">Description</th
 								>
 								<th class="px-3 py-2.5 text-center text-xs font-medium text-gray-700">Action</th>
 							</tr>
@@ -217,7 +222,8 @@
 							{#each state.table as row}
 								<tr class="hover:bg-gray-50">
 									<td class="px-3 py-2.5 text-xs text-gray-500">{row.no}</td>
-									<td class="px-3 py-2.5 text-xs" ><InvoicePage {row}/></td>
+									<td class="px-3 py-2.5 text-xs"><InvoicePage {row} /></td>
+									<td class="px-3 py-2.5 text-xs text-gray-500">{row.package_name}</td>
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.person_id}
 											<Popover.Root>
@@ -304,6 +310,7 @@
 															<tr class="border-b border-gray-200 text-gray-500">
 																<th class="py-1 text-left">Item ID</th>
 																<th class="py-1 text-left">Name</th>
+																<th class="py-1 text-left">Price</th>
 																<th class="py-1 text-left">Desc</th>
 																<th class="py-1 text-left">Qty</th>
 																<th class="py-1 text-left">Qty Keluar</th>
@@ -314,6 +321,7 @@
 																<tr>
 																	<td class="py-1 text-gray-700">{detail.item_id}</td>
 																	<td class="py-1 text-gray-700">{detail.name}</td>
+																	<td class="py-1 text-gray-700">Rp{detail.price.toLocaleString()}</td>
 																	<td class="py-1 text-gray-700">{detail.description}</td>
 																	<td class="py-1 text-gray-700">{detail.qty}</td>
 																	<td class="py-1 text-center text-gray-700">{detail.qty_keluar}</td
@@ -329,6 +337,7 @@
 										{/if}
 									</td>
 
+									<td class="px-3 py-2.5 text-xs">{row.keterangan}</td>
 									<!-- Actions -->
 									<td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
 										{#if row.open}

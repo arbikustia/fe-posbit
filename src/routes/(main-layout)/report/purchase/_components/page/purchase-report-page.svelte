@@ -108,7 +108,9 @@
 		<!-- HEADER -->
 		<header class="mb-4 sm:mb-6 md:mb-8">
 			<div class="flex items-center justify-between">
-				<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">Purchase</h1>
+				<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">
+					Report Invoice
+				</h1>
 			</div>
 
 			<div
@@ -205,6 +207,8 @@
 							<tr>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">No</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Invoice No</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Package Name</th
+								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Customer</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Status</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Down Payment</th
@@ -216,6 +220,7 @@
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700"
 									>Order Details</th
 								>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Description</th>
 							</tr>
 						</thead>
 
@@ -224,6 +229,7 @@
 								<tr class="hover:bg-gray-50">
 									<td class="px-3 py-2.5 text-xs text-gray-500">{row.no}</td>
 									<td class="px-3 py-2.5 text-xs"><InvoicePage {row} /></td>
+									<td class="px-3 py-2.5 text-xs text-gray-500">{row.package_name}</td>
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.person_id}
 											<Popover.Root>
@@ -310,6 +316,7 @@
 															<tr class="border-b border-gray-200 text-gray-500">
 																<th class="py-1 text-left">Item ID</th>
 																<th class="py-1 text-left">Name</th>
+																<th class="py-1 text-left">Price</th>
 																<th class="py-1 text-left">Desc</th>
 																<th class="py-1 text-left">Qty</th>
 																<th class="py-1 text-left">Qty Keluar</th>
@@ -320,6 +327,7 @@
 																<tr>
 																	<td class="py-1 text-gray-700">{detail.item_id}</td>
 																	<td class="py-1 text-gray-700">{detail.name}</td>
+																	<td class="py-1 text-gray-700">Rp{detail.price.toLocaleString()}</td>
 																	<td class="py-1 text-gray-700">{detail.description}</td>
 																	<td class="py-1 text-gray-700">{detail.qty}</td>
 																	<td class="py-1 text-center text-gray-700">{detail.qty_keluar}</td
@@ -334,8 +342,7 @@
 											<span class="text-xs text-gray-400 italic">No details</span>
 										{/if}
 									</td>
-
-									<!-- Actions -->
+									<td class="px-3 py-2.5 text-xs">{row.keterangan}</td>
 								</tr>
 							{/each}
 						</tbody>

@@ -104,7 +104,7 @@
 
 			// === TABLE HEADER ===
 			doc.setFillColor(240, 240, 240);
-			doc.rect(margin, y - 10, pageWidth - (margin * 2), 20, 'F');
+			doc.rect(margin, y - 10, pageWidth - (margin * 2), 20,);
 			doc.setTextColor(0, 0, 0);
 			doc.setFont('helvetica', 'bold');
 			doc.setFontSize(10);
