@@ -18,7 +18,7 @@
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import dayjs from 'dayjs';
 	import { Root } from '@/components/ui/card';
-	import InvoicePage from '../invoice-purchase/invoice-page.svelte';
+	import InvoicePage from '../../../report/purchase/_components/invoice-purchase/invoice-page.svelte';
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
 	const { state, handleGetPaged, handlePageChange } = usePurchasePage();

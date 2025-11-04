@@ -18,7 +18,7 @@
 	import dayjs from 'dayjs';
 	import { Root } from '@/components/ui/card';
 	import { usePurchasePage } from '../../../../purchase/create/use-create.svelte';
-	import InvoicePage from '../../../../purchase/_components/invoice-purchase/invoice-page.svelte';
+	import InvoicePage from '../invoice-purchase/invoice-page.svelte';
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
 	const { state, handleGetPaged, handlePageChange } = usePurchasePage();
