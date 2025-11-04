@@ -70,7 +70,7 @@
 			doc.text('TO', margin, y);
 			doc.setFont('helvetica', 'normal');
 			doc.text(row.customer_name || 'FIONA', margin, y + 15);
-			doc.text(row.telephone || '', margin, y + 45);
+			doc.text(row.telephone || '', margin, y + 15);
 
 			// Right side info
 			doc.setFont('helvetica', 'bold');
@@ -184,7 +184,7 @@
 
 			doc.setFont('helvetica', 'bold');
 			doc.setFontSize(10);
-			doc.text('TERIMAKASIH ATAS', pageWidth, footerY, { align: 'center' });
+			doc.text('TERIMAKASIH ATAS', margin, footerY);
 			doc.text('PEMBELIAN ANDA', margin, footerY + 15);
 
 			// Signature area on the right

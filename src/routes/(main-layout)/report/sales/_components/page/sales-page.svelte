@@ -131,7 +131,7 @@
 		nota += '          DA.ALUS HIJAB        \n';
 		nota += '         Ruko B-15 no 17       \n';
 		nota += '\x1B\x21\x01';
-		nota += '  Mutiara Gading Timur, Mustikajaya, Bekasi\n';
+		nota += ' Mutiara Gading Timur, Mustikajaya, Bekasi\n';
 		nota += '\x1B\x21\x08';
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
@@ -144,30 +144,32 @@
 		let subtotal = 0;
 		if (sale.details && sale.details.length > 0) {
 			for (const item of sale.details) {
-				const { name, price, qty = 1 } = item;
-				const total = price * qty;
+				const { name, harga_jual, qty = 1 } = item;
+				const total = harga_jual * qty;
 				subtotal += total;
 
-				// Lebar maksimum kertas thermal (misal 12 karakter nama)
-				const namaCol = 12;
+				// Lebar maksimum kertas thermal (misal 32 karakter total)
+				const namaCol = 12; // lebar kolom nama
 				const hargaCol = 8;
 				const qtyCol = 3;
+				const totalCol = 9;
 
-				// Bagi nama menjadi beberapa baris
-				const namaPotong: string[] = [];
+				// Bagi nama jadi beberapa baris (setiap baris maks 12 karakter)
+				const namaPotong = [];
 				let sisa = String(name);
+
 				while (sisa.length > 0) {
 					namaPotong.push(sisa.substring(0, namaCol));
 					sisa = sisa.substring(namaCol);
 				}
 
-				// Baris pertama nama + harga + qty
+				// Baris pertama (nama + angka)
 				const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
-				const hrg = String(price.toLocaleString('id-ID')).padStart(hargaCol, ' ');
+				const hrg = String(harga_jual.toLocaleString('id-ID')).padStart(hargaCol, ' ');
 				const qtyStr = String(qty).padStart(qtyCol, ' ');
 				nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
 
-				// Baris tambahan untuk nama panjang
+				// Jika nama lebih panjang, cetak sisanya di bawah (hanya nama)
 				for (let i = 1; i < namaPotong.length; i++) {
 					nota += `${namaPotong[i]}\n`;
 				}
