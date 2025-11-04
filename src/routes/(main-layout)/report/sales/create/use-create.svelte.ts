@@ -98,6 +98,12 @@ export function useSalesPage() {
 		console.log('Row after toggle:', rowAfter?.open);
 	}
 
+	$effect(() => {
+		(async () => {
+			await handleGetPaged(1, state.searchTerm);
+		})();
+	});
+
 	// ✅ Get paginated sales data
 	async function handleGetPaged(pageNumber = state.currentPage, searchTerm = state.searchTerm) {
 		try {
@@ -153,7 +159,7 @@ export function useSalesPage() {
 			return;
 		}
 
-		const values = get(formData);
+		const values: any = get(formData);
 
 		const body = {
 			customer_id: values.customer_id,
@@ -219,41 +225,16 @@ export function useSalesPage() {
 		state.selectedSale = null;
 	}
 
-	// ✅ Load sale for edit
-	async function loadSaleForEdit(id: string) {
-		try {
-			state.isLoading = true;
-			const res: any = await saleService.getById(id);
+	async function handleDateFilter(startDate: string, endDate: string) {
+		state.startDate = startDate;
+		state.endDate = endDate;
+		state.currentPage = 1; // Reset ke halaman 1 saat filter tanggal berubah
 
-			if (res?.data) {
-				const sale = res.data;
-
-				formData.update((f) => ({
-					...f,
-					id: sale.id,
-					customer_id: sale.customer_id,
-					total_amount: sale.total_amount ?? 0,
-					final_amount: sale.final_amount ?? 0,
-					discount_amount: sale.discount_amount ?? 0,
-					payment_method: sale.payment_method ?? 'CASH',
-					amount_receive: sale.amount_receive ?? 0,
-					details: sale.details?.map((d: any) => ({
-						item_id: d.item_id,
-						qty: d.qty ?? d.quantity,
-						price: d.price
-					})) ?? []
-				}));
-
-				toast.success('Sale loaded for editing');
-			}
-		} catch (err) {
-			console.error('Failed to load sale:', err);
-			toast.error('Failed to load sale data');
-			goto('/sales/report');
-		} finally {
-			state.isLoading = false;
-		}
+		// Data akan otomatis ter-refresh oleh $effect di atas
+		console.log('Date filter applied:', startDate, endDate);
 	}
+
+	// ✅ Load sale for edit
 
 	// ✅ ON MOUNT - Initialize data
 	onMount(() => {
@@ -262,10 +243,6 @@ export function useSalesPage() {
 		const url = get(page).url;
 		const saleId = url.searchParams.get('id');
 
-		if (saleId) {
-			// Edit mode
-			loadSaleForEdit(saleId);
-		}
 	});
 
 	return {
@@ -279,7 +256,7 @@ export function useSalesPage() {
 		handleDelete,
 		openDeleteModal,
 		closeDeleteModal,
-		loadSaleForEdit,
-		toggleRow
+		toggleRow,
+		handleDateFilter
 	};
 }

@@ -18,7 +18,7 @@
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { saleService } from '@/services/saleService';
 
-	const { state, handlePageChange, handleSearch, toggleRow } = useSalesPage();
+	const { state, handlePageChange, handleSearch, toggleRow, handleDateFilter } = useSalesPage();
 
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
@@ -29,15 +29,14 @@
 	function handleDateChange(v: any) {
 		console.log('Date changed:', v);
 
-		// Cek apakah start dan end sudah terisi
 		if (v?.start && v?.end) {
-			// Update state dengan tanggal baru
 			state.startDate = dayjs(v.start.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
 			state.endDate = dayjs(v.end.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
-
+			handleDateFilter(
+				dayjs(v.start.toDate(getLocalTimeZone())).format('YYYY-MM-DD'),
+				dayjs(v.end.toDate(getLocalTimeZone())).format('YYYY-MM-DD')
+			);
 			console.log('Fetching data for:', state.startDate, state.endDate);
-
-			// Tutup Popover otomatis setelah end date dipilih
 			popoverOpen = false;
 		}
 	}
@@ -114,160 +113,96 @@
 	}
 
 	// Fungsi print nota thermal untuk report
-	function printReportNota(sale: any) {
+	function printThermalNota(row:any) {
 		if (!browser) return;
-
-		// === KONFIGURASI LEBAR NOTA ===
-		const PAPER_WIDTH = 48; // Lebar full untuk printer 58mm
-		const COLUMN_WIDTH = {
-			ITEM: 24, // Lebar kolom item lebih longgar
-			PRICE: 10, // Lebar kolom harga
-			QTY: 4, // Lebar kolom quantity
-			TOTAL: 10 // Lebar kolom total
-		};
 
 		// === DATA NOTA ===
 		const toko = 'DA.ALUS HIJAB';
-		const alamat1 = 'Ruko B-15 no 17, Mutiara';
-		const alamat2 = 'Gading Timur, Mustikajaya, Bekasi';
-		const tanggal = formatDate(sale.created_at) || dayjs().format('DD/MM/YYYY HH:mm');
-		const kasir = sale.cashier || '';
-		const customer = sale.customer_name || '';
-		const transactionCode = sale.transaction_code || '';
+		const alamat = 'Ruko B-15 no 17, ';
+		const telp = 'Mutiara Gading Timur, Mustikajaya, Bekasi';
+		const tanggal = row.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
+		const kasir = row.username || '';
+		const customer = row.customerName || '';
+		const member = row?.customerData !== null ? 'PREMIUM' : 'REGULAR';
+		const point = row?.customerData?.point || 0;
 
-		// Helper untuk teks center
-		const center = (text: string) => {
-			const space = Math.max(0, Math.floor((PAPER_WIDTH - text.length) / 2));
-			return ' '.repeat(space) + text + '\n';
-		};
+		// Data items - sesuaikan dengan data cart Anda
+		// const items = [
+		// 	['Hijab Segi Empat', 75000, 2],
+		// 	['Pashmina Wolfis', 85000, 1],
+		// 	['Jilbab Instan', 45000, 3]
+		// ];
 
-		// Helper untuk membuat garis pemisah
-		const separator = () => {
-			return '-'.repeat(PAPER_WIDTH) + '\n';
-		};
-
+		// === FORMAT STRUK DALAM TEKS ===
 		let nota = '';
-
-		// === HEADER TOKO ===
-		nota += '\x1B\x21\x08'; // Double width + height
-		nota += center(toko);
-		nota += '\x1B\x21\x01'; // Kembali ke ukuran normal
-		nota += center(alamat1);
-		nota += center(alamat2);
-
-		nota += separator();
+		nota += '         DA.ALUS HIJAB         \n';
+		nota += '        Ruko B-15 no 17        \n';
+		nota += '\x1B\x21\x01';
+		nota += 'Mutiara Gading Timur, Mustikajaya, Bekasi\n';
+		nota += '\x1B\x21\x08';
+		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;
-		if (customer) {
-			nota += `Customer: ${customer}\n`;
-		}
-		if (transactionCode) {
-			nota += `No. Nota: ${transactionCode}\n`;
-		}
-		nota += separator();
-
-		// Header tabel item
-		const itemHeader =
-			'Item'.padEnd(COLUMN_WIDTH.ITEM) +
-			'Harga'.padStart(COLUMN_WIDTH.PRICE) +
-			'Qty'.padStart(COLUMN_WIDTH.QTY) +
-			'Total'.padStart(COLUMN_WIDTH.TOTAL);
-		nota += itemHeader + '\n';
-		nota += separator();
+		nota += `Customer: ${customer}\n`;
+		nota += '--------------------------------\n';
+		nota += 'Item                  Hrg   Qty\n';
+		nota += '--------------------------------\n';
 
 		let subtotal = 0;
+		for (const item of row.itemTable) {
+			const { name, harga_jual, qty = 1 } = item;
+			const total = harga_jual * qty;
+			subtotal += total;
 
-		// Gunakan details dari data sale
-		if (sale.details && sale.details.length > 0) {
-			for (const item of sale.details) {
-				const { item_name, price, qty = 1 } = item;
-				const total = price * qty;
-				subtotal += total;
+			// Lebar maksimum kertas thermal (misal 32 karakter total)
+			const namaCol = 12; // lebar kolom nama
+			const hargaCol = 8;
+			const qtyCol = 3;
+			const totalCol = 9;
 
-				// Format harga dan total
-				const priceFormatted = price.toLocaleString('id-ID');
-				const totalFormatted = total.toLocaleString('id-ID');
-				const qtyFormatted = qty.toString();
+			// Bagi nama jadi beberapa baris (setiap baris maks 12 karakter)
+			const namaPotong = [];
+			let sisa = String(name);
 
-				// Potong nama item jika terlalu panjang
-				const namaPotong = [];
-				let sisa = String(item_name);
+			while (sisa.length > 0) {
+				namaPotong.push(sisa.substring(0, namaCol));
+				sisa = sisa.substring(namaCol);
+			}
 
-				while (sisa.length > 0) {
-					namaPotong.push(sisa.substring(0, COLUMN_WIDTH.ITEM));
-					sisa = sisa.substring(COLUMN_WIDTH.ITEM);
-				}
+			// Baris pertama (nama + angka)
+			const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
+			const hrg = String(harga_jual.toLocaleString('id-ID')).padStart(hargaCol, ' ');
+			const qtyStr = String(qty).padStart(qtyCol, ' ');
+			nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
 
-				// Baris pertama dengan harga dan quantity
-				const namaBaris1 = namaPotong[0].padEnd(COLUMN_WIDTH.ITEM, ' ');
-				const priceStr = `Rp${priceFormatted}`.padStart(COLUMN_WIDTH.PRICE, ' ');
-				const qtyStr = qtyFormatted.padStart(COLUMN_WIDTH.QTY, ' ');
-				const totalStr = `Rp${totalFormatted}`.padStart(COLUMN_WIDTH.TOTAL, ' ');
-
-				nota += `${namaBaris1}${priceStr}${qtyStr}${totalStr}\n`;
-
-				// Baris tambahan untuk nama item yang terpotong
-				for (let i = 1; i < namaPotong.length; i++) {
-					nota += namaPotong[i] + '\n';
-				}
+			// Jika nama lebih panjang, cetak sisanya di bawah (hanya nama)
+			for (let i = 1; i < namaPotong.length; i++) {
+				nota += `${namaPotong[i]}\n`;
 			}
 		}
 
-		nota += separator();
+		nota += '--------------------------------\n';
+		const diskonPersen = row.discount || 0;
+		const diskonNilai = (subtotal * diskonPersen) / 100;
+		const totalBayar = subtotal - diskonNilai;
 
-		// Perhitungan total dan diskon
-		const totalAmount = sale.total_amount || subtotal;
-		const diskonNilai = sale.discount_amount || 0;
-		const finalAmount = sale.final_amount || totalAmount - diskonNilai;
-		const diskonPersen = totalAmount > 0 ? (diskonNilai / totalAmount) * 100 : 0;
+		nota += `Subtotal    :Rp${row.totalAll?.toLocaleString('id-ID')}\n`;
+		nota += `Diskon      :${row.discount || 0}% (Rp${diskonNilai})\n`;
+		nota += `Total Bayar :Rp${row.grandTotal?.toLocaleString('id-ID')}\n`;
+		nota += `Bayar       :Rp${row.amountPaid?.toLocaleString('id-ID')}\n`;
+		nota += `Kembali     :Rp${((row.amountPaid || 0) - (row.grandTotal || 0))?.toLocaleString('id-ID')}\n`;
 
-		// Format nilai currency
-		const formatCurrency = (amount: number) => {
-			return amount.toLocaleString('id-ID');
-		};
+		nota += '--------------------------------\n';
+		nota += `Payment: ${row.paymentMethod}\n`;
+		nota += '--------------------------------\n';
+		nota += '         DA.ALUS HIJAB         \n';
+		nota += '        IG @daalushijab		 \n';
+		nota += '       www.daalushijab.id        \n';
+		nota += ' Terima kasih telah berbelanja! \n';
+		nota += '*** Barang yang sudah dibeli ***\n';
+		nota += '*** tidak dapat dikembalikan ***\n';
 
-		// Tampilkan subtotal, diskon, dan total
-		const labelWidth = 14;
-		const valueWidth = PAPER_WIDTH - labelWidth;
-
-		nota +=
-			`Subtotal`.padEnd(labelWidth) +
-			`: Rp${formatCurrency(totalAmount).padStart(valueWidth - 3)}\n`;
-		if (diskonNilai > 0) {
-			nota +=
-				`Diskon`.padEnd(labelWidth) +
-				`: ${diskonPersen.toFixed(1)}% (Rp${formatCurrency(diskonNilai)})\n`;
-		}
-		nota +=
-			`Total`.padEnd(labelWidth) + `: Rp${formatCurrency(finalAmount).padStart(valueWidth - 3)}\n`;
-
-		// Informasi pembayaran jika ada
-		if (sale.amount_receive) {
-			const amountReceive = sale.amount_receive || 0;
-			const change = sale.change || 0;
-
-			nota +=
-				`Dibayar`.padEnd(labelWidth) +
-				`: Rp${formatCurrency(amountReceive).padStart(valueWidth - 3)}\n`;
-			nota +=
-				`Kembalian`.padEnd(labelWidth) + `: Rp${formatCurrency(change).padStart(valueWidth - 3)}\n`;
-		}
-
-		nota += separator();
-		nota += `Payment: ${sale.payment_method || 'CASH'}\n`;
-		nota += separator();
-
-		// === FOOTER ===
-		nota += '\x1B\x21\x00'; // Font condensed untuk footer
-		nota += center('DA.ALUS HIJAB');
-		nota += center('IG: daalushijab.store');
-		nota += center('TIKTOK: da.alus');
-		nota += '\n';
-		nota += center('Terima kasih telah berbelanja!');
-		nota += center('*** Barang yang sudah dibeli ***');
-		nota += center('*** tidak dapat dikembalikan ***');
-		nota += '\x1B\x21\x01'; // Kembali ke normal
-
+		// === CETAK MENGGUNAKAN RAWBT (BLUETOOTH THERMAL) ===
 		try {
 			const encoded = btoa(unescape(encodeURIComponent(nota)));
 			window.location.href = 'rawbt:base64,' + encoded;
@@ -283,7 +218,7 @@
 			PageSize: 100000,
 			SearchTerm: state.searchTerm,
 			EndDate: state.endDate,
-			StartDate: state.startDate,
+			StartDate: state.startDate
 		});
 	}
 
@@ -298,16 +233,16 @@
 				setTimeout(() => {
 					const updatedRow = state.table.find((r) => r.id === row.id);
 					if (updatedRow && updatedRow.details && updatedRow.details.length > 0) {
-						printReportNota(updatedRow);
+						printThermalNota(updatedRow);
 					} else {
 						alert('Tidak dapat memuat detail transaksi untuk dicetak');
 					}
 				}, 500);
 			} else {
-				printReportNota(row);
+				printThermalNota(row);
 			}
 		} else {
-			printReportNota(row);
+			printThermalNota(row);
 		}
 	}
 </script>

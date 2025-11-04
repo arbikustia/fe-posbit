@@ -58,8 +58,8 @@
 
 		// === DATA NOTA ===
 		const toko = 'DA.ALUS HIJAB';
-		const alamat = 'Jl. Melati No. 45, Jakarta';
-		const telp = 'Telp: 0812-9876-5432';
+		const alamat = 'Ruko B-15 no 17, ';
+		const telp = 'Mutiara Gading Timur, Mustikajaya, Bekasi';
 		const tanggal = pageState.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
 		const kasir = pageState.username || '';
 		const customer = pageState.customerName || '';
@@ -76,13 +76,14 @@
 		// === FORMAT STRUK DALAM TEKS ===
 		let nota = '';
 		nota += '         DA.ALUS HIJAB         \n';
-		nota += '   Jl. Melati No. 45, Jakarta   \n';
-		nota += '     Telp: 0812-9876-5432      \n';
+		nota += '        Ruko B-15 no 17        \n';
+		nota += '\x1B\x21\x01'; 
+		nota += 'Mutiara Gading Timur, Mustikajaya, Bekasi\n';
+		nota += '\x1B\x21\x08'; 
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;
 		nota += `Customer: ${customer}\n`;
-		nota += `Member  : ${member}   Point: ${point}\n`;
 		nota += '--------------------------------\n';
 		nota += 'Item                  Hrg   Qty\n';
 		nota += '--------------------------------\n';
@@ -126,7 +127,7 @@
 		const totalBayar = subtotal - diskonNilai;
 
 		nota += `Subtotal    :Rp${pageState.totalAll?.toLocaleString('id-ID')}\n`;
-		nota += `Diskon      :${pageState.discount || 0}%\n`;
+		nota += `Diskon      :${pageState.discount || 0}% (Rp${diskonNilai})\n`;
 		nota += `Total Bayar :Rp${pageState.grandTotal?.toLocaleString('id-ID')}\n`;
 		nota += `Bayar       :Rp${pageState.amountPaid?.toLocaleString('id-ID')}\n`;
 		nota += `Kembali     :Rp${((pageState.amountPaid || 0) - (pageState.grandTotal || 0))?.toLocaleString('id-ID')}\n`;

@@ -4,6 +4,7 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { goto } from '$app/navigation';
 import { purchaseReportSchema } from '../_components/form/schema';
 import { onMount } from 'svelte';
+import { purchaseService } from '@/services/purchaseService';
 
 export function usePurchaseReportPage() {
 	const form = superForm(defaults(zod(purchaseReportSchema)), {
@@ -56,14 +57,14 @@ export function usePurchaseReportPage() {
 	// Flatten purchase_order_details ke rows terpisah
 	function transformPurchaseReportData(apiData: any[]): PurchaseReportRow[] {
 		const rows: PurchaseReportRow[] = [];
-		
+
 		apiData.forEach((purchase) => {
 			if (purchase.purchase_order_details && purchase.purchase_order_details.length > 0) {
 				purchase.purchase_order_details.forEach((detail: any) => {
 					rows.push({
 						id: `${purchase.id}-${detail.item_id}`,
 						inv_number: purchase.inv_number,
-						person_name: purchase.person 
+						person_name: purchase.person
 							? `${purchase.person.firstname} ${purchase.person.lastname}`.trim()
 							: '-',
 						item_name: detail.name || detail.item_id,
@@ -71,7 +72,7 @@ export function usePurchaseReportPage() {
 						qty_keluar: detail.qty_keluar,
 						status: purchase.status,
 						total_amount: purchase.final_amount || purchase.total_amount,
-						created_at: purchase.created_at 
+						created_at: purchase.created_at
 							? new Date(purchase.created_at).toLocaleDateString('id-ID')
 							: '-',
 						open: true
@@ -82,7 +83,7 @@ export function usePurchaseReportPage() {
 				rows.push({
 					id: purchase.id,
 					inv_number: purchase.inv_number,
-					person_name: purchase.person 
+					person_name: purchase.person
 						? `${purchase.person.firstname} ${purchase.person.lastname}`.trim()
 						: '-',
 					item_name: '-',
@@ -90,14 +91,14 @@ export function usePurchaseReportPage() {
 					qty_keluar: 0,
 					status: purchase.status,
 					total_amount: purchase.final_amount || purchase.total_amount,
-					created_at: purchase.created_at 
+					created_at: purchase.created_at
 						? new Date(purchase.created_at).toLocaleDateString('id-ID')
 						: '-',
 					open: true
 				});
 			}
 		});
-		
+
 		return rows;
 	}
 
@@ -112,10 +113,13 @@ export function usePurchaseReportPage() {
 		try {
 			state.isLoading = true;
 
-			const res: any = await purchaseReportService.getPaged({
+			const res: any = await purchaseService.getPaged({
 				PageNumber: pageNumber,
 				PageSize: state.pageSize,
-				SearchTerm: searchTerm
+				SearchTerm: searchTerm,
+				Status: '',
+				EndDate: '',
+				StartDate: ''
 			});
 
 			if (res?.data?.data) {
