@@ -144,7 +144,7 @@
 		let subtotal = 0;
 		if (sale.details && sale.details.length > 0) {
 			for (const item of sale.details) {
-				const { item_name, price, qty = 1 } = item;
+				const { name, price, qty = 1 } = item;
 				const total = price * qty;
 				subtotal += total;
 
@@ -155,7 +155,7 @@
 
 				// Bagi nama menjadi beberapa baris
 				const namaPotong: string[] = [];
-				let sisa = String(item_name);
+				let sisa = String(name);
 				while (sisa.length > 0) {
 					namaPotong.push(sisa.substring(0, namaCol));
 					sisa = sisa.substring(namaCol);
