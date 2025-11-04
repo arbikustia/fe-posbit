@@ -15,7 +15,6 @@
 	let { form, handleSubmit }: TransactionFormProps = $props();
 
 	const { form: formData, enhance, errors } = form;
-
 </script>
 
 <form method="POST" use:enhance onsubmit={handleSubmit}>
@@ -33,7 +32,9 @@
 								<Input
 									placeholder="Enter transaction name"
 									bind:value={$formData.transactionName}
-									class="pr-10 {$errors.transactionName ? 'border-red-500 focus:border-red-500' : ''}"
+									class="pr-10 {$errors.transactionName
+										? 'border-red-500 focus:border-red-500'
+										: ''}"
 								/>
 							</div>
 						</Form.Control>

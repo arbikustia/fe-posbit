@@ -11,11 +11,12 @@
 	type ModalFormProps = {
 		showModalAwal: boolean;
 		type: string;
+		closeModalPage: () => void;
 	};
 
 	let username: string = $state('');
 	let modalState = $state({ is_open: false });
-	let { showModalAwal, type }: ModalFormProps = $props();
+	let { showModalAwal, type, closeModalPage }: ModalFormProps = $props();
 
 	const { form, handleSubmit, errors, enhance, closeModal } = useCashierModalPage(
 		type as 'create' | 'update',
@@ -57,6 +58,14 @@
 		}
 	});
 
+	$effect(() => {
+		(async () => {
+			if(modalState.is_open == false){
+				closeModalPage();
+			}
+		})();
+	});
+
 	function handleClose() {
 		closeModal();
 	}
@@ -91,7 +100,10 @@
 	}
 </script>
 
-<Dialog.Root bind:open={modalState.is_open} onOpenChange={() =>  modalState.is_open == true ?  modalState.is_open = false : null}>
+<Dialog.Root
+	bind:open={modalState.is_open}
+	onOpenChange={() => (modalState.is_open == true ? (modalState.is_open = false) : null)}
+>
 	<Dialog.Content
 		class="rounded-2xl sm:max-w-[500px]"
 		escapeKeydownBehavior="ignore"

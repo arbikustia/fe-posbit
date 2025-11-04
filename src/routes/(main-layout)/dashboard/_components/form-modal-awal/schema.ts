@@ -23,7 +23,6 @@ export const modalUpdateSchema = z.object({
 		if (typeof val === 'string') return val.trim() === '' ? NaN : Number(val);
 		return val;
 	}, z.number().refine(v => !Number.isNaN(v), { message: 'Actual earning harus angka' })),
-	is_modal_awal: z.literal(false).optional()
 });
 
 export type ModalUpdate = z.infer<typeof modalUpdateSchema>;

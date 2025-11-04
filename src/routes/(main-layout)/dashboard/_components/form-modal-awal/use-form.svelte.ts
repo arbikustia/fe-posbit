@@ -41,7 +41,8 @@ export function useCashierModalPage(type: 'create' | 'update', modalState: { is_
   // fetch idSale and set to form when available
   onMount(async () => {
     try {
-      const res = await modalService.getStatusModalAwal();
+      const res = await modalService.getModalAwal();
+      console.log(res,'ttt')
       idSale = res.data?.data?.id || '';
       if (debug) console.log('[useCashierModalPage] fetched idSale:', idSale);
       if (idSale) {

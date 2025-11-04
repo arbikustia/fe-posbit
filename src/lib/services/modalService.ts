@@ -8,6 +8,11 @@ export const modalService = {
             `/view/get-status-modal`
         );
     },
+    getModalAwal: () => {
+        return apiClient.get<RestApiResponse<unknown>>(
+            `/view/get-modal-awal`
+        );
+    },
 
     create: (body: {
         cashier_id: string,

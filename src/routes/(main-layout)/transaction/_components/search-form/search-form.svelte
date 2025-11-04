@@ -70,9 +70,9 @@
 		let nota = '';
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '        Ruko B-15 no 17        \n';
-		nota += '\x1B\x21\x01'; 
+		nota += '\x1B\x21\x01';
 		nota += ' Mutiara Gading Timur, Mustikajaya, Bekasi\n';
-		nota += '\x1B\x21\x08'; 
+		nota += '\x1B\x21\x08';
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;
@@ -168,51 +168,57 @@
 			time: pageState.currentTime
 		});
 
-		saleService
-			.create({
-				customer_id: pageState?.customerData?.id || null,
-				customer_name: pageState.customerName || '',
-				phone: pageState.customerNumber || '',
-				is_member: !!pageState.customerData,
-				cashier_id: idCashier,
-				total_amount: pageState.totalAll || 0,
-				discount_amount: pageState.discount || 0,
-				final_amount: pageState.grandTotal || 0,
-				point_used: 0,
-				point_earned: 0,
-				payment_method: pageState.paymentMethod || 'CASH',
-				amount_receive: pageState.amountPaid || 0,
-				chance: (pageState.amountPaid || 0) - (pageState.grandTotal || 0),
-				details: pageState.itemTable.map((item: any) => ({
-					barcode_id: item.barcode_id,
-					item_id: item.item_id,
-					qty: item.qty || 1
-				}))
-			})
-			.then(async (res) => {
-				printThermalNota();
+		if (
+			pageState.totalAll > 0 &&
+			pageState.customerName !== '' &&
+			pageState.customerNumber !== ''
+		) {
+			saleService
+				.create({
+					customer_id: pageState?.customerData?.id || null,
+					customer_name: pageState.customerName || '',
+					phone: pageState.customerNumber || '',
+					is_member: !!pageState.customerData,
+					cashier_id: idCashier,
+					total_amount: pageState.totalAll || 0,
+					discount_amount: pageState.discount || 0,
+					final_amount: pageState.grandTotal || 0,
+					point_used: 0,
+					point_earned: 0,
+					payment_method: pageState.paymentMethod || 'CASH',
+					amount_receive: pageState.amountPaid || 0,
+					chance: (pageState.amountPaid || 0) - (pageState.grandTotal || 0),
+					details: pageState.itemTable.map((item: any) => ({
+						barcode_id: item.barcode_id,
+						item_id: item.item_id,
+						qty: item.qty || 1
+					}))
+				})
+				.then(async (res) => {
+					printThermalNota();
 
-				// 🔹 Reset data form
-				pageState.customerName = '';
-				pageState.customerNumber = null;
-				pageState.customerData = null;
-				pageState.itemTable = [];
-				pageState.amountPaid = null;
-				pageState.totalAll = 0;
-				pageState.grandTotal = 0;
-				pageState.discount = 0;
-				pageState.searchProduct = '';
-				pageState.paymentMethod = 'CASH';
+					// 🔹 Reset data form
+					pageState.customerName = '';
+					pageState.customerNumber = null;
+					pageState.customerData = null;
+					pageState.itemTable = [];
+					pageState.amountPaid = null;
+					pageState.totalAll = 0;
+					pageState.grandTotal = 0;
+					pageState.discount = 0;
+					pageState.searchProduct = '';
+					pageState.paymentMethod = 'CASH';
 
-				// ✅ Refresh item gudang setelah transaksi
-				await handleGetListItemGudang();
+					// ✅ Refresh item gudang setelah transaksi
+					await handleGetListItemGudang();
 
-				toast.success('Purchase completed and item list updated');
-			})
-			.catch((err) => {
-				console.error(err);
-				toast.error('Failed to complete purchase');
-			});
+					toast.success('Purchase completed and item list updated');
+				})
+				.catch((err) => {
+					console.error(err);
+					toast.error('Failed to complete purchase');
+				});
+		}
 
 		pageState.isLoading = false;
 	}

@@ -165,7 +165,7 @@
 				const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
 				const hrg = String(price.toLocaleString('id-ID')).padStart(hargaCol, ' ');
 				const qtyStr = String(qty).padStart(qtyCol, ' ');
-				nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
+				nota += `${name}       Rp${hrg}${qtyStr}\n`;
 
 				// Baris tambahan untuk nama panjang
 				for (let i = 1; i < namaPotong.length; i++) {
@@ -196,7 +196,6 @@
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '        IG @daalushijab		 \n';
 		nota += '        tiktok : da.alus        \n';
-		nota += '\x1B\x21\x01';
 		nota += ' Terima kasih telah berbelanja! \n';
 		nota += '*** Barang yang sudah dibeli ***\n';
 		nota += '*** tidak dapat dikembalikan ***\n';
