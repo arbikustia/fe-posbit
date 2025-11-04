@@ -130,12 +130,13 @@
 		let nota = '';
 		nota += '         DA.ALUS HIJAB         \n';
 		nota += '        Ruko B-15 no 17        \n';
-		nota += ' Mutiara Gading Timur, Mustikajaya, Bekasi\n';
 		nota += '\x1B\x21\x01';
+		nota += ' Mutiara Gading Timur, Mustikajaya, Bekasi\n';
+		nota += '\x1B\x21\x08';
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;
-		if (customer) nota += `Customer: ${customer}\n`;
+		nota += `Customer: ${customer}\n`;
 		nota += '--------------------------------\n';
 		nota += 'Item                  Hrg   Qty\n';
 		nota += '--------------------------------\n';
