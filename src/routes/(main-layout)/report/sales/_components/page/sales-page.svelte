@@ -127,7 +127,7 @@
 
 		// Helper untuk teks center
 		const center = (text: string) => {
-			const width = 32;
+			const width = 36;
 			const space = Math.max(0, Math.floor((width - text.length) / 2));
 			return ' '.repeat(space) + text + '\n';
 		};
