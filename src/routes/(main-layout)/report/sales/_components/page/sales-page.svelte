@@ -125,31 +125,71 @@
 		const customer = sale.customer_name || '';
 		const transactionCode = sale.transaction_code || '';
 
-		// Helper untuk teks center
-		const center = (text: string) => {
-			const width = 34;
+		// Constants untuk lebar printer thermal
+		const PRINT_WIDTH = 32;
+
+		// Advanced centering functions
+		const center = (text, width = PRINT_WIDTH) => {
 			const space = Math.max(0, Math.floor((width - text.length) / 2));
-			return ' '.repeat(space) + text + '\n';
+			return ' '.repeat(space) + text;
+		};
+
+		const centerLine = (text, width = PRINT_WIDTH) => {
+			return center(text, width) + '\n';
+		};
+
+		const centerWithStyle = (text, style = '') => {
+			let result = '';
+
+			// Apply styling
+			if (style === 'large') {
+				result += '\x1B\x21\x30'; // Double width + height
+			} else if (style === 'bold') {
+				result += '\x1B\x21\x08'; // Bold
+			} else if (style === 'small') {
+				result += '\x1B\x21\x01'; // Condensed
+			} else {
+				result += '\x1B\x21\x00'; // Normal
+			}
+
+			result += centerLine(text);
+			result += '\x1B\x21\x00'; // Reset to normal
+			return result;
+		};
+
+		const createSeparator = (char = '-', length = PRINT_WIDTH) => {
+			return char.repeat(length) + '\n';
 		};
 
 		let nota = '';
 
 		// === HEADER TOKO ===
-		nota += '\x1B\x21\x08'; // Double width + height
-		nota += center(toko);
-		nota += '\x1B\x21\x01'; // Kembali ke ukuran normal
-		nota += `              ${center(alamat1)}                 \n`;
-		nota += '\x1B\x21\x01'; // Font lebih kecil (condensed)
-		nota += center(alamat2);
-		nota += '\x1B\x21\x08'; // Normal lagi
+		nota += '\x1B\x21\x30'; // DOUBLE SIZE
+		nota += centerLine(toko);
+		nota += '\x1B\x21\x00'; // Reset to normal
 
-		nota += '--------------------------------\n';
-		nota += `Tanggal : ${tanggal}\n`;
-		nota += `Kasir   : ${kasir}\n`;
-		nota += `Customer: ${customer}\n`;
-		nota += '--------------------------------\n';
-		nota += 'Item                  Hrg   Qty\n';
-		nota += '--------------------------------\n';
+		nota += '\x1B\x21\x01'; // SMALL FONT
+		nota += centerLine(alamat1);
+		nota += centerLine(alamat2);
+		nota += '\x1B\x21\x00'; // Reset to normal
+
+		nota += createSeparator();
+
+		// Transaction Info dengan alignment yang rapi
+		nota += `Tanggal  : ${tanggal}\n`;
+		nota += `Kasir    : ${kasir}\n`;
+		if (customer) {
+			nota += `Customer : ${customer}\n`;
+		}
+		if (transactionCode) {
+			nota += `No. Trans: ${transactionCode}\n`;
+		}
+		nota += createSeparator();
+
+		// Table Header dengan alignment presisi
+		// Format: Item (16) + Harga (7) + Qty (3) + Total (6)
+		nota += 'Item              Harga  Qty Total\n';
+		nota += createSeparator();
 
 		let subtotal = 0;
 
@@ -160,10 +200,13 @@
 				const total = price * qty;
 				subtotal += total;
 
-				const namaCol = 12;
-				const hargaCol = 8;
+				// Column widths yang lebih presisi
+				const namaCol = 16;
+				const hargaCol = 6;
 				const qtyCol = 3;
+				const totalCol = 6;
 
+				// Handle nama item yang panjang dengan word wrap
 				const namaPotong = [];
 				let sisa = String(item_name);
 
@@ -172,45 +215,71 @@
 					sisa = sisa.substring(namaCol);
 				}
 
-				const namaBaris1 = namaPotong[0].padEnd(namaCol, '');
-				const hrg = String(price.toLocaleString('id-ID')).padStart(hargaCol, '');
-				const qtyStr = String(qty).padStart(qtyCol, '');
-				// nota += `${namaBaris1}   Rp${hrg}  ${qtyStr}\n`;
-				nota += `${namaBaris1}                  Rp${hrg}   ${qtyStr}\n`;
+				// Baris pertama dengan semua informasi
+				const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
+				const hrg = String(price.toLocaleString('id-ID')).padStart(hargaCol, ' ');
+				const qtyStr = String(qty).padStart(qtyCol, ' ');
+				const totalStr = String(total.toLocaleString('id-ID')).padStart(totalCol, ' ');
 
+				nota += `${namaBaris1} Rp${hrg} ${qtyStr} Rp${totalStr}\n`;
+
+				// Baris tambahan untuk nama yang panjang
 				for (let i = 1; i < namaPotong.length; i++) {
 					nota += `${namaPotong[i]}\n`;
 				}
 			}
 		}
 
-		nota += '--------------------------------\n';
+		nota += createSeparator();
 
-		// Hitung diskon berdasarkan data sale
+		// Perhitungan dengan alignment yang konsisten
 		const diskonNilai = sale.discount_amount || 0;
 		const diskonPersen = sale.total_amount > 0 ? (diskonNilai / sale.total_amount) * 100 : 0;
+		const subtotalValue = sale.total_amount || subtotal;
+		const finalAmount = sale.final_amount || subtotalValue - diskonNilai;
 
-		nota += `Subtotal    : Rp${(sale.total_amount || 0)?.toLocaleString('id-ID')}\n`;
-		nota += `Diskon      : ${diskonPersen.toFixed(1)}% (Rp${diskonNilai?.toLocaleString('id-ID')})\n`;
-		nota += `Total       : Rp${(sale.final_amount || 0)?.toLocaleString('id-ID')}\n`;
+		// Format rupiah dengan alignment
+		const formatRupiah = (amount) => {
+			return String(amount?.toLocaleString('id-ID') || '0').padStart(10, ' ');
+		};
+
+		nota += `Subtotal : Rp${formatRupiah(subtotalValue)}\n`;
+
+		if (diskonNilai > 0) {
+			nota += `Diskon   : ${diskonPersen.toFixed(1)}% (Rp${formatRupiah(diskonNilai)})\n`;
+		}
+
+		nota += `Total    : Rp${formatRupiah(finalAmount)}\n`;
 
 		// Tambahkan informasi pembayaran jika ada
 		if (sale.amount_receive) {
-			nota += `Nominal     : Rp${(sale.amount_receive || 0)?.toLocaleString('id-ID')}\n`;
-			nota += `Kembalian   : Rp${(sale.change || 0)?.toLocaleString('id-ID')}\n`;
+			nota += `Tunai    : Rp${formatRupiah(sale.amount_receive)}\n`;
+			nota += `Kembali  : Rp${formatRupiah(sale.change)}\n`;
 		}
 
-		nota += '--------------------------------\n';
-		nota += `Payment: ${sale.payment_method || 'CASH'}\n`;
-		nota += '--------------------------------\n';
+		nota += createSeparator();
+		nota += `Payment : ${sale.payment_method || 'CASH'}\n`;
+		nota += createSeparator();
 
 		// === FOOTER ===
-		nota += center('DA.ALUS HIJAB');
-		nota += center('IG: daalushijab.store');
-		nota += center('TIKTOK: da.alus\n');
-		nota += center('Terima kasih telah berbelanja!');
-		nota += center('*** Barang yang sudah dibeli ***');
-		nota += center('*** tidak dapat dikembalikan ***');
+		nota += '\n'; // Spasi sebelum footer
+
+		// Footer dengan styling yang konsisten
+		nota += centerWithStyle('DA.ALUS HIJAB', 'bold');
+
+		nota += '\x1B\x21\x01'; // Small font untuk social media
+		nota += centerLine('IG: daalushijab.store');
+		nota += centerLine('TIKTOK: da.alus');
+		nota += '\x1B\x21\x00'; // Reset to normal
+
+		nota += '\n';
+		nota += centerLine('Terima kasih telah berbelanja!');
+		nota += '\n';
+		nota += centerLine('*** Barang yang sudah dibeli ***');
+		nota += centerLine('*** tidak dapat dikembalikan ***');
+
+		// Tambahan spasi untuk memastikan cetakan selesai
+		nota += '\n\n\n\x1B\x69'; // Partial cut (jika printer support)
 
 		try {
 			const encoded = btoa(unescape(encodeURIComponent(nota)));
