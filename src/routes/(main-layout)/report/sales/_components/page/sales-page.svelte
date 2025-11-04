@@ -16,6 +16,7 @@
 	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
 	import dayjs from 'dayjs';
 	import * as Popover from '$lib/components/ui/popover/index.js';
+	import { saleService } from '@/services/saleService';
 
 	const { state, handlePageChange, handleSearch, toggleRow } = useSalesPage();
 
@@ -276,6 +277,16 @@
 		}
 	}
 
+	function downloadExcel() {
+		saleService.getReportExcel({
+			PageNumber: 1,
+			PageSize: 100000,
+			SearchTerm: state.searchTerm,
+			EndDate: state.endDate,
+			StartDate: state.startDate,
+		});
+	}
+
 	// Fungsi untuk handle klik transaction code
 	function handlePrintNota(row: any) {
 		// Pastikan data details tersedia sebelum print
@@ -368,6 +379,9 @@
 					/>
 				</Popover.Content>
 			</Popover.Root>
+			<div>
+				<Button onclick={downloadExcel}>Export</Button>
+			</div>
 		</div>
 	</div>
 </header>
