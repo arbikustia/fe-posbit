@@ -165,7 +165,7 @@
 				const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
 				const hrg = String(price.toLocaleString('id-ID')).padStart(hargaCol, ' ');
 				const qtyStr = String(qty).padStart(qtyCol, ' ');
-				nota += `${name}       Rp${hrg}${qtyStr}\n`;
+				nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
 
 				// Baris tambahan untuk nama panjang
 				for (let i = 1; i < namaPotong.length; i++) {
