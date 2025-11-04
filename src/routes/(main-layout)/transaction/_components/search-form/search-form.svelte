@@ -58,36 +58,31 @@
 
 		// === DATA NOTA ===
 		const toko = 'DA.ALUS HIJAB';
-		const alamat1 = 'Ruko B-15 no 17, Mutiara';
-		const alamat2 = 'Gading Timur, Mustikajaya, Bekasi';
+		const alamat = 'Jl. Melati No. 45, Jakarta';
+		const telp = 'Telp: 0812-9876-5432';
 		const tanggal = pageState.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
 		const kasir = pageState.username || '';
 		const customer = pageState.customerName || '';
 		const member = pageState?.customerData !== null ? 'PREMIUM' : 'REGULAR';
 		const point = pageState?.customerData?.point || 0;
 
-		// Helper untuk teks center
-		const center = (text) => {
-			const width = 32;
-			const space = Math.max(0, Math.floor((width - text.length) / 2));
-			return ' '.repeat(space) + text + '\n';
-		};
+		// Data items - sesuaikan dengan data cart Anda
+		// const items = [
+		// 	['Hijab Segi Empat', 75000, 2],
+		// 	['Pashmina Wolfis', 85000, 1],
+		// 	['Jilbab Instan', 45000, 3]
+		// ];
 
+		// === FORMAT STRUK DALAM TEKS ===
 		let nota = '';
-
-		// === HEADER TOKO (Nama besar, alamat kecil) ===
-		nota += '\x1B\x21\x30'; // Double width + height (besar)
-		nota += center(toko.toUpperCase());
-		nota += '\x1B\x21\x00'; // Kembali ke ukuran normal
-		nota += center(alamat1);
-		nota += '\x1B\x21\x01'; // Font lebih kecil (condensed)
-		nota += center(alamat2);
-		nota += '\x1B\x21\x00'; // Normal lagi
-
+		nota += '         DA.ALUS HIJAB         \n';
+		nota += '   Jl. Melati No. 45, Jakarta   \n';
+		nota += '     Telp: 0812-9876-5432      \n';
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
 		nota += `Kasir   : ${kasir}\n`;
 		nota += `Customer: ${customer}\n`;
+		nota += `Member  : ${member}   Point: ${point}\n`;
 		nota += '--------------------------------\n';
 		nota += 'Item                  Hrg   Qty\n';
 		nota += '--------------------------------\n';
@@ -98,10 +93,13 @@
 			const total = harga_jual * qty;
 			subtotal += total;
 
-			const namaCol = 12;
+			// Lebar maksimum kertas thermal (misal 32 karakter total)
+			const namaCol = 12; // lebar kolom nama
 			const hargaCol = 8;
 			const qtyCol = 3;
+			const totalCol = 9;
 
+			// Bagi nama jadi beberapa baris (setiap baris maks 12 karakter)
 			const namaPotong = [];
 			let sisa = String(name);
 
@@ -110,11 +108,13 @@
 				sisa = sisa.substring(namaCol);
 			}
 
+			// Baris pertama (nama + angka)
 			const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
 			const hrg = String(harga_jual.toLocaleString('id-ID')).padStart(hargaCol, ' ');
 			const qtyStr = String(qty).padStart(qtyCol, ' ');
-			nota += `${namaBaris1}   Rp${hrg}${qtyStr}\n`;
+			nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
 
+			// Jika nama lebih panjang, cetak sisanya di bawah (hanya nama)
 			for (let i = 1; i < namaPotong.length; i++) {
 				nota += `${namaPotong[i]}\n`;
 			}
@@ -123,25 +123,25 @@
 		nota += '--------------------------------\n';
 		const diskonPersen = pageState.discount || 0;
 		const diskonNilai = (subtotal * diskonPersen) / 100;
+		const totalBayar = subtotal - diskonNilai;
 
-		nota += `Subtotal    : Rp${pageState.totalAll?.toLocaleString('id-ID')}\n`;
-		nota += `Diskon      : ${pageState.discount || 0}% (Rp${diskonNilai?.toLocaleString('id-ID')})\n`;
-		nota += `Total       : Rp${pageState.grandTotal?.toLocaleString('id-ID')}\n`;
-		nota += `Nominal     : Rp${pageState.amountPaid?.toLocaleString('id-ID')}\n`;
-		nota += `Kembalian   : Rp${((pageState.amountPaid || 0) - (pageState.grandTotal || 0))?.toLocaleString('id-ID')}\n`;
+		nota += `Subtotal    :Rp${pageState.totalAll?.toLocaleString('id-ID')}\n`;
+		nota += `Diskon      :${pageState.discount || 0}%\n`;
+		nota += `Total Bayar :Rp${pageState.grandTotal?.toLocaleString('id-ID')}\n`;
+		nota += `Bayar       :Rp${pageState.amountPaid?.toLocaleString('id-ID')}\n`;
+		nota += `Kembali     :Rp${((pageState.amountPaid || 0) - (pageState.grandTotal || 0))?.toLocaleString('id-ID')}\n`;
 
 		nota += '--------------------------------\n';
 		nota += `Payment: ${pageState.paymentMethod}\n`;
 		nota += '--------------------------------\n';
+		nota += '         DA.ALUS HIJAB         \n';
+		nota += '        IG @daalushijab		 \n';
+		nota += '       www.daalushijab.id        \n';
+		nota += ' Terima kasih telah berbelanja! \n';
+		nota += '*** Barang yang sudah dibeli ***\n';
+		nota += '*** tidak dapat dikembalikan ***\n';
 
-		// === FOOTER ===
-		nota += center('DA.ALUS HIJAB');
-		nota += center('IG: daalushijab.store');
-		nota += center('TIKTOK: da.alus');
-		nota += center('Terima kasih telah berbelanja!');
-		nota += center('*** Barang yang sudah dibeli ***');
-		nota += center('*** tidak dapat dikembalikan ***');
-
+		// === CETAK MENGGUNAKAN RAWBT (BLUETOOTH THERMAL) ===
 		try {
 			const encoded = btoa(unescape(encodeURIComponent(nota)));
 			window.location.href = 'rawbt:base64,' + encoded;
