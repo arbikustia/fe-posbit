@@ -20,42 +20,10 @@
 	const { form: formData, enhance, errors } = form;
 
 	// === OPTIONS ===
-
-	// Derived reactive item options
 	const itemOptions = $derived(pageState.listItem ?? []);
 
 	let customerOptions: { value: string; label: string }[] = $state([]);
 	let packageOptions: { value: string; label: string }[] = $state([]);
-
-	onMount(() => {
-		customerService.getDataPerson().then((res: any) => {
-			customerOptions = res.data.data.map((customer: any, index: number) => ({
-				value: customer.id ?? `customer-${index}`,
-				label: customer.firstname + ' ' + customer.lastname
-			}));
-			console.log(res.data, 'ofofo');
-		});
-
-		purchaseService.getDataPackage().then((res: any) => {
-			console.log(res.data.data, 'package');
-			packageOptions = res.data.data.map(
-				(item: { id: string; package_name: string }, index: number) => ({
-					value: item.id,
-					label: item.package_name
-				})
-			);
-		});
-	});
-	const statusOptions = [
-		{ value: 'LUNAS', label: 'Lunas' },
-		{ value: 'DP', label: 'DP' },
-		{ value: 'CANCEL', label: 'Cancelled' }
-	];
-
-	const paymentOptions = [
-		{ value: 'CASH', label: 'Cash' },
-		{ value: 'DEBIT', label: 'Debit' }
-	];
 
 	// === STATES ===
 	let selectedItems = $state<string[]>([]);
@@ -63,12 +31,10 @@
 
 	let open = $state(false);
 	let triggerRef = $state<HTMLButtonElement>(null!);
-
-	// Customer combobox state
 	let customerOpen = $state(false);
 	let customerTriggerRef = $state<HTMLButtonElement>(null!);
 
-	// Derived labels for display
+	// Derived labels
 	const customerLabel = $derived(
 		customerOptions.find((r) => r.value === $formData.customer_id)?.label ?? 'Select Customer'
 	);
@@ -83,10 +49,21 @@
 		packageOptions.find((r) => r.value === $formData.package_id)?.label ?? 'Select package'
 	);
 
+	const statusOptions = [
+		{ value: 'LUNAS', label: 'Lunas' },
+		{ value: 'DP', label: 'DP' },
+		{ value: 'CANCEL', label: 'Cancelled' }
+	];
+
+	const paymentOptions = [
+		{ value: 'CASH', label: 'Cash' },
+		{ value: 'DEBIT', label: 'Debit' }
+	];
+
 	// === GET PRICE BY PACKAGE ===
 	function getItemPriceByPackage(item: any, packageName: string) {
 		if (!item) return 0;
-		
+
 		switch (packageName) {
 			case 'Harga Normal':
 				return item.harga;
@@ -147,8 +124,9 @@
 			const existing = itemDetails.find((d) => d.item_id === id);
 			const item = pageState.listItem.find((i) => i.value === id);
 			const qty = existing?.qty ?? 1;
-			const price = getItemPriceByPackage(item, packageLabel);
-			const priceKey = packageLabel;
+			// Preserve existing price if in edit mode, otherwise calculate
+			const price = existing?.price || getItemPriceByPackage(item, packageLabel);
+			const priceKey = existing?.priceKey || packageLabel;
 			return { item_id: id, qty, price, priceKey };
 		});
 
@@ -162,30 +140,36 @@
 		if (!item) return;
 
 		const qty = Math.max(1, Math.min(newQty, item.stock));
-		const price = getItemPriceByPackage(item, packageLabel);
-		const priceKey = packageLabel;
+		const detail = itemDetails.find((d) => d.item_id === id);
+		const price = detail?.price || getItemPriceByPackage(item, packageLabel);
+		const priceKey = detail?.priceKey || packageLabel;
 
 		const updated = itemDetails.map((i) => (i.item_id === id ? { ...i, qty, price, priceKey } : i));
 		itemDetails = updated;
 		formData.update((f) => ({ ...f, details: updated }));
 	}
 
-	// === WATCH PACKAGE CHANGES AND RECALCULATE ===
+	// === WATCH PACKAGE CHANGES ===
 	let previousPackageId = $state<string | undefined>(undefined);
-	
+
 	$effect(() => {
-		// Only recalculate if package actually changed
-		if ($formData.package_id !== previousPackageId && itemDetails.length > 0) {
+		if (
+			$formData.package_id !== previousPackageId &&
+			itemDetails.length > 0 &&
+			previousPackageId !== undefined
+		) {
 			previousPackageId = $formData.package_id;
-			
+
 			const updated = itemDetails.map((detail) => {
 				const item = pageState.listItem.find((i) => i.value === detail.item_id);
 				const price = getItemPriceByPackage(item, packageLabel);
 				return { ...detail, price, priceKey: packageLabel };
 			});
-			
+
 			itemDetails = updated;
 			formData.update((f) => ({ ...f, details: updated }));
+		} else if (previousPackageId === undefined && $formData.package_id) {
+			previousPackageId = $formData.package_id;
 		}
 	});
 
@@ -198,6 +182,71 @@
 			final_amount: total - (f.discount_amount ?? 0)
 		}));
 	});
+
+	// === INITIALIZE FORM DATA ON MOUNT ===
+	// === INITIALIZE FORM DATA ON MOUNT ===
+	onMount(async () => {
+		// --- DECODE KETERANGAN DARI URL/QUERY (jika ada) ---
+		const qp = new URLSearchParams(window.location.search);
+		const rawKeterangan = qp.get('keterangan') ?? '';
+		if (rawKeterangan) {
+			const decodedKeterangan = decodeURIComponent(decodeURIComponent(rawKeterangan));
+			formData.update((f) => ({ ...f, keterangan: decodedKeterangan }));
+		}
+
+		// Load customers
+		try {
+			const customerRes: any = await customerService.getDataPerson();
+			customerOptions = customerRes.data.data.map((customer: any, index: number) => ({
+				value: String(customer.id ?? `customer-${index}`),
+				label: customer.firstname + ' ' + customer.lastname
+			}));
+		} catch (err) {
+			console.error('Failed to load customers:', err);
+		}
+
+		// Load packages
+		try {
+			const packageRes: any = await purchaseService.getDataPackage();
+			packageOptions = packageRes.data.data.map(
+				(item: { id: string; package_name: string }, index: number) => ({
+					value: item.id,
+					label: item.package_name
+				})
+			);
+		} catch (err) {
+			console.error('Failed to load packages:', err);
+		}
+
+		// Tunggu sampai list item sudah terisi
+		const waitForItems = async () => {
+			let retries = 0;
+			while (pageState.listItem.length === 0 && retries < 20) {
+				await new Promise((r) => setTimeout(r, 100));
+				retries++;
+			}
+		};
+		await waitForItems();
+		await tick();
+
+		// Restore items dari formData.details
+		if ($formData.details && $formData.details.length > 0) {
+			selectedItems = $formData.details.map((d: any) => d.item_id);
+
+			itemDetails = $formData.details.map((d: any) => {
+				const item = pageState.listItem.find((i: any) => i.value === d.item_id);
+				const price = getItemPriceByPackage(item, packageLabel);
+				return {
+					item_id: d.item_id,
+					qty: d.qty,
+					price: price,
+					priceKey: packageLabel
+				};
+			});
+
+			formData.update((f) => ({ ...f, details: itemDetails }));
+		}
+	});
 </script>
 
 <form
@@ -206,9 +255,12 @@
 	onsubmit={handleSubmit}
 	class="mx-auto w-full max-w-4xl space-y-6 px-4 py-6 sm:px-6 md:px-8"
 >
-	<h2 class="text-xl font-bold sm:text-2xl">Create New Purchase</h2>
+	<h2 class="text-xl font-bold sm:text-2xl">
+		{pageState.isEditing ? 'Edit Purchase' : 'Create New Purchase'}
+	</h2>
+
 	<div class="grid grid-cols-2 items-center gap-4">
-		<!-- PACKAGE - Moved to top -->
+		<!-- PACKAGE -->
 		<Form.Field {form} name="package_id">
 			<Form.Control>
 				<Form.Label>Package <span class="text-red-500">*</span></Form.Label>
@@ -377,7 +429,7 @@
 
 	<!-- FORM FIELDS -->
 	<div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-		<!-- CUSTOMER (SEARCHABLE) -->
+		<!-- CUSTOMER -->
 		<Form.Field {form} name="customer_id">
 			<Form.Control>
 				<Form.Label>Customer <span class="text-red-500">*</span></Form.Label>
@@ -391,9 +443,7 @@
 								role="combobox"
 							>
 								<span
-									class={cn(
-										!$formData.customer_id && 'text-muted-foreground'
-									, 'w-full text-left')}
+									class={cn(!$formData.customer_id && 'text-muted-foreground', 'w-full text-left')}
 								>
 									{customerLabel}
 								</span>
@@ -449,11 +499,11 @@
 			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
 
-		<!-- DOWN PAYMENT: Hanya muncul jika status DP -->
+		<!-- DOWN PAYMENT -->
 		{#if $formData.status === 'DP'}
 			<Form.Field {form} name="down_payment">
 				<Form.Control>
-					<Form.Label>Down Payment</Form.Label>
+					<Form.Label>Down Payment <span class="text-red-500">*</span></Form.Label>
 					<Input type="number" placeholder="0" bind:value={$formData.down_payment} />
 				</Form.Control>
 				<Form.FieldErrors class="text-sm text-red-600" />
@@ -484,7 +534,44 @@
 			</Form.Control>
 			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
+
+		<!-- DISCOUNT -->
+		<Form.Field {form} name="discount_amount">
+			<Form.Control>
+				<Form.Label>Discount</Form.Label>
+				<Input type="number" placeholder="0" bind:value={$formData.discount_amount} />
+			</Form.Control>
+			<Form.FieldErrors class="text-sm text-red-600" />
+		</Form.Field>
 	</div>
+
+	<!-- TOTAL SUMMARY -->
+	<!-- <div class="rounded-lg border bg-gray-50 p-4">
+		<div class="space-y-2 text-sm">
+			<div class="flex justify-between">
+				<span class="text-gray-600">Total Amount:</span>
+				<span class="font-medium">Rp {($formData.total_amount ?? 0).toLocaleString('id-ID')}</span>
+			</div>
+			<div class="flex justify-between">
+				<span class="text-gray-600">Discount:</span>
+				<span class="font-medium text-red-600">- Rp {($formData.discount_amount ?? 0).toLocaleString('id-ID')}</span>
+			</div>
+			<div class="flex justify-between border-t pt-2 text-base font-bold">
+				<span>Final Amount:</span>
+				<span class="text-green-600">Rp {($formData.final_amount ?? 0).toLocaleString('id-ID')}</span>
+			</div>
+			{#if $formData.status === 'DP' && $formData.down_payment}
+				<div class="flex justify-between text-sm text-gray-600">
+					<span>Down Payment:</span>
+					<span>Rp {($formData.down_payment ?? 0).toLocaleString('id-ID')}</span>
+				</div>
+				<div class="flex justify-between text-sm font-medium text-orange-600">
+					<span>Remaining:</span>
+					<span>Rp {(($formData.final_amount ?? 0) - ($formData.down_payment ?? 0)).toLocaleString('id-ID')}</span>
+				</div>
+			{/if}
+		</div>
+	</div> -->
 
 	<!-- BUTTONS -->
 	<div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -497,6 +584,8 @@
 			Cancel
 		</Button>
 
-		<Button type="submit" class="w-full sm:w-auto">Save Purchase</Button>
+		<Button type="submit" class="w-full sm:w-auto">
+			{pageState.isEditing ? 'Update Purchase' : 'Save Purchase'}
+		</Button>
 	</div>
 </form>

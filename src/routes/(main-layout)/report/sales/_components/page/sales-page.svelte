@@ -8,6 +8,7 @@
 	import { fly } from 'svelte/transition';
 	import { cn } from '$lib/utils';
 	import { useSalesPage } from '../../create/use-create.svelte';
+	import { browser } from '$app/environment';
 
 	const { state, handlePageChange, handleSearch, toggleRow } = useSalesPage();
 
@@ -73,6 +74,139 @@
 			minute: '2-digit'
 		}).format(date);
 	}
+
+	// Fungsi print nota thermal untuk report
+	function printReportNota(sale: any) {
+		if (!browser) return;
+
+		// === DATA NOTA ===
+		const toko = 'DA.ALUS HIJAB';
+		const alamat1 = 'Ruko B-15 no 17, Mutiara';
+		const alamat2 = 'Gading Timur, Mustikajaya, Bekasi';
+		const tanggal = formatDate(sale.created_at) || dayjs().format('DD/MM/YYYY HH:mm');
+		const kasir = sale.cashier || '';
+		const customer = sale.customer_name || '';
+		const transactionCode = sale.transaction_code || '';
+
+		// Helper untuk teks center
+		const center = (text: string) => {
+			const width = 32;
+			const space = Math.max(0, Math.floor((width - text.length) / 2));
+			return ' '.repeat(space) + text + '\n';
+		};
+
+		let nota = '';
+
+		// === HEADER TOKO ===
+		nota += '\x1B\x21\x30'; // Double width + height
+		nota += center(toko.toUpperCase());
+		nota += '\x1B\x21\x00'; // Kembali ke ukuran normal
+		nota += center(alamat1);
+		nota += '\x1B\x21\x01'; // Font lebih kecil (condensed)
+		nota += center(alamat2);
+		nota += '\x1B\x21\x00'; // Normal lagi
+
+		nota += '--------------------------------\n';
+		nota += `Tanggal : ${tanggal}\n`;
+		nota += `Kasir   : ${kasir}\n`;
+		nota += `Customer: ${customer}\n`;
+		nota += `No. Trans: ${transactionCode}\n`;
+		nota += '--------------------------------\n';
+		nota += 'Item                  Hrg   Qty\n';
+		nota += '--------------------------------\n';
+
+		let subtotal = 0;
+
+		// Gunakan details dari data sale
+		if (sale.details && sale.details.length > 0) {
+			for (const item of sale.details) {
+				const { item_name, price, qty = 1 } = item;
+				const total = price * qty;
+				subtotal += total;
+
+				const namaCol = 12;
+				const hargaCol = 8;
+				const qtyCol = 3;
+
+				const namaPotong = [];
+				let sisa = String(item_name);
+
+				while (sisa.length > 0) {
+					namaPotong.push(sisa.substring(0, namaCol));
+					sisa = sisa.substring(namaCol);
+				}
+
+				const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
+				const hrg = String(price.toLocaleString('id-ID')).padStart(hargaCol, ' ');
+				const qtyStr = String(qty).padStart(qtyCol, ' ');
+				nota += `${namaBaris1}   Rp${hrg}${qtyStr}\n`;
+
+				for (let i = 1; i < namaPotong.length; i++) {
+					nota += `${namaPotong[i]}\n`;
+				}
+			}
+		}
+
+		nota += '--------------------------------\n';
+
+		// Hitung diskon berdasarkan data sale
+		const diskonNilai = sale.discount_amount || 0;
+		const diskonPersen = sale.total_amount > 0 ? (diskonNilai / sale.total_amount) * 100 : 0;
+
+		nota += `Subtotal    : Rp${(sale.total_amount || 0)?.toLocaleString('id-ID')}\n`;
+		nota += `Diskon      : ${diskonPersen.toFixed(1)}% (Rp${diskonNilai?.toLocaleString('id-ID')})\n`;
+		nota += `Total       : Rp${(sale.final_amount || 0)?.toLocaleString('id-ID')}\n`;
+
+		// Tambahkan informasi pembayaran jika ada
+		if (sale.amount_receive) {
+			nota += `Nominal     : Rp${(sale.amount_receive || 0)?.toLocaleString('id-ID')}\n`;
+			nota += `Kembalian   : Rp${(sale.change || 0)?.toLocaleString('id-ID')}\n`;
+		}
+
+		nota += '--------------------------------\n';
+		nota += `Payment: ${sale.payment_method || 'CASH'}\n`;
+		nota += '--------------------------------\n';
+
+		// === FOOTER ===
+		nota += center('DA.ALUS HIJAB');
+		nota += center('IG: daalushijab.store');
+		nota += center('TIKTOK: da.alus');
+		nota += center('Terima kasih telah berbelanja!');
+		nota += center('*** Barang yang sudah dibeli ***');
+		nota += center('*** tidak dapat dikembalikan ***');
+
+		try {
+			const encoded = btoa(unescape(encodeURIComponent(nota)));
+			window.location.href = 'rawbt:base64,' + encoded;
+		} catch (error) {
+			console.error('Error printing nota:', error);
+			alert('Gagal mencetak nota. Pastikan aplikasi RawBT terinstall.');
+		}
+	}
+
+	// Fungsi untuk handle klik transaction code
+	function handlePrintNota(row: any) {
+		// Pastikan data details tersedia sebelum print
+		if (!row.details || row.details.length === 0) {
+			// Jika details belum ada, buka row terlebih dahulu untuk memuat details
+			if (!row.open) {
+				toggleRow(row.id);
+				// Tunggu sebentar agar details terload, lalu print
+				setTimeout(() => {
+					const updatedRow = state.table.find((r) => r.id === row.id);
+					if (updatedRow && updatedRow.details && updatedRow.details.length > 0) {
+						printReportNota(updatedRow);
+					} else {
+						alert('Tidak dapat memuat detail transaksi untuk dicetak');
+					}
+				}, 500);
+			} else {
+				printReportNota(row);
+			}
+		} else {
+			printReportNota(row);
+		}
+	}
 </script>
 
 <!-- HEADER -->
@@ -136,16 +270,45 @@
 				<table class="min-w-full divide-y divide-gray-200">
 					<thead class="bg-gray-100">
 						<tr>
-							<th class="w-8 px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3"></th>
-							<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">No</th>
-							<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Transaction Code</th>
-							<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Customer</th>
-							<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Cashier</th>
-							<th class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Total Amount</th>
-							<th class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Discount</th>
-							<th class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Final Amount</th>
-							<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Payment</th>
-							<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm">Date</th>
+							<th
+								class="w-8 px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3"
+							></th>
+							<th
+								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>No</th
+							>
+							<th
+								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>Transaction Code</th
+							>
+							<th
+								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>Customer</th
+							>
+							<th
+								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>Cashier</th
+							>
+							<th
+								class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>Total Amount</th
+							>
+							<th
+								class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>Discount</th
+							>
+							<th
+								class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>Final Amount</th
+							>
+							<th
+								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>Payment</th
+							>
+							<th
+								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>Date</th
+							>
 						</tr>
 					</thead>
 
@@ -174,37 +337,60 @@
 											/>
 										</button>
 									</td>
-									
-									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm">
+
+									<td
+										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm"
+									>
 										{row.no}
 									</td>
-									<td class="px-3 py-2.5 text-xs whitespace-nowrap font-medium text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+									<td
+										onclick={() => handlePrintNota(row)}
+										class="px-3 py-2.5 text-xs font-medium whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
 										{row.transaction_code}
 									</td>
-									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+									<td
+										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
 										{row.customer_name}
 									</td>
-									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+									<td
+										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
 										{row.cashier}
 									</td>
-									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-right text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+									<td
+										class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
 										{formatCurrency(row.total_amount)}
 									</td>
-									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-right text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+									<td
+										class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
 										{formatCurrency(row.discount_amount)}
 									</td>
-									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-right font-semibold text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+									<td
+										class="px-3 py-2.5 text-right text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
 										{formatCurrency(row.final_amount)}
 									</td>
-									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm">
-										<span class={cn(
-											"inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
-											row.payment_method === 'CASH' ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"
-										)}>
+									<td
+										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
+										<span
+											class={cn(
+												'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
+												row.payment_method === 'CASH'
+													? 'bg-green-100 text-green-700'
+													: 'bg-blue-100 text-blue-700'
+											)}
+										>
 											{row.payment_method}
 										</span>
 									</td>
-									<td class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm">
+									<td
+										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm"
+									>
 										{formatDate(row.created_at)}
 									</td>
 								</tr>
@@ -217,8 +403,16 @@
 												<div class="flex items-center justify-between">
 													<h4 class="text-sm font-semibold text-gray-700">Transaction Details</h4>
 													<div class="flex gap-4 text-xs text-gray-600">
-														<span>Amount Received: <strong class="text-gray-900">{formatCurrency(row.amount_receive)}</strong></span>
-														<span>Change: <strong class="text-gray-900">{formatCurrency(row.change)}</strong></span>
+														<span
+															>Amount Received: <strong class="text-gray-900"
+																>{formatCurrency(row.amount_receive)}</strong
+															></span
+														>
+														<span
+															>Change: <strong class="text-gray-900"
+																>{formatCurrency(row.change)}</strong
+															></span
+														>
 													</div>
 												</div>
 
@@ -226,10 +420,18 @@
 													<table class="min-w-full text-sm">
 														<thead class="bg-gray-100">
 															<tr>
-																<th class="px-3 py-2 text-left text-xs font-medium text-gray-600">Item</th>
-																<th class="px-3 py-2 text-center text-xs font-medium text-gray-600">Qty</th>
-																<th class="px-3 py-2 text-right text-xs font-medium text-gray-600">Price</th>
-																<th class="px-3 py-2 text-right text-xs font-medium text-gray-600">Subtotal</th>
+																<th class="px-3 py-2 text-left text-xs font-medium text-gray-600"
+																	>Item</th
+																>
+																<th class="px-3 py-2 text-center text-xs font-medium text-gray-600"
+																	>Qty</th
+																>
+																<th class="px-3 py-2 text-right text-xs font-medium text-gray-600"
+																	>Price</th
+																>
+																<th class="px-3 py-2 text-right text-xs font-medium text-gray-600"
+																	>Subtotal</th
+																>
 															</tr>
 														</thead>
 														<tbody class="divide-y divide-gray-200">
@@ -237,8 +439,12 @@
 																<tr>
 																	<td class="px-3 py-2 text-gray-900">{detail.item_name}</td>
 																	<td class="px-3 py-2 text-center text-gray-900">{detail.qty}</td>
-																	<td class="px-3 py-2 text-right text-gray-900">{formatCurrency(detail.price)}</td>
-																	<td class="px-3 py-2 text-right font-medium text-gray-900">{formatCurrency(detail.subtotal)}</td>
+																	<td class="px-3 py-2 text-right text-gray-900"
+																		>{formatCurrency(detail.price)}</td
+																	>
+																	<td class="px-3 py-2 text-right font-medium text-gray-900"
+																		>{formatCurrency(detail.subtotal)}</td
+																	>
 																</tr>
 															{/each}
 														</tbody>
@@ -262,8 +468,8 @@
 			{#snippet children({ pages, currentPage })}
 				<div class="mt-4 flex w-full items-center justify-between">
 					<p class="text-sm text-gray-600">
-						Showing <strong>{(state.currentPage - 1) * state.pageSize + 1}</strong> to 
-						<strong>{Math.min(state.currentPage * state.pageSize, state.totalCount)}</strong> of 
+						Showing <strong>{(state.currentPage - 1) * state.pageSize + 1}</strong> to
+						<strong>{Math.min(state.currentPage * state.pageSize, state.totalCount)}</strong> of
 						<strong>{state.totalCount}</strong> results
 					</p>
 
@@ -331,7 +537,9 @@
 
 			<p class="mb-5 text-center text-sm text-gray-600 sm:mb-6 dark:text-gray-400">
 				Are you sure you want to delete transaction
-				<span class="font-semibold text-gray-800 dark:text-gray-100">{selectedSale?.transaction_code}</span>?
+				<span class="font-semibold text-gray-800 dark:text-gray-100"
+					>{selectedSale?.transaction_code}</span
+				>?
 				<span class="block sm:inline">This action cannot be undone.</span>
 			</p>
 

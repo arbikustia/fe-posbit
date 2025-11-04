@@ -2,20 +2,27 @@
 	import * as Table from '$lib/components/ui/table/index.js';
 	import Icon from '@iconify/svelte';
 	import * as Pagination from '$lib/components/ui/pagination/index.js';
-	import Button from '$lib/components/ui/button/button.svelte';
+	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { goto } from '$app/navigation';
 	import { tick, onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { cn } from '$lib/utils';
-	import { usePurchasePage } from '../../create/use-create.svelte'; // ✅ pastikan path ini benar
-	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover'; // pastikan path sesuai
+	import { usePurchasePage } from '../../create/use-create.svelte';
+	import { PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
 	import { purchaseService } from '@/services/purchaseService';
+	import * as Select from '$lib/components/ui/select/index.js';
+	import * as Popover from '$lib/components/ui/popover/index.js';
+	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
+	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date';
+	import CalendarIcon from '@lucide/svelte/icons/calendar';
+	import dayjs from 'dayjs';
+	import { Root } from '@/components/ui/card';
+	import InvoicePage from '../invoice-purchase/invoice-page.svelte';
+	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
-	// ✅ Ambil state & logic dari composable
 	const { state, handleGetPaged, handlePageChange } = usePurchasePage();
 
-	// 🧩 TOGGLE SEARCH
 	async function toggleSearch() {
 		state.showSearch = !state.showSearch;
 		if (state.showSearch) {
@@ -35,12 +42,10 @@
 		open?: boolean;
 	};
 
-	// 🧩 FETCH DATA DARI API SAAT LOAD
 	onMount(async () => {
 		await handleGetPaged();
 	});
 
-	// 🧩 DELETE MODAL
 	function openDeleteModal(row: TableRow) {
 		state.selectedPurchase = row;
 		state.showDeleteModal = true;
@@ -57,6 +62,33 @@
 			state.table = state.table.filter((r: any) => r.id !== state.selectedPurchase?.id);
 			closeDeleteModal();
 		}
+	}
+
+	let popoverOpen = false;
+
+	// ✅ Ubah tanggal → update di state & fetch ulang data
+	function handleDateChange(v: any) {
+		console.log('Date changed:', v);
+
+		// Cek apakah start dan end sudah terisi
+		if (v?.start && v?.end) {
+			// Update state dengan tanggal baru
+			state.startDate = dayjs(v.start.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
+			state.endDate = dayjs(v.end.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
+
+			console.log('Fetching data for:', state.startDate, state.endDate);
+
+			// Tutup Popover otomatis setelah end date dipilih
+			popoverOpen = false;
+		}
+	}
+
+	// ✅ Helper untuk tampilkan teks tanggal dengan aman
+	function formatDateText() {
+		if (!state.startDate || !state.endDate) return 'Pick a date';
+		return (
+			df.format(dayjs(state.startDate).toDate()) + ' - ' + df.format(dayjs(state.endDate).toDate())
+		);
 	}
 </script>
 
@@ -80,31 +112,80 @@
 					<span>New Purchase</span>
 				</Button>
 
-				<!-- Search -->
-				<div class="relative flex w-full items-center justify-end sm:w-auto">
-					<div class="overflow-hidden">
-						{#if state.showSearch}
-							<input
-								bind:this={state.searchEl}
-								transition:fly={{ x: 120, duration: 250 }}
-								placeholder="Search purchase..."
-								class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
-							/>
-						{/if}
-					</div>
+				<div class="flex gap-2">
+					<!-- Search -->
+					<div class="relative flex w-full items-center justify-end sm:w-auto">
+						<div class="overflow-hidden">
+							{#if state.showSearch}
+								<input
+									bind:this={state.searchEl}
+									bind:value={state.searchTerm}
+									transition:fly={{ x: 120, duration: 250 }}
+									placeholder="Search purchase..."
+									class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
+								/>
+							{/if}
+						</div>
 
-					<button
-						type="button"
-						class="absolute right-0 rounded-full p-2 transition hover:bg-gray-100 dark:hover:bg-gray-800"
-						onclick={toggleSearch}
+						<button
+							type="button"
+							class="absolute right-0 rounded-full p-2 transition hover:bg-gray-100 dark:hover:bg-gray-800"
+							onclick={toggleSearch}
+						>
+							<Icon
+								icon="majesticons:search-line"
+								width="20"
+								height="20"
+								class="text-gray-600 md:h-[22px] md:w-[22px]"
+							/>
+						</button>
+					</div>
+					<Select.Root
+						type="single"
+						bind:value={state.statusFilter}
+						onValueChange={() => handleGetPaged(1)}
 					>
-						<Icon
-							icon="majesticons:search-line"
-							width="20"
-							height="20"
-							class="text-gray-600 md:h-[22px] md:w-[22px]"
-						/>
-					</button>
+						<Select.Trigger class="w-full text-sm">
+							{'All Types'}
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Item value="">All</Select.Item>
+							<Select.Item value="DP">DP</Select.Item>
+							<Select.Item value="LUNAS">LUNAS</Select.Item>
+							<Select.Item value="CANCEL">CANCEL</Select.Item>
+						</Select.Content>
+					</Select.Root>
+					<!-- FILTER DATE -->
+					<!-- FILTER DATE -->
+					<div class="flex gap-2">
+						<Popover.Root bind:open={popoverOpen}>
+							<Popover.Trigger
+								class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}
+							>
+								<CalendarIcon class="mr-2 size-4" />
+								{formatDateText()}
+							</Popover.Trigger>
+
+							<Popover.Content class="w-auto p-0" align="start">
+								<RangeCalendar
+									numberOfMonths={2}
+									onValueChange={handleDateChange}
+									value={{
+										start: new CalendarDate(
+											Number(dayjs(state.startDate).format('YYYY')),
+											Number(dayjs(state.startDate).format('M')),
+											Number(dayjs(state.startDate).format('D'))
+										),
+										end: new CalendarDate(
+											Number(dayjs(state.endDate).format('YYYY')),
+											Number(dayjs(state.endDate).format('M')),
+											Number(dayjs(state.endDate).format('D'))
+										)
+									}}
+								/>
+							</Popover.Content>
+						</Popover.Root>
+					</div>
 				</div>
 			</div>
 		</header>
@@ -120,6 +201,7 @@
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Invoice No</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Customer</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Status</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Down Payment</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Payment</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created By</th>
@@ -135,84 +217,88 @@
 							{#each state.table as row}
 								<tr class="hover:bg-gray-50">
 									<td class="px-3 py-2.5 text-xs text-gray-500">{row.no}</td>
-									<td class="px-3 py-2.5 text-xs">{row.inv_number}</td>
+									<td class="px-3 py-2.5 text-xs" ><InvoicePage {row}/></td>
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.person_id}
-											<Popover>
-												<PopoverTrigger
+											<Popover.Root>
+												<Popover.Trigger
 													class="cursor-pointer text-start text-xs font-medium text-blue-500 underline hover:text-blue-600"
 												>
 													{row.customer_name}
-												</PopoverTrigger>
+												</Popover.Trigger>
 
-												<PopoverContent
+												<Popover.Content
 													class="max-h-60 w-64 overflow-y-auto rounded-lg bg-white p-3 shadow-lg"
 												>
 													<p class="mb-2 text-sm font-semibold text-gray-700">Customer Details</p>
-
 													<table class="min-w-full text-xs">
 														<tbody>
-															<tr>
-																<td class="py-1 font-medium text-gray-700">ID</td>
-																<td class="py-1 text-gray-700">{row.person_id}</td>
-															</tr>
-															<tr>
-																<td class="py-1 font-medium text-gray-700">First Name</td>
-																<td class="py-1 text-gray-700">{row.customer_name.split(' ')[0]}</td
-																>
-															</tr>
-															<tr>
-																<td class="py-1 font-medium text-gray-700">Last Name</td>
-																<td class="py-1 text-gray-700"
+															<tr
+																><td class="py-1 font-medium text-gray-700">ID</td><td
+																	class="py-1 text-gray-700">{row.person_id}</td
+																></tr
+															>
+															<tr
+																><td class="py-1 font-medium text-gray-700">First Name</td><td
+																	class="py-1 text-gray-700">{row.customer_name.split(' ')[0]}</td
+																></tr
+															>
+															<tr
+																><td class="py-1 font-medium text-gray-700">Last Name</td><td
+																	class="py-1 text-gray-700"
 																	>{row.customer_name.split(' ').slice(1).join(' ')}</td
-																>
-															</tr>
-															<tr>
-																<td class="py-1 font-medium text-gray-700">Customer Code</td>
-																<td class="py-1 text-gray-700">{row.customer_code}</td>
-															</tr>
-															<tr>
-																<td class="py-1 font-medium text-gray-700">Telephone</td>
-																<td class="py-1 text-gray-700">{row.telephone}</td>
-															</tr>
-															<tr>
-																<td class="py-1 font-medium text-gray-700">Mobile</td>
-																<td class="py-1 text-gray-700">{row.mobile}</td>
-															</tr>
-															<tr>
-																<td class="py-1 font-medium text-gray-700">Type</td>
-																<td class="py-1 text-gray-700">{row.person_type ?? 'Customer'}</td>
-															</tr>
+																></tr
+															>
+															<tr
+																><td class="py-1 font-medium text-gray-700">Customer Code</td><td
+																	class="py-1 text-gray-700">{row.customer_code}</td
+																></tr
+															>
+															<tr
+																><td class="py-1 font-medium text-gray-700">Telephone</td><td
+																	class="py-1 text-gray-700">{row.telephone}</td
+																></tr
+															>
+															<tr
+																><td class="py-1 font-medium text-gray-700">Mobile</td><td
+																	class="py-1 text-gray-700">{row.mobile}</td
+																></tr
+															>
+															<tr
+																><td class="py-1 font-medium text-gray-700">Type</td><td
+																	class="py-1 text-gray-700">{row.person_type ?? 'Customer'}</td
+																></tr
+															>
 														</tbody>
 													</table>
-												</PopoverContent>
-											</Popover>
+												</Popover.Content>
+											</Popover.Root>
 										{:else}
 											<span class="text-xs text-gray-400 italic">No customer</span>
 										{/if}
 									</td>
 
 									<td class="px-3 py-2.5 text-xs">{row.status}</td>
+									<td class="px-3 py-2.5 text-xs">Rp {row.down_payment.toLocaleString() || '-'}</td>
 									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
 									<td class="px-3 py-2.5 text-xs">{row.payment_method}</td>
 									<td class="px-3 py-2.5 text-xs">{row.created_by}</td>
 									<td class="px-3 py-2.5 text-xs">{row.created_at}</td>
 
-									<!-- 🔹 Order Details Popover -->
+									<!-- Order Details Popover -->
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.purchase_order_details?.length > 0}
-											<Popover>
-												<PopoverTrigger
+											<Popover.Root>
+												<Popover.Trigger
 													class="cursor-pointer text-xs font-medium text-blue-500 underline hover:text-blue-600"
 												>
 													See more
-												</PopoverTrigger>
+												</Popover.Trigger>
 
-												<PopoverContent
+												<Popover.Content
 													class="max-h-60 w-[500px] overflow-y-auto rounded-lg bg-white p-3 shadow-lg"
 												>
 													<p class="mb-2 text-sm font-semibold text-gray-700">Order Details</p>
-
 													<table class="min-w-full text-xs">
 														<thead>
 															<tr class="border-b border-gray-200 text-gray-500">
@@ -230,19 +316,20 @@
 																	<td class="py-1 text-gray-700">{detail.name}</td>
 																	<td class="py-1 text-gray-700">{detail.description}</td>
 																	<td class="py-1 text-gray-700">{detail.qty}</td>
-																	<td class="py-1 text-center text-gray-700">{detail.qty_keluar}</td>
+																	<td class="py-1 text-center text-gray-700">{detail.qty_keluar}</td
+																	>
 																</tr>
 															{/each}
 														</tbody>
 													</table>
-												</PopoverContent>
-											</Popover>
+												</Popover.Content>
+											</Popover.Root>
 										{:else}
 											<span class="text-xs text-gray-400 italic">No details</span>
 										{/if}
 									</td>
 
-									<!-- 🔹 Actions -->
+									<!-- Actions -->
 									<td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
 										{#if row.open}
 											<div class="flex items-center justify-center gap-2 md:gap-3">
@@ -263,10 +350,31 @@
 												<button
 													type="button"
 													class="rounded-full p-1.5 transition hover:scale-110 hover:bg-yellow-50 md:p-2"
-													onclick={() =>
-														goto(
-															`/purchase/create?id=${row.id}&customer_id=${row.customer_id}&status=${row.status}&payment_method=${row.payment_method}&total=${row.total_amount}&final=${row.final_amount}`
-														)}
+													onclick={() => {
+														const details =
+															row.purchase_order_details?.map((d: any) => ({
+																item_id: d.item_id,
+																qty: d.qty,
+																price: 0,
+																priceKey: row.package_name || 'Harga Normal'
+															})) || [];
+														console.log('🔍 keterangan before append:', row.keterangan);
+
+														const params = new URLSearchParams();
+														params.append('id', String(row.id || ''));
+														params.append('customer_id', String(row.person_id || ''));
+														params.append('status', row.status || 'DP');
+														params.append('payment_method', row.payment_method || 'CASH');
+														params.append('package_id', row.package_id || '');
+														params.append('total', String(row.total_amount || 0));
+														params.append('final', String(row.final_amount || 0));
+														params.append('discount', String(row.discount_amount || 0));
+														params.append('down_payment', String(row.down_payment || 0));
+														params.append('keterangan', row.keterangan || ''); // ✅ tanpa encode
+														params.append('details', JSON.stringify(details)); // ✅ biarkan JSON.stringify, jangan encode lagi
+
+														goto(`/purchase/create?${params.toString()}`);
+													}}
 												>
 													<Icon
 														icon="lucide:edit"
@@ -324,7 +432,7 @@
 	</div>
 </div>
 
-<!-- 🧩 DELETE CONFIRM MODAL -->
+<!-- DELETE CONFIRM MODAL -->
 {#if state.showDeleteModal}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->

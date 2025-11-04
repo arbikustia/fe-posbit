@@ -2,7 +2,7 @@
 import { z } from 'zod';
 
 export const invoiceSchema = z.object({
-	customer_id: z.number(),
+	customer_id: z.string(),
 	point_used: z.number().min(0, 'Point Used must be 0 or greater'),
 	point_earned: z.number().min(0, 'Point Earned must be 0 or greater'),
 	status: z.string().min(1, 'Status is required'),
