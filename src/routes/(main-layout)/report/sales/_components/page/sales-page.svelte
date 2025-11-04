@@ -128,10 +128,10 @@
 
 		// === FORMAT STRUK DALAM TEKS ===
 		let nota = '';
-		nota += '         DA.ALUS HIJAB         \n';
-		nota += '        Ruko B-15 no 17        \n';
+		nota += '          DA.ALUS HIJAB        \n';
+		nota += '         Ruko B-15 no 17       \n';
 		nota += '\x1B\x21\x01';
-		nota += ' Mutiara Gading Timur, Mustikajaya, Bekasi\n';
+		nota += '  Mutiara Gading Timur, Mustikajaya, Bekasi\n';
 		nota += '\x1B\x21\x08';
 		nota += '--------------------------------\n';
 		nota += `Tanggal : ${tanggal}\n`;
