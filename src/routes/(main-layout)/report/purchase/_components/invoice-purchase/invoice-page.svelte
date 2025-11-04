@@ -54,8 +54,8 @@
 			doc.text('DA.ALUS', pageWidth - margin, y, { align: 'right' });
 			doc.setFontSize(10);
 			doc.setFont('helvetica', 'normal');
-			doc.text('Ruko B-15 no 17', pageWidth - margin, y + 15, { align: 'right' });
-			doc.text('Mutiara Gading Timur, Mustikajaya, Bekasi', pageWidth - margin, y + 25, { align: 'right' });
+			doc.text('Ruko B-15 no 17', pageWidth - margin, y + 25, { align: 'right' });
+			doc.text('Mutiara Gading Timur, Mustikajaya, Bekasi', pageWidth - margin, y + 45, { align: 'right' });
 
 			// Header line
 			doc.setDrawColor(0, 0, 0);
@@ -69,8 +69,8 @@
 			doc.setFont('helvetica', 'bold');
 			doc.text('TO', margin, y);
 			doc.setFont('helvetica', 'normal');
-			doc.text(row.customer_name || 'FIONA', margin, y + 15);
-			doc.text(row.telephone || '', margin, y + 35);
+			doc.text(row.customer_name || 'FIONA', margin, y + 25);
+			doc.text(row.telephone || '', margin, y + 45);
 
 			// Right side info
 			doc.setFont('helvetica', 'bold');
