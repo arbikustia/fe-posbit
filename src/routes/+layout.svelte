@@ -37,7 +37,7 @@
 			<img
 				class="block h-12 object-contain object-center"
 				src="/images/opsigo-logo.png"
-				alt="Opsigo"
+				alt="Bantuit"
 			/>
 			<div class="relative h-[4px] w-52 overflow-hidden rounded-full bg-black/20">
 				<div class="animate-moving bg-primary absolute h-full rounded-full"></div>

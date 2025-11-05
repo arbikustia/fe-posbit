@@ -97,7 +97,7 @@
 <div class="flex h-full w-full flex-col justify-between">
 	<div class="flex-1">
 		<div class="fixed top-0 z-50 flex w-full justify-between bg-white p-2">
-			<img src="/images/opsigo-logo.png" alt="Opsigo" class="h-8" />
+			<img src="/images/opsigo-logo.png" alt="Bantuit" class="h-8" />
 		</div>
 		<Separator class="mb-4" />
 		<div class="flex items-center gap-x-2 px-2">

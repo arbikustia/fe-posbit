@@ -9,6 +9,7 @@
 	import { useCustomerPage } from '../../create/use-create.svelte';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { customerService } from '@/services/customerService';
+	import { toast } from 'svelte-sonner';
 
 	const { state, handlePageChange, handleGetPaged } = useCustomerPage();
 
@@ -43,11 +44,25 @@
 	}
 
 	function confirmDelete() {
-		if (state.selectedCustomer) {
-			// local remove — service call can be added if needed
-			customerService.delete(state.selectedCustomer.id)
-			state.table = state.table.filter((c: any) => c.id !== state.selectedCustomer?.id);
-			closeDeleteModal();
+		if (!state.selectedCustomer) return;
+
+		try {
+			customerService
+				.delete(state.selectedCustomer.id)
+				.then(() => {
+					// Hapus dari local state
+					state.table = state.table.filter((c: any) => c.id !== state.selectedCustomer?.id);
+					closeDeleteModal();
+					toast.success('Customer deleted successfully!');
+				})
+				.catch((err) => {
+					// Tangani error jika customer sudah digunakan
+					toast.error('Cannot delete customer: customer already used somewhere.');
+					console.error('Delete failed:', err);
+				});
+		} catch (err) {
+			toast.error('Something went wrong while deleting customer.');
+			console.error(err);
 		}
 	}
 </script>

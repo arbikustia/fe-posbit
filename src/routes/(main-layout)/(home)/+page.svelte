@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { HighlightCard } from './_components/highlight-card';
-	import { ChartVisitors } from './_components/chart-visitors';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 	import { cn } from '$lib/utils.js';
@@ -8,33 +6,74 @@
 	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
 	import dayjs from 'dayjs';
 	import { useDashboardPage } from '../dashboard/_components/use-dashboard-page.svelte';
-	// import * as Popover from '$lib/components/ui/popover/index.js';
+	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { onMount } from 'svelte';
+	import { modalService } from '@/services/modalService';
+	import { FormModalAwal } from '../dashboard/_components/form-modal-awal';
+	import HighlightCard from '../dashboard/_components/highlight-card/highlight-card.svelte';
+	import { ChartVisitors } from '../dashboard/_components/chart-visitors';
+
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
 	// ✅ Ambil semua state & handler langsung dari useDashboardPage
-	const { state, handleGetSummary, handleGetChart } = useDashboardPage();
+	const { state: pageState, handleGetSummary, handleGetChart } = useDashboardPage();
+	let popoverOpen = false;
 
 	// ✅ Ubah tanggal → update di state & fetch ulang data
 	function handleDateChange(v: any) {
-		if (v?.start && v?.end) {
-			state.startDate = dayjs(v.start.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
-			state.endDate = dayjs(v.end.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
+		console.log('Date changed:', v);
 
-			// Fetch ulang data dari dashboard service
-			handleGetSummary(state.startDate, state.endDate);
-			handleGetChart(state.startDate, state.endDate, state.filter);
+		// Cek apakah start dan end sudah terisi
+		if (v?.start && v?.end) {
+			// Update state dengan tanggal baru
+			pageState.startDate = dayjs(v.start.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
+			pageState.endDate = dayjs(v.end.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
+
+			console.log('Fetching data for:', pageState.startDate, pageState.endDate);
+
+			// Fetch ulang data
+			handleGetSummary(pageState.startDate, pageState.endDate);
+			handleGetChart(pageState.startDate, pageState.endDate, pageState.filter);
+
+			// Tutup Popover otomatis setelah end date dipilih
+			popoverOpen = false;
 		}
 	}
 
 	// ✅ Helper untuk tampilkan teks tanggal dengan aman
 	function formatDateText() {
-		if (!state.startDate || !state.endDate) return 'Pick a date';
+		if (!pageState.startDate || !pageState.endDate) return 'Pick a date';
 		return (
-			df.format(dayjs(state.startDate).toDate()) + ' - ' + df.format(dayjs(state.endDate).toDate())
+			df.format(dayjs(pageState.startDate).toDate()) +
+			' - ' +
+			df.format(dayjs(pageState.endDate).toDate())
 		);
 	}
 
+	let showModalAwal = $state(false);
+
+	onMount(async () => {
+		try {
+			const res = await modalService.getStatusModalAwal();
+			console.log('Response modal awal:', res);
+
+			// Perbaiki logika kondisi
+			if (res?.data?.data == null) {
+				// Jika data null, tampilkan modal
+				showModalAwal = false;
+			} else if (res.data?.data?.shift1 === '0' || res.data?.data?.shift2 === '0') {
+				// Jika shift1 atau shift2 adalah '0', tampilkan modal
+				showModalAwal = true;
+			} else {
+				showModalAwal = false;
+			}
+
+			console.log('showModalAwal set to:', showModalAwal);
+		} catch (error) {
+			console.error('Error fetching modal status:', error);
+			showModalAwal = false;
+		}
+	});
 </script>
 
 <svelte:head>
@@ -45,7 +84,7 @@
 	<div class="@container/main flex flex-1 flex-col gap-4">
 		<!-- 🔹 Kalender -->
 		<div class="grid max-w-65 gap-2">
-			<!-- <Popover.Root>
+			<Popover.Root bind:open={popoverOpen}>
 				<Popover.Trigger class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}>
 					<CalendarIcon class="mr-2 size-4" />
 					{formatDateText()}
@@ -53,28 +92,31 @@
 				<Popover.Content class="w-auto p-0" align="start">
 					<RangeCalendar
 						numberOfMonths={2}
-						onchange={handleDateChange}
+						onValueChange={handleDateChange}
 						value={{
 							start: new CalendarDate(
-								Number(dayjs(state.startDate).format('YYYY')),
-								Number(dayjs(state.startDate).format('M')),
-								Number(dayjs(state.startDate).format('D'))
+								Number(dayjs(pageState.startDate).format('YYYY')),
+								Number(dayjs(pageState.startDate).format('M')),
+								Number(dayjs(pageState.startDate).format('D'))
 							),
 							end: new CalendarDate(
-								Number(dayjs(state.endDate).format('YYYY')),
-								Number(dayjs(state.endDate).format('M')),
-								Number(dayjs(state.endDate).format('D'))
+								Number(dayjs(pageState.endDate).format('YYYY')),
+								Number(dayjs(pageState.endDate).format('M')),
+								Number(dayjs(pageState.endDate).format('D'))
 							)
 						}}
 					/>
 				</Popover.Content>
-			</Popover.Root> -->
+			</Popover.Root>
 		</div>
 
 		<!-- 🔹 Konten utama -->
 		<div class="flex flex-col gap-4 md:gap-6">
-			<HighlightCard {state} />
-			<ChartVisitors {state} />
+			<HighlightCard state={pageState} />
+			<ChartVisitors state={pageState} />
+			{#if showModalAwal}
+				<FormModalAwal type="create" {showModalAwal} />
+			{/if}
 		</div>
 	</div>
 </div>

@@ -205,7 +205,7 @@
 			<div class="flex h-full w-full flex-col justify-between">
 				<div class="flex-1">
 					<div class="flex justify-between p-2">
-						<img src={logoSrc} alt="Opsigo" class="h-8" />
+						<img src={logoSrc} alt="Bantuit" class="h-8" />
 						<Button variant="ghost" class="p-2" onclick={handleClose}>
 							<Close class="h-6! w-6!" />
 						</Button>

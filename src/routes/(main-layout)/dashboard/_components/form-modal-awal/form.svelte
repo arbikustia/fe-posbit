@@ -11,7 +11,7 @@
 	type ModalFormProps = {
 		showModalAwal: boolean;
 		type: string;
-		closeModalPage: () => void;
+		closeModalPage?: () => void;
 	};
 
 	let username: string = $state('');
@@ -35,7 +35,7 @@
 
 	onMount(async () => {
 		username = getCookie('username') || 'superadmin';
-		const res = await userService.getPaged({
+		const res:any = await userService.getPaged({
 			PageNumber: 1,
 			PageSize: 1000000,
 			SearchTerm: ''
@@ -61,7 +61,7 @@
 	$effect(() => {
 		(async () => {
 			if(modalState.is_open == false){
-				closeModalPage();
+				closeModalPage?.();
 			}
 		})();
 	});

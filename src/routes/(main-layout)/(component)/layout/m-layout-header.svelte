@@ -21,7 +21,7 @@
 		</Button>
 		<div>
 			<a href="/">
-				<img src={logoSrc} alt="Opsigo" class="h-8" />
+				<img src={logoSrc} alt="Bantuit" class="h-8" />
 			</a>
 		</div>
 	</div>

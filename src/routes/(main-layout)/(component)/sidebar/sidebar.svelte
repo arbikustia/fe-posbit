@@ -25,7 +25,7 @@
 				>
 					{#snippet child({ props })}
 						<a href="/" {...props}>
-							<img class="block h-8 w-auto object-contain" src={logoSrc} alt="Opsigo" />
+							<img class="block h-8 w-auto object-contain" src={logoSrc} alt="Bantuit" />
 						</a>
 					{/snippet}
 				</Sidebar.MenuButton>
