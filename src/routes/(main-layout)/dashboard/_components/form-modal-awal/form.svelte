@@ -7,6 +7,7 @@
 	import { userService } from '@/services/userService';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { customerService } from '@/services/customerService';
 
 	type ModalFormProps = {
 		showModalAwal: boolean;
@@ -35,14 +36,14 @@
 
 	onMount(async () => {
 		username = getCookie('username') || 'superadmin';
-		const res:any = await userService.getPaged({
+		const res:any = await customerService.getPaged({
 			PageNumber: 1,
 			PageSize: 1000000,
 			SearchTerm: ''
 		});
-		dataCashier = res.data.data.filter((u: any) => u.role === 'Cashier');
+		dataCashier = res.data.data.find((u: any) => u.customer_name === username);
 
-		const cashier = dataCashier.find((u) => u.username === username);
+		const cashier = dataCashier?.id;
 		if (cashier) {
 			$formData.cashier_id = cashier.id;
 			console.log('[ModalForm] auto-set cashier_id ->', cashier.id);
