@@ -41,12 +41,14 @@
 			PageSize: 1000000,
 			SearchTerm: ''
 		});
+		console.log(res,'tes1')
 		dataCashier = res.data.data.find((u: any) => u.username === username);
-
+console.log(dataCashier,'tes2')
 		const cashier = dataCashier?.id;
+		console.log(cashier,'tes3')
 		if (cashier) {
-			$formData.cashier_id = cashier.id;
-			console.log('[ModalForm] auto-set cashier_id ->', cashier.id);
+			$formData.cashier_id = cashier;
+			console.log('[ModalForm] auto-set cashier_id ->', cashier);
 		}
 
 		$formData.is_modal_awal = type === 'create';
