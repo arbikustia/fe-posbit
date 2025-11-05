@@ -36,12 +36,12 @@
 
 	onMount(async () => {
 		username = getCookie('username') || 'superadmin';
-		const res:any = await customerService.getPaged({
+		const res:any = await userService.getPaged({
 			PageNumber: 1,
 			PageSize: 1000000,
 			SearchTerm: ''
 		});
-		dataCashier = res.data.data.find((u: any) => u.customer_name === username);
+		dataCashier = res.data.data.find((u: any) => u.username === username);
 
 		const cashier = dataCashier?.id;
 		if (cashier) {
