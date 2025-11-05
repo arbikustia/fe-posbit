@@ -17,6 +17,10 @@ export function useCashierModalPage(type: 'create' | 'update', modalState: { is_
 
   let idSale = $state('');
 
+  const state = $state<any>({
+    dataModal: null
+  });
+
   // initial values are generic; specific validations come from selected schema
   const initialValues = {
     id: '',
@@ -42,12 +46,11 @@ export function useCashierModalPage(type: 'create' | 'update', modalState: { is_
   onMount(async () => {
     try {
       const res = await modalService.getModalAwal();
-      console.log(res,'ttt')
       idSale = res.data?.data?.id || '';
-      if (debug) console.log('[useCashierModalPage] fetched idSale:', idSale);
+      console.log(res.data.data, 'ttt')
+      state.dataModal = res?.data?.data
       if (idSale) {
         formData.update((f) => ({ ...f, id: idSale }));
-        if (debug) console.log('[useCashierModalPage] form.id updated ->', idSale);
       }
     } catch (err) {
       console.error('[useCashierModalPage] Failed to get modal status:', err);
@@ -148,6 +151,7 @@ export function useCashierModalPage(type: 'create' | 'update', modalState: { is_
   });
 
   return {
+    state,
     form,
     errors,
     handleSubmit,

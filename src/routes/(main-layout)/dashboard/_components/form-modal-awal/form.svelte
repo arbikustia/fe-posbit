@@ -19,10 +19,14 @@
 	let modalState = $state({ is_open: false });
 	let { showModalAwal, type, closeModalPage }: ModalFormProps = $props();
 
-	const { form, handleSubmit, errors, enhance, closeModal } = useCashierModalPage(
-		type as 'create' | 'update',
-		modalState
-	);
+	const {
+		form,
+		handleSubmit,
+		errors,
+		enhance,
+		closeModal,
+		state: pageState
+	} = useCashierModalPage(type as 'create' | 'update', modalState);
 	const { form: formData } = form;
 	let dataCashier: { username: string; id: string }[] = $state([]);
 
@@ -36,16 +40,16 @@
 
 	onMount(async () => {
 		username = getCookie('username') || 'superadmin';
-		const res:any = await userService.getPaged({
+		const res: any = await userService.getPaged({
 			PageNumber: 1,
 			PageSize: 1000000,
 			SearchTerm: ''
 		});
-		console.log(res,'tes1')
+		console.log(res, 'tes1');
 		dataCashier = res.data.data.find((u: any) => u.username === username);
-console.log(dataCashier,'tes2')
+		console.log(dataCashier, 'tes2');
 		const cashier = dataCashier?.id;
-		console.log(cashier,'tes3')
+		console.log(cashier, 'tes3');
 		if (cashier) {
 			$formData.cashier_id = cashier;
 			console.log('[ModalForm] auto-set cashier_id ->', cashier);
@@ -63,7 +67,7 @@ console.log(dataCashier,'tes2')
 
 	$effect(() => {
 		(async () => {
-			if(modalState.is_open == false){
+			if (modalState.is_open == false) {
 				closeModalPage?.();
 			}
 		})();
@@ -123,6 +127,19 @@ console.log(dataCashier,'tes2')
 					: 'Isi data berikut untuk menyimpan informasi actual earning kasir.'}
 			</Dialog.Description>
 		</Dialog.Header>
+
+		{#if type !== 'create'}
+			<div class="flex gap-3">
+				<div class="bg-primary/10 border-primary font-medium text-primary w-fit rounded-md border p-1 px-2">
+					<span class="font-normal">Username :</span>
+					{pageState?.dataModal?.username}
+				</div>
+				<div class="bg-primary/10 border-primary font-medium text-primary  w-fit rounded-md border p-1 px-2">
+					<span class="font-normal">Modal Awal :</span>
+					{formatIDR(pageState?.dataModal?.modal_awal)}
+				</div>
+			</div>
+		{/if}
 
 		<form method="POST" use:enhance on:submit|preventDefault={handleSubmit} class="w-full py-4">
 			<input type="hidden" bind:value={$formData.id} />
