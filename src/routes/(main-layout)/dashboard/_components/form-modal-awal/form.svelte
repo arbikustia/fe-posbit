@@ -42,7 +42,7 @@
 		username = getCookie('username') || 'superadmin';
 		const res: any = await userService.getPaged({
 			PageNumber: 1,
-			PageSize: 1000000,
+			PageSize: 1000,
 			SearchTerm: ''
 		});
 		console.log(res, 'tes1');

@@ -8,4 +8,5 @@ export type UserInfo = {
 	fullName: string;
 	username: string;
 	email: string;
+	role: string;
 };

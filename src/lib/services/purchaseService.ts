@@ -96,6 +96,16 @@ export const purchaseService = {
             `/purchase-order`, body
         );
     },
+    purchaseLog: (body: {
+        inv_number: string,
+        action: string,
+        aktivitas: string
+
+    }) => {
+        return apiClient.post<RestApiResponse<unknown>>(
+            `/purchase-order/log-po`, body
+        );
+    },
     update: (body: {
         id: string;
         customer_id: string,

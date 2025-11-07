@@ -17,13 +17,12 @@ export function decodeJwt(token: string): { [key: string]: unknown } | null {
 }
 
 export function setAuthCookie(event: RequestEvent, response: any): void {
-	const { accessToken, refreshToken } = response;
-
+	const { accessToken, refreshToken, role, fullName, email, username } = response;
+	console.log(role, 'niini')
 	if (!accessToken) {
 		throw new Error('Auth Failed, please contact Administrator');
 	}
 
-	// Simpan access token ke cookie (JWT)
 	event.cookies.set(authTokenCookieKey, accessToken, {
 		httpOnly: false,
 		path: '/',
@@ -42,9 +41,10 @@ export function setAuthCookie(event: RequestEvent, response: any): void {
 	});
 
 	const userInfo: UserInfo = {
-		fullName: 'superadmin',
-		email: 'superadmin@bantuit.com',
-		username: 'superadmin'
+		fullName: fullName,
+		email: email,
+		username: username,
+		role: role
 	};
 
 	// Simpan user info ke cookie dalam format JSON string
@@ -81,13 +81,14 @@ export async function login(event: RequestEvent, username: string, password: str
 
 	const data = await res.json();
 	setAuthCookie(event, data.data);
+	console.log(data, 'ini response')
 	event.cookies.set('username', username, {
 		httpOnly: false,
 		path: '/',
 		secure: true,
 		sameSite: 'lax'
 	});
-
+	return data
 }
 
 export function logout(event: RequestEvent) {

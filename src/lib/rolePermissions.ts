@@ -1,0 +1,10 @@
+// import { PERMISSIONS, ROLES } from "./constants/permission";
+
+// export const rolePermissions = {
+// 	[ROLES.ADMIN]: [
+// 		PERMISSIONS.CREATE_PRODUCTS,
+// 		PERMISSIONS.UPDATE_PRODUCTS,
+// 		PERMISSIONS.DELETE_PRODUCTS,
+// 	],
+// 	[ROLES.CUSTOMER]: [PERMISSIONS.READ_PROFILE, PERMISSIONS.UPDATE_PROFILE],
+// };

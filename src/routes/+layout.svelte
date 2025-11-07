@@ -22,11 +22,6 @@
 	});
 </script>
 
-<svelte:head>
-	<style>
-		@import '/registry/themes.css';
-	</style>
-</svelte:head>
 
 {#if isMounted}
 	<Toaster position="top-center" richColors />

@@ -23,51 +23,108 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { userService } from '@/services/userService';
+	import { hasAccess, getUserRole } from '@/rbacUtils';
+	import { ROLES } from '@/constants/permission';
 
 	let { open = $bindable() } = $props();
 
 	// State untuk loading logout
 	let isLoading = $state(false);
 
+	const user = {
+		role: 'Cashier'
+	};
+
 	// Sidebar items with subpages
-	const sidebarItems = [
+	// Sidebar items dengan struktur yang lebih baik
+	const sidebarItems = $derived([
 		{
 			icon: DashboardIcon,
 			label: 'Dashboard',
-			href: '/dashboard'
+			href: '/dashboard',
+			access: [ROLES.ADMIN] // Semua role bisa akses
 		},
 		{
 			icon: MasterIcon,
 			label: 'Master',
 			href: '/master/user',
 			children: [
-				{ label: 'User', href: '/master/user' },
-				{ label: 'Point', href: '/master/point' },
-				{ label: 'Customer', href: '/master/customer' },
-				{ label: 'Item', href: '/master/item' }
-			]
+				{
+					label: 'User',
+					href: '/master/user',
+					childAccess: [ROLES.ADMIN]
+				},
+				{
+					label: 'Point',
+					href: '/master/point',
+					childAccess: [ROLES.ADMIN]
+				},
+				{
+					label: 'Customer',
+					href: '/master/customer',
+					childAccess: [ROLES.CASHIER, ROLES.ADMIN]
+				},
+				{
+					label: 'Item',
+					href: '/master/item',
+					childAccess: [ROLES.ADMIN]
+				}
+			],
+			access: [ROLES.ADMIN, ROLES.CASHIER]
 		},
 		{
 			icon: TransactionIcon,
 			label: 'Transaction',
-			href: '/transaction'
+			href: '/transaction',
+			access: [ROLES.ADMIN, ROLES.CASHIER]
 		},
 		{
 			icon: PurchaseIcon,
 			label: 'Purchase',
-			href: '/purchase'
+			href: '/purchase',
+			access: [ROLES.ADMIN]
 		},
 		{
 			icon: MasterIcon,
 			label: 'Report',
 			href: '/report/sales',
 			children: [
-				{ label: 'Sales', href: '/report/sales' },
-				{ label: 'Invoice', href: '/report/purchase' },
-				{ label: 'Summary Shift', href: '/report/shift' }
-			]
+				{
+					label: 'Sales',
+					href: '/report/sales',
+					childAccess: [ROLES.CASHIER, ROLES.ADMIN]
+				},
+				{
+					label: 'Invoice',
+					href: '/report/purchase',
+					childAccess: [ROLES.GUDANG, ROLES.ADMIN]
+				},
+				{
+					label: 'Summary Shift',
+					href: '/report/shift',
+					childAccess: [ROLES.ADMIN]
+				}
+			],
+			access: [ROLES.ADMIN, ROLES.CASHIER, ROLES.GUDANG]
 		}
-	];
+	]);
+
+	// Fungsi untuk memfilter sidebar items berdasarkan akses
+	const filteredSidebarItems = $derived(
+		sidebarItems.filter((item: any) => {
+			// Cek akses utama
+			if (!hasAccess(item.access)) return false;
+
+			// Jika punya children, filter children yang bisa diakses
+			if (item.children) {
+				item.children = item.children.filter((child: any) => hasAccess(child.childAccess || []));
+				// Jika tidak ada children yang bisa diakses, sembunyikan parent juga
+				if (item.children.length === 0) return false;
+			}
+
+			return true;
+		})
+	);
 
 	const current = $derived(currentPage(page.url.pathname));
 
@@ -109,33 +166,6 @@
 				});
 			});
 		}
-	};
-
-	const logout: SubmitFunction = () => {
-		return async ({ result }) => {
-			if (isLoading) return;
-
-			try {
-				isLoading = true;
-
-				// Beri sedikit delay agar UI sempat update
-				await new Promise((resolve) => setTimeout(resolve, 50));
-
-				// Hapus client-side data
-				clearAllStorage();
-				deleteClientCookies();
-
-				if (result.type === 'redirect') {
-					window.location.href = result.location;
-					handleClose();
-				}
-			} catch (error) {
-				console.error('Logout error:', error);
-				if (result.type === 'redirect') {
-					window.location.href = result.location;
-				}
-			}
-		};
 	};
 
 	// Manual logout function sebagai fallback
@@ -239,7 +269,7 @@
 				<div class="mt-4 mb-2 h-2 bg-(--sidebar-accent)"></div>
 				<div class="flex h-full flex-col justify-between overflow-y-auto">
 					<ul>
-						{#each sidebarItems as { icon, label, href, children }, i}
+						{#each filteredSidebarItems as { icon, label, href, children }, i}
 							{@const isActive =
 								href === '/' ? current === href || current === '' : current === href}
 							{@const Icon = icon}
@@ -281,28 +311,6 @@
 					</ul>
 
 					<div class="space-y-2 p-2">
-						<!-- <MLanguageSwitch /> -->
-						<!-- <ThemeCostumizer /> -->
-
-						<!-- Method 1: Form dengan loading -->
-						<!-- <form method="POST" use:enhance={logout} action="/api/logout" class="w-full">
-							<Button 
-								type="submit" 
-								variant="outline" 
-								class="mt-5 w-full text-red-500 flex items-center justify-center gap-2"
-								disabled={isLoading}
-							>
-								{#if isLoading}
-									<Loader class="h-4 w-4 animate-spin" />
-									<span>Logging out...</span>
-								{:else}
-									<span>Logout</span>
-								{/if}
-							</Button>
-						</form> -->
-
-						<!-- Method 2: Atau gunakan button manual -->
-
 						<Button
 							variant="outline"
 							class="mt-5 flex w-full items-center justify-center gap-2 text-red-500"

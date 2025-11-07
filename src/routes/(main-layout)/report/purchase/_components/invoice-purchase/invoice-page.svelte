@@ -46,7 +46,7 @@
 			doc.setFontSize(36);
 			doc.setFont('helvetica', 'bold');
 			doc.setTextColor(0, 0, 0);
-			doc.text('INVOICE', margin, y);
+			doc.text('INVOICE', margin, y + 35);
 
 			// Right side header
 			doc.setFontSize(14);
@@ -56,11 +56,12 @@
 			doc.setFont('helvetica', 'normal');
 			doc.text('Ruko B-15 no 17', pageWidth - margin, y + 15, { align: 'right' });
 			doc.text('Mutiara Gading Timur, Mustikajaya, Bekasi', pageWidth - margin, y + 25, { align: 'right' });
+			doc.text('085817346722 / 0895372220952', pageWidth - margin, y + 40, { align: 'right' });
 
 			// Header line
 			doc.setDrawColor(0, 0, 0);
 			doc.setLineWidth(1);
-			doc.line(margin, y + 30, pageWidth - margin, y + 30);
+			doc.line(margin, y + 45, pageWidth - margin, y + 45);
 
 			y += 60;
 
@@ -103,7 +104,7 @@
 			y += 90;
 
 			// === TABLE HEADER ===
-			doc.setFillColor(240, 240, 240);
+			doc.setDrawColor(192, 192, 192);
 			doc.rect(margin, y - 10, pageWidth - margin * 2, 20);
 			doc.setTextColor(0, 0, 0);
 			doc.setFont('helvetica', 'bold');
@@ -156,8 +157,8 @@
 			// === PAYMENT INFO ===
 			doc.setFont('helvetica', 'normal');
 			doc.text(`PEMBAYARAN : ${row.payment_method}`, margin, y);
-			doc.text(`Nama : ${row.payment_name || 'Bintaya Zahristi Khayah'}`, margin, y + 15);
-			doc.text(`No Rek : ${row.account_number || '0030903617'}`, margin, y + 30);
+			doc.text(`Nama : Bintaya Zahriati Khayah`, margin, y + 15);
+			doc.text(`No Rek : 0030903617 - BCA `, margin, y + 30);
 
 			// === TOTALS (right side) ===
 			const sisa = 0;
@@ -175,7 +176,7 @@
 			});
 			y += 15;
 			doc.text('SISA :', 420, y);
-			doc.text(`RP ${subtotal - row.down_payment.toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
+			doc.text(`RP ${(subtotal - row.down_payment).toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
 
 			y += 40;
 

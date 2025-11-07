@@ -27,7 +27,9 @@
 
 	// === STATES ===
 	let selectedItems = $state<string[]>([]);
-	let itemDetails = $state<{ item_id: string; qty: number; price: number; priceKey: string }[]>([]);
+	let itemDetails = $state<
+		{ item_id: string; qty: number; price: number; priceKey: string; name: string }[]
+	>([]);
 
 	let open = $state(false);
 	let triggerRef = $state<HTMLButtonElement>(null!);
@@ -38,13 +40,7 @@
 	const customerLabel = $derived(
 		customerOptions.find((r) => r.value === $formData.customer_id)?.label ?? 'Select Customer'
 	);
-	const statusLabel = $derived(
-		statusOptions.find((r) => r.value === $formData.status)?.label ?? 'Select Status'
-	);
-	const paymentLabel = $derived(
-		paymentOptions.find((r) => r.value === $formData.payment_method)?.label ??
-			'Select Payment Method'
-	);
+
 	const packageLabel = $derived(
 		packageOptions.find((r) => r.value === $formData.package_id)?.label ?? 'Select package'
 	);
@@ -59,6 +55,13 @@
 		{ value: 'CASH', label: 'Cash' },
 		{ value: 'DEBIT', label: 'Debit' }
 	];
+	const statusLabel = $derived(
+		statusOptions.find((r) => r.value === $formData.status)?.label ?? 'Select Status'
+	);
+	const paymentLabel = $derived(
+		paymentOptions.find((r) => r.value === $formData.payment_method)?.label ??
+			'Select Payment Method'
+	);
 
 	// === GET PRICE BY PACKAGE ===
 	function getItemPriceByPackage(item: any, packageName: string) {
@@ -85,25 +88,61 @@
 	}
 
 	// === TOGGLE ITEMS ===
-	function toggleItem(itemValue: string) {
+	function toggleItem(itemValue: string, label: string) {
+		const oldCount = selectedItems.length;
+
 		if (selectedItems.includes(itemValue)) {
 			selectedItems = selectedItems.filter((id) => id !== itemValue);
 		} else {
 			selectedItems = [...selectedItems, itemValue];
 		}
 		syncSelectedItems();
+
+		// Log perubahan item count
+		const newCount = selectedItems.length;
+		if (newCount > oldCount) {
+			pageState.poLogIncreaseItem.push({
+				action: label,
+				aktivitas: `Increase item from ${oldCount} to ${newCount}`,
+				inv_number: $formData.inv_number
+			});
+		} else {
+			pageState.poLogDecreaseItem.push({
+				action: label,
+				aktivitas: `Decrease item from ${oldCount} to ${newCount}`,
+				inv_number: $formData.inv_number
+			});
+		}
 	}
 
-	function removeItem(itemValue: string, e: Event) {
+	function removeItem(itemValue: string, e: Event, label: string) {
 		e.stopPropagation();
+		const oldCount = selectedItems.length;
+
 		selectedItems = selectedItems.filter((id) => id !== itemValue);
 		syncSelectedItems();
-	}
 
+		// Log perubahan item count
+		const newCount = selectedItems.length;
+		pageState.poLogDecreaseItem.push({
+			action: label,
+			aktivitas: `Decrease item from ${oldCount} to ${newCount}`,
+			inv_number: $formData.inv_number
+		});
+	}
 	function clearAll(e: Event) {
 		e.stopPropagation();
+		const oldCount = selectedItems.length;
+
 		selectedItems = [];
+		itemDetails = []; // Reset itemDetails juga
 		syncSelectedItems();
+
+		pageState.poLogDecreaseItem.push({
+			action: 'All',
+			aktivitas: `Decrease item from ${oldCount} to 0`,
+			inv_number: $formData.inv_number
+		});
 	}
 
 	function closeAndFocusTrigger() {
@@ -127,7 +166,8 @@
 			// Preserve existing price if in edit mode, otherwise calculate
 			const price = existing?.price || getItemPriceByPackage(item, packageLabel);
 			const priceKey = existing?.priceKey || packageLabel;
-			return { item_id: id, qty, price, priceKey };
+			const name = existing?.name;
+			return { item_id: id, qty, price, priceKey, name };
 		});
 
 		itemDetails = mapped;
@@ -135,7 +175,7 @@
 	}
 
 	// === UPDATE QUANTITY ===
-	function updateQty(id: string, newQty: number) {
+	function updateQty(id: string, newQty: number,oldQty:number, name: string) {
 		const item = pageState.listItem.find((i) => i.value === id);
 		if (!item) return;
 
@@ -144,9 +184,28 @@
 		const price = detail?.price || getItemPriceByPackage(item, packageLabel);
 		const priceKey = detail?.priceKey || packageLabel;
 
+		// Dapatkan oldQty dari state saat ini, bukan dari params awal
+		// const oldDetail = itemDetails.find((d) => d.item_id === id);
+		// const oldQty = oldDetail?.qty || 0;
+
 		const updated = itemDetails.map((i) => (i.item_id === id ? { ...i, qty, price, priceKey } : i));
 		itemDetails = updated;
 		formData.update((f) => ({ ...f, details: updated }));
+
+		// Log perubahan quantity
+		if (qty > oldQty) {
+			pageState.poLogIncreaseQty.push({
+				action: name,
+				aktivitas: `Increase qty from ${oldQty} to ${qty}`,
+				inv_number: $formData.inv_number
+			});
+		} else if (qty < oldQty) {
+			pageState.poLogDecreaseQty.push({
+				action: name,
+				aktivitas: `Decrease qty from ${oldQty} to ${qty}`,
+				inv_number: $formData.inv_number
+			});
+		}
 	}
 
 	// === WATCH PACKAGE CHANGES ===
@@ -228,25 +287,54 @@
 		};
 		await waitForItems();
 		await tick();
+		// HANYA inisialisasi jika belum ada selectedItems (kasus create baru)
+		if (selectedItems.length === 0) {
+			// Restore items dari formData.details (untuk edit mode)
+			if ($formData.details && $formData.details.length > 0) {
+				selectedItems = $formData.details.map((d: any) => d.item_id);
 
-		// Restore items dari formData.details
-		if ($formData.details && $formData.details.length > 0) {
-			selectedItems = $formData.details.map((d: any) => d.item_id);
+				itemDetails = $formData.details.map((d: any) => {
+					const item = pageState.listItem.find((i: any) => i.value === d.item_id);
+					const price = getItemPriceByPackage(item, packageLabel);
+					return {
+						item_id: d.item_id,
+						qty: d.qty,
+						price: price,
+						priceKey: packageLabel,
+						name: d.name
+					};
+				});
 
-			itemDetails = $formData.details.map((d: any) => {
-				const item = pageState.listItem.find((i: any) => i.value === d.item_id);
-				const price = getItemPriceByPackage(item, packageLabel);
-				return {
-					item_id: d.item_id,
-					qty: d.qty,
-					price: price,
-					priceKey: packageLabel
-				};
-			});
+				// Update detailFromParams untuk tracking perubahan quantity
+				pageState.detailFromParams = [...itemDetails];
 
-			formData.update((f) => ({ ...f, details: itemDetails }));
+				formData.update((f) => ({ ...f, details: itemDetails }));
+			}
 		}
 	});
+
+	function formatIDR(value: number | string) {
+		if (!value) return '';
+		const num = Number(String(value).replace(/[^\d]/g, ''));
+		return num.toLocaleString('id-ID', {
+			style: 'currency',
+			currency: 'IDR',
+			minimumFractionDigits: 0
+		});
+	}
+
+	function handleLabelInput(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const raw = target.value.replace(/[^\d]/g, '');
+		$formData.label = Number(raw || 0);
+		target.value = formatIDR(raw);
+	}
+	function handleOngkirInput(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const raw = target.value.replace(/[^\d]/g, '');
+		$formData.ongkir = Number(raw || 0);
+		target.value = formatIDR(raw);
+	}
 </script>
 
 <form
@@ -301,7 +389,7 @@
 												{item?.label}
 												<button
 													type="button"
-													onclick={(e) => removeItem(id, e)}
+													onclick={(e) => removeItem(id, e, item?.label!)}
 													class="hover:text-destructive transition"
 												>
 													<XIcon class="size-3" />
@@ -330,7 +418,7 @@
 										<Command.Item
 											value={item.value}
 											keywords={[item.label, item.value]}
-											onSelect={() => toggleItem(item.value)}
+											onSelect={() => toggleItem(item.value, item.label)}
 											class="flex items-center justify-between"
 										>
 											<div class="flex items-center gap-2">
@@ -379,7 +467,7 @@
 	<!-- ITEM DETAILS -->
 	{#if selectedItems.length > 0}
 		<div class="space-y-3">
-			{#each itemDetails as detail (detail.item_id)}
+			{#each itemDetails as detail, index (detail.item_id)}
 				{@const item = itemOptions.find((i) => i.value === detail.item_id)}
 				{@const subtotal = (detail.price ?? 0) * detail.qty}
 
@@ -398,7 +486,13 @@
 								<button
 									type="button"
 									class="hover:bg-muted px-3 py-1 transition"
-									onclick={() => updateQty(detail.item_id, detail.qty - 1)}>−</button
+									onclick={() =>
+										updateQty(
+											detail.item_id,
+											detail.qty - 1,
+											pageState?.detailFromParams?.[index]?.qty,
+											item?.label
+										)}>−</button
 								>
 
 								<input
@@ -407,13 +501,25 @@
 									max={item?.stock}
 									class="bg-muted w-16 py-1 text-center text-sm font-medium focus:outline-none"
 									bind:value={detail.qty}
-									onchange={(e) => updateQty(detail.item_id, parseInt(e.currentTarget.value) || 1)}
+									onchange={(e) =>
+										updateQty(
+											detail.item_id,
+											parseInt(e.currentTarget.value) || 1,
+											pageState?.detailFromParams?.[index]?.qty,
+											item?.label
+										)}
 								/>
 
 								<button
 									type="button"
 									class="hover:bg-muted px-3 py-1 transition"
-									onclick={() => updateQty(detail.item_id, detail.qty + 1)}>+</button
+									onclick={() =>
+										updateQty(
+											detail.item_id,
+											detail.qty + 1,
+											pageState?.detailFromParams?.[index]?.qty,
+											item?.label
+										)}>+</button
 								>
 							</div>
 						</div>
@@ -522,6 +628,38 @@
 						{/each}
 					</Select.Content>
 				</Select.Root>
+			</Form.Control>
+			<Form.FieldErrors class="text-sm text-red-600" />
+		</Form.Field>
+
+		<!-- LABEL -->
+		<Form.Field {form} name="label">
+			<Form.Control>
+				<Form.Label>Label</Form.Label>
+				<Input
+					type="text"
+					inputmode="numeric"
+					placeholder="Input Label"
+					value={formatIDR($formData.label)}
+					oninput={handleLabelInput}
+					class="text-left"
+				/>
+			</Form.Control>
+			<Form.FieldErrors class="text-sm text-red-600" />
+		</Form.Field>
+
+		<!-- ONGKIR -->
+		<Form.Field {form} name="ongkir">
+			<Form.Control>
+				<Form.Label>Ongkir</Form.Label>
+				<Input
+					type="text"
+					inputmode="numeric"
+					placeholder="Input Ongkir"
+					value={formatIDR($formData.ongkir)}
+					oninput={handleOngkirInput}
+					class="text-left"
+				/>
 			</Form.Control>
 			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>

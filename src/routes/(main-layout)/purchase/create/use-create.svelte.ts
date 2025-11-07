@@ -42,7 +42,7 @@ export function usePurchasePage() {
         totalCount: number;
         isLoading: boolean;
         searchTerm: string;
-        statusFilter: string; // <-- tambahkan ini
+        statusFilter: string;
         startDate: string,
         endDate: string,
         filter: {},
@@ -62,6 +62,27 @@ export function usePurchasePage() {
             harga_e: number;
             harga_f: number;
         }[];
+        poLogIncreaseItem: {
+            inv_number: string,
+            action: string,
+            aktivitas: string
+        }[]
+        poLogDecreaseItem: {
+            inv_number: string,
+            action: string,
+            aktivitas: string
+        }[]
+        poLogIncreaseQty: {
+            inv_number: string,
+            action: string,
+            aktivitas: string
+        }[]
+        poLogDecreaseQty: {
+            inv_number: string,
+            action: string,
+            aktivitas: string
+        }[]
+        detailFromParams: any[]
     };
 
     const state = $state<stateProps>({
@@ -76,13 +97,18 @@ export function usePurchasePage() {
         totalCount: 0,
         isLoading: false,
         searchTerm: '',
-        statusFilter: '', // default kosong
-        startDate: dayjs().startOf('month').format('YYYY-MM-DD'), // <-- default awal bulan
-        endDate: dayjs().endOf('month').format('YYYY-MM-DD'),     // <-- default akhir bulan
+        statusFilter: '',
+        startDate: dayjs().startOf('month').format('YYYY-MM-DD'),
+        endDate: dayjs().endOf('month').format('YYYY-MM-DD'),
         filter: {},
         popoverOpen: false,
         isEditing: false,
-        listItem: []
+        listItem: [],
+        poLogIncreaseItem: [],
+        poLogDecreaseItem: [],
+        poLogIncreaseQty: [],
+        poLogDecreaseQty: [],
+        detailFromParams: []
     });
 
     // Fetch items from gudang
@@ -138,6 +164,8 @@ export function usePurchasePage() {
             created_at: item.created_at ?? '-',
             created_by: item.created_by ?? '-',
             keterangan: item.keterangan ?? '',
+            label: item.label ?? 0, // <-- tambahkan ini
+            ongkir: item.ongkir ?? 0, // <-- tambahkan ini
             purchase_order_details: item.purchase_order_details ?? [],
             open: true
         }));
@@ -199,9 +227,9 @@ export function usePurchasePage() {
             return;
         }
 
-        const values:any = get(formData);
+        const values: any = get(formData);
 
-        // Payload sesuai API
+        // Payload sesuai API - tambahkan label dan ongkir
         const body = {
             person_id: values.customer_id ?? 0,
             status: values.status ?? 'DP',
@@ -211,14 +239,86 @@ export function usePurchasePage() {
             discount_amount: values.discount_amount ?? 0,
             payment_method: values.payment_method ?? 'CASH',
             package_id: values.package_id ?? 'Harga Normal',
-            create_by: getCookie('username') || 'superadmin',
+            create_by: getCookie('username') || 'system',
             keterangan: values.keterangan ?? '',
+            label: values.label ?? 0, // <-- tambahkan ini
+            ongkir: values.ongkir ?? 0, // <-- tambahkan ini
             details: values.details ?? []
         };
 
         try {
             if ((values as any).id) {
+
                 await purchaseService.update({ id: String((values as any).id), ...body });
+                const processLogsCombined = async (
+                    increaseLogs: { inv_number: string; action: string; aktivitas: string }[],
+                    decreaseLogs: { inv_number: string; action: string; aktivitas: string }[]
+                ) => {
+                    // Gabungkan: decrease dulu, lalu increase
+                    // Jadi increase akan menimpa decrease jika ada action code yang sama
+                    const allLogs = [...decreaseLogs, ...increaseLogs];
+
+                    if (allLogs.length === 0) return;
+
+                    console.log('All logs to process:', allLogs);
+
+                    // Kelompokkan data berdasarkan action code (tanpa prefix)
+                    // Yang terakhir dalam array akan menang
+                    const lastLogsByActionCode = allLogs.reduce((acc, current) => {
+                        acc[current.action] = current; // Action code sebagai key
+                        return acc;
+                    }, {} as { [key: string]: any });
+
+                    console.log('Unique action codes:', Object.keys(lastLogsByActionCode));
+
+                    // Post semua last logs
+                    for (const actionCode in lastLogsByActionCode) {
+                        await purchaseService.purchaseLog(lastLogsByActionCode[actionCode]);
+                        const log = lastLogsByActionCode[actionCode];
+                        console.log(`Posted last log for action: ${actionCode}, type: ${log.aktivitas.includes('Increase') ? 'increase' : 'decrease'}`);
+                    }
+                };
+
+                const processItemLogs = async (
+                    increaseLogs: { inv_number: string; action: string; aktivitas: string }[],
+                    decreaseLogs: { inv_number: string; action: string; aktivitas: string }[],
+                    logType: 'increase' | 'decrease'
+                ) => {
+                    const logs = logType === 'increase' ? increaseLogs : decreaseLogs;
+
+                    if (logs.length === 0) return;
+
+                    console.log(`Processing ${logType} item logs:`, logs);
+
+                    // Kelompokkan data berdasarkan action code
+                    const lastLogsByActionCode = logs.reduce((acc, current) => {
+                        acc[current.action] = current; // Action code sebagai key
+                        return acc;
+                    }, {} as { [key: string]: any });
+
+                    console.log(`Unique ${logType} item action codes:`, Object.keys(lastLogsByActionCode));
+
+                    // Post semua last logs
+                    for (const actionCode in lastLogsByActionCode) {
+                        // Panggil API yang berbeda untuk item logs
+                        await purchaseService.purchaseLog(lastLogsByActionCode[actionCode]);
+                        console.log(`Posted ${logType} item log for action: ${actionCode}`);
+                    }
+                };
+
+                // Usage:
+                if (state.poLogIncreaseQty.length > 0 || state.poLogDecreaseQty.length > 0) {
+                    await processLogsCombined(state.poLogIncreaseQty, state.poLogDecreaseQty);
+                }
+
+                // Usage:
+                if (state.poLogIncreaseItem.length > 0) {
+                    await processItemLogs(state.poLogIncreaseItem, [], 'increase');
+                }
+
+                if (state.poLogDecreaseItem.length > 0) {
+                    await processItemLogs([], state.poLogDecreaseItem, 'decrease');
+                }
                 toast.success('Purchase updated successfully');
             } else {
                 await purchaseService.create(body);
@@ -235,6 +335,7 @@ export function usePurchasePage() {
     $effect(() => {
         handleGetPaged(1, state.searchTerm);
     });
+
 
     onMount(() => {
         handleGetPaged();
@@ -253,15 +354,21 @@ export function usePurchasePage() {
             const detailsParam = qp.get('details');
             if (detailsParam) {
                 try {
+                    state.detailFromParams = JSON.parse(decodeURIComponent(detailsParam))
+                    console.log(state.detailFromParams, 'detailFromParams')
                     details = JSON.parse(decodeURIComponent(detailsParam));
                 } catch (e) {
                     console.error('Failed to parse details:', e);
                 }
             }
+            console.log(details,
+                'detail params'
+            )
 
             formData.update((f) => ({
                 ...f,
                 id: qp.get('id') ?? (f as any).id,
+                inv_number: qp.get('inv_number') ?? (f as any).inv_number,
                 customer_id: String(qp.get('customer_id') ?? f.customer_id),
                 status: qp.get('status') ?? f.status,
                 payment_method: qp.get('payment_method') ?? f.payment_method,
@@ -270,6 +377,8 @@ export function usePurchasePage() {
                 final_amount: parseFloat(qp.get('final') ?? '0'),
                 discount_amount: parseFloat(qp.get('discount') ?? '0'),
                 down_payment: parseFloat(qp.get('down_payment') ?? '0'),
+                label: parseFloat(qp.get('label') ?? '0'), // <-- tambahkan ini
+                ongkir: parseFloat(qp.get('ongkir') ?? '0'), // <-- tambahkan ini
                 keterangan: qp.get('keterangan') ?? '',
                 details: details.length > 0 ? details : f.details
             }));

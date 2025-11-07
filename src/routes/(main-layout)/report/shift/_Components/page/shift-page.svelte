@@ -11,6 +11,8 @@
 	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
 	import dayjs from 'dayjs';
 	import * as Popover from '$lib/components/ui/popover/index.js';
+	import Button from '@/components/ui/button/button.svelte';
+	import { summaryShiftService } from '@/services/shiftService';
 
 	const { state, handlePageChange } = useSummaryShiftPage();
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
@@ -67,6 +69,16 @@
 			month: 'short',
 			year: 'numeric'
 		}).format(date);
+	}
+
+	function downloadExcel() {
+		summaryShiftService.getReportExcel({
+			PageNumber: 1,
+			PageSize: 100000,
+			SearchTerm: state.searchTerm,
+			EndDate: state.endDate,
+			StartDate: state.startDate
+		});
 	}
 </script>
 
@@ -138,6 +150,9 @@
 								/>
 							</Popover.Content>
 						</Popover.Root>
+					</div>
+					<div>
+						<Button onclick={downloadExcel}>Export</Button>
 					</div>
 				</div>
 			</div>

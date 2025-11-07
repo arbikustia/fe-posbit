@@ -23,6 +23,7 @@
 		resetForm: false,
 		onSubmit() {
 			errorMsg = undefined;
+			console.log(data.form,'ok')
 		},
 		onResult({ result }) {
 			if (result.type === 'failure' && result.status === 500) {
