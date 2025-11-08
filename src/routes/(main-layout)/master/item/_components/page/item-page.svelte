@@ -5,6 +5,7 @@
 	import { fly } from 'svelte/transition';
 	import * as Pagination from '$lib/components/ui/pagination/index.js';
 	import { useMasterItemPage } from '../../use-page.svelte';
+	import { itemService } from '@/services/itemService';
 
 	const { state, handlePageChange } = useMasterItemPage();
 
@@ -14,6 +15,14 @@
 			await tick();
 			state.searchEl?.focus();
 		}
+	}
+
+	function downloadExcel() {
+		itemService.getExportExcel({
+			PageNumber: 1,
+			PageSize: 100000,
+			SearchTerm: state.searchTerm
+		});
 	}
 </script>
 
@@ -32,30 +41,36 @@
 						</h1>
 					</div>
 				</Button>
-				<!-- Search Container -->
-				<div class="relative flex w-full items-center justify-end sm:w-auto">
-					<div class="overflow-hidden">
-						{#if state.showSearch}
-							<input
-								bind:value={state.searchTerm}
-								transition:fly={{ x: 120, duration: 250 }}
-								placeholder="Search item..."
-								class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
+
+				<div class="flex gap-2">
+					<!-- Search Container -->
+					<div class="relative flex w-full items-center justify-end sm:w-auto">
+						<div class="overflow-hidden">
+							{#if state.showSearch}
+								<input
+									bind:value={state.searchTerm}
+									transition:fly={{ x: 120, duration: 250 }}
+									placeholder="Search item..."
+									class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
+								/>
+							{/if}
+						</div>
+						<button
+							type="button"
+							class="absolute right-0 rounded-full p-2 transition hover:bg-gray-100 dark:hover:bg-gray-800"
+							onclick={toggleSearch}
+						>
+							<Icon
+								icon="majesticons:search-line"
+								width="20"
+								height="20"
+								class="text-gray-600 md:h-[22px] md:w-[22px]"
 							/>
-						{/if}
+						</button>
 					</div>
-					<button
-						type="button"
-						class="absolute right-0 rounded-full p-2 transition hover:bg-gray-100 dark:hover:bg-gray-800"
-						onclick={toggleSearch}
-					>
-						<Icon
-							icon="majesticons:search-line"
-							width="20"
-							height="20"
-							class="text-gray-600 md:h-[22px] md:w-[22px]"
-						/>
-					</button>
+					<div>
+						<Button onclick={downloadExcel}>Export</Button>
+					</div>
 				</div>
 			</div>
 		</header>

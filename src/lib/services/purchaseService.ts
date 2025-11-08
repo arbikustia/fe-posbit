@@ -3,9 +3,9 @@ import apiClient from '$lib/api/apiClient';
 import type { RestApiResponse } from '$lib/types/api/base/RestApi';
 
 export const purchaseService = {
-    getPaged: (params: { PageNumber: number, PageSize: number, SearchTerm: string, EndDate?: string, StartDate?: string, Status: string }) => {
+    getPaged: (params: { PageNumber: number, PageSize: number, SearchTerm: string, EndDate?: string, StartDate?: string, PaymentStatus: string, StatusPo:string }) => {
         return apiClient.get<RestApiResponse<unknown>>(
-            `/purchase-order/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&StartDate=${params.StartDate}&EndDate=${params.EndDate}&Status=${params.Status}`
+            `/purchase-order/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&StartDate=${params.StartDate}&EndDate=${params.EndDate}&payment_status=${params.PaymentStatus}&status_po=${params.StatusPo}`
         );
     },
     getReportExcel: async (params: {
@@ -17,7 +17,7 @@ export const purchaseService = {
         Status: string
     }): Promise<void> => {
         try {
-            const response = await apiClient.get(
+            const response:any = await apiClient.get(
                 `/purchase-order/export-report-po?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&StartDate=${params.StartDate}&EndDate=${params.EndDate}&Status=${params.Status}`,
                 {
                     responseType: 'blob' // Important for file download

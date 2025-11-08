@@ -5,8 +5,11 @@
 	import SearchForm from './_components/search-form/search-form.svelte';
 	import { cn } from '$lib/utils';
 	import { useTransactionForm } from './form.svelte';
+	import { getUserRole } from '@/rbacUtils';
+	import { modalService } from '@/services/modalService';
+	import { FormModalAwal } from '../dashboard/_components/form-modal-awal';
 
-	const { state: statePage, handleSearchProduct,handleGetListItemGudang } = useTransactionForm();
+	const { state: statePage, handleSearchProduct, handleGetListItemGudang } = useTransactionForm();
 
 	$effect(() => {
 		console.log('🧾 item table page changes:', statePage.itemTable);
@@ -17,6 +20,35 @@
 
 	onMount(() => {
 		searchFormDefaultHeight = document.getElementById('search-form')?.clientHeight ?? 0;
+	});
+
+	let showModalAwal = $state(false);
+
+	onMount(async () => {
+		const role = getUserRole();
+		if (role == 'Cashier') {
+			console.warn(role, 'role');
+			try {
+				const res = await modalService.getStatusModalAwal();
+				console.log('Response modal awal:', res);
+
+				// Perbaiki logika kondisi
+				if (res?.data?.data == null) {
+					// Jika data null, tampilkan modal
+					showModalAwal = false;
+				} else if (res.data?.data?.shift1 === '0' || res.data?.data?.shift2 === '0') {
+					// Jika shift1 atau shift2 adalah '0', tampilkan modal
+					showModalAwal = true;
+				} else {
+					showModalAwal = false;
+				}
+
+				console.log('showModalAwal set to:', showModalAwal);
+			} catch (error) {
+				console.error('Error fetching modal status:', error);
+				showModalAwal = false;
+			}
+		}
 	});
 </script>
 
@@ -41,5 +73,8 @@
 {/if}
 <div class="space-y-5 p-5">
 	<TransactionPage state={statePage} />
+	{#if showModalAwal}
+		<FormModalAwal type="create" {showModalAwal} />
+	{/if}
 </div>
 <svelte:window bind:scrollY />

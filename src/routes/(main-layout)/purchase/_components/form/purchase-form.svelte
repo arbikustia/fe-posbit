@@ -45,18 +45,25 @@
 		packageOptions.find((r) => r.value === $formData.package_id)?.label ?? 'Select package'
 	);
 
-	const statusOptions = [
+	const paymentStatusOptions = [
 		{ value: 'LUNAS', label: 'Lunas' },
 		{ value: 'DP', label: 'DP' },
 		{ value: 'CANCEL', label: 'Cancelled' }
+	];
+	const statusPoOptions = [
+		{ value: 'OPEN', label: 'Open' },
+		{ value: 'CLOSE', label: 'Close' }
 	];
 
 	const paymentOptions = [
 		{ value: 'CASH', label: 'Cash' },
 		{ value: 'DEBIT', label: 'Debit' }
 	];
-	const statusLabel = $derived(
-		statusOptions.find((r) => r.value === $formData.status)?.label ?? 'Select Status'
+	const paymentStatusLabel = $derived(
+		paymentStatusOptions.find((r) => r.value === $formData.payment_status)?.label ?? 'Select Payment Status'
+	);
+	const statusPoLabel = $derived(
+		statusPoOptions.find((r) => r.value === $formData.status_po)?.label ?? 'Select Status Po'
 	);
 	const paymentLabel = $derived(
 		paymentOptions.find((r) => r.value === $formData.payment_method)?.label ??
@@ -590,13 +597,28 @@
 		</Form.Field>
 
 		<!-- STATUS -->
-		<Form.Field {form} name="status">
+		<Form.Field {form} name="payment_status">
 			<Form.Control>
-				<Form.Label>Status <span class="text-red-500">*</span></Form.Label>
-				<Select.Root type="single" name="status" bind:value={$formData.status}>
-					<Select.Trigger class="w-full">{statusLabel}</Select.Trigger>
+				<Form.Label>Payment Status <span class="text-red-500">*</span></Form.Label>
+				<Select.Root type="single" name="payment_status" bind:value={$formData.payment_status}>
+					<Select.Trigger class="w-full">{paymentStatusLabel}</Select.Trigger>
 					<Select.Content>
-						{#each statusOptions as s}
+						{#each paymentStatusOptions as s}
+							<Select.Item value={s.value} label={s.label}>{s.label}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			</Form.Control>
+			<Form.FieldErrors class="text-sm text-red-600" />
+		</Form.Field>
+		<!-- STATUS -->
+		<Form.Field {form} name="status_po">
+			<Form.Control>
+				<Form.Label>Status PO <span class="text-red-500">*</span></Form.Label>
+				<Select.Root type="single" name="status_po" bind:value={$formData.status_po}>
+					<Select.Trigger class="w-full">{statusPoLabel}</Select.Trigger>
+					<Select.Content>
+						{#each statusPoOptions as s}
 							<Select.Item value={s.value} label={s.label}>{s.label}</Select.Item>
 						{/each}
 					</Select.Content>
@@ -606,7 +628,7 @@
 		</Form.Field>
 
 		<!-- DOWN PAYMENT -->
-		{#if $formData.status === 'DP'}
+		{#if $formData.payment_status === 'DP'}
 			<Form.Field {form} name="down_payment">
 				<Form.Control>
 					<Form.Label>Down Payment <span class="text-red-500">*</span></Form.Label>

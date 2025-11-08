@@ -42,7 +42,8 @@ export function usePurchasePage() {
         totalCount: number;
         isLoading: boolean;
         searchTerm: string;
-        statusFilter: string;
+        paymentStatus: string;
+        statusPo: string;
         startDate: string,
         endDate: string,
         filter: {},
@@ -97,7 +98,8 @@ export function usePurchasePage() {
         totalCount: 0,
         isLoading: false,
         searchTerm: '',
-        statusFilter: '',
+        paymentStatus: '',
+        statusPo: '',
         startDate: dayjs().startOf('month').format('YYYY-MM-DD'),
         endDate: dayjs().endOf('month').format('YYYY-MM-DD'),
         filter: {},
@@ -153,7 +155,8 @@ export function usePurchasePage() {
             telephone: item.person?.telephone ?? '-',
             mobile: item.person?.mobile ?? '-',
             person_type: item.person?.type ?? 'Customer',
-            status: item.status ?? '-',
+            payment_status: item.payment_status ?? '-',
+            status_po: item.status_po ?? '-',
             total_amount: item.total_amount ?? 0,
             final_amount: item.final_amount ?? 0,
             discount_amount: item.discount_amount ?? 0,
@@ -183,7 +186,8 @@ export function usePurchasePage() {
                 PageNumber: pageNumber,
                 PageSize: state.pageSize,
                 SearchTerm: searchTerm,
-                Status: state.statusFilter,
+                PaymentStatus: state.paymentStatus,
+                StatusPo: state.statusPo,
                 StartDate: startDate,
                 EndDate: endDate
             });
@@ -192,9 +196,14 @@ export function usePurchasePage() {
                 let transformed = transformPurchaseData(res.data.data);
 
                 // 🔹 Apply statusFilter
-                if (state.statusFilter) {
+                if (state.paymentStatus) {
                     transformed = transformed.filter(
-                        (p) => p.status === state.statusFilter
+                        (p) => p.payment_status === state.paymentStatus
+                    );
+                }
+                if (state.statusPo) {
+                    transformed = transformed.filter(
+                        (p) => p.status_po === state.statusPo
                     );
                 }
 
@@ -232,7 +241,8 @@ export function usePurchasePage() {
         // Payload sesuai API - tambahkan label dan ongkir
         const body = {
             person_id: values.customer_id ?? 0,
-            status: values.status ?? 'DP',
+            payment_status: values.payment_status ?? 'DP',
+            status_po: values.status_po ?? 'OPEN',
             down_payment: values.down_payment ?? 0,
             total_amount: values.total_amount ?? 0,
             final_amount: values.final_amount ?? 0,
@@ -344,7 +354,7 @@ export function usePurchasePage() {
         // ✅ Load data untuk edit dari URL query params
         const url = get(page).url;
         const qp = url.searchParams;
-        const hasAny = qp.has('id') || qp.has('customer_id') || qp.has('status');
+        const hasAny = qp.has('id') || qp.has('customer_id') || qp.has('payment_status');
 
         if (hasAny) {
             state.isEditing = true;
@@ -370,7 +380,8 @@ export function usePurchasePage() {
                 id: qp.get('id') ?? (f as any).id,
                 inv_number: qp.get('inv_number') ?? (f as any).inv_number,
                 customer_id: String(qp.get('customer_id') ?? f.customer_id),
-                status: qp.get('status') ?? f.status,
+                payment_status: qp.get('payment_status')!,
+                status_po: qp.get('status_po')!,
                 payment_method: qp.get('payment_method') ?? f.payment_method,
                 package_id: qp.get('package_id') ?? f.package_id,
                 total_amount: parseFloat(qp.get('total') ?? '0'),
