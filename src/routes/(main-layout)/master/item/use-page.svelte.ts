@@ -56,7 +56,7 @@ export function useMasterItemPage() {
 			qty_stok_toko: item.qty_stok_toko ?? 0,
 			harga_beli: item.harga_beli ?? 0,
 			harga_jual: item.harga_jual ?? 0,
-			qty: item.qty ?? 0,
+			jumlah: item.jumlah ?? 0,
 			open: true
 		}));
 	}
@@ -131,7 +131,7 @@ export function useMasterItemPage() {
 			qp.has('qty_stok_toko') ||
 			qp.has('harga_beli') ||
 			qp.has('harga_jual') ||
-			qp.has('qty') ||
+			qp.has('jumlah') ||
 			qp.has('id');
 
 		if (hasAny) {
@@ -143,7 +143,7 @@ export function useMasterItemPage() {
 				qty_stok_toko: qp.has('qty_stok_toko') ? Number(qp.get('qty_stok_toko')) : f.qty_stok_toko,
 				harga_beli: qp.has('harga_beli') ? Number(qp.get('harga_beli')) : f.harga_beli,
 				harga_jual: qp.has('harga_jual') ? Number(qp.get('harga_jual')) : f.harga_jual,
-				qty: qp.has('qty') ? Number(qp.get('qty')) : f.qty,
+				jumlah: qp.has('jumlah') ? Number(qp.get('jumlah')) : 0,
 				id: qp.get('id') ?? (f as any).id
 			}));
 		}

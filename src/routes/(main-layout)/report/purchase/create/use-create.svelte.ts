@@ -21,7 +21,8 @@ export function usePurchaseReportPage() {
 		item_name: string;
 		qty: number;
 		qty_keluar: number;
-		status: string;
+		payment_status: string;
+		status_po: string;
 		total_amount: number;
 		created_at: string;
 		open?: boolean;
@@ -37,6 +38,8 @@ export function usePurchaseReportPage() {
 		totalCount: number;
 		isLoading: boolean;
 		searchTerm: string;
+		payment_status: string,
+		status_po: string
 	};
 
 	const { form: formData, validateForm, errors } = form;
@@ -50,7 +53,9 @@ export function usePurchaseReportPage() {
 		totalPages: 0,
 		totalCount: 0,
 		isLoading: false,
-		searchTerm: ''
+		searchTerm: '',
+		payment_status: '',
+		status_po: ''
 	});
 
 	// 🔹 Transform data dari API ke bentuk table
@@ -70,7 +75,8 @@ export function usePurchaseReportPage() {
 						item_name: detail.name || detail.item_id,
 						qty: detail.qty,
 						qty_keluar: detail.qty_keluar,
-						status: purchase.status,
+						payment_status: purchase.payment_status,
+						status_po: purchase.status_po,
 						total_amount: purchase.final_amount || purchase.total_amount,
 						created_at: purchase.created_at
 							? new Date(purchase.created_at).toLocaleDateString('id-ID')
@@ -89,7 +95,8 @@ export function usePurchaseReportPage() {
 					item_name: '-',
 					qty: 0,
 					qty_keluar: 0,
-					status: purchase.status,
+					payment_status: purchase.payment_status,
+					status_po: purchase.status_po,
 					total_amount: purchase.final_amount || purchase.total_amount,
 					created_at: purchase.created_at
 						? new Date(purchase.created_at).toLocaleDateString('id-ID')
@@ -117,7 +124,8 @@ export function usePurchaseReportPage() {
 				PageNumber: pageNumber,
 				PageSize: state.pageSize,
 				SearchTerm: searchTerm,
-				Status: '',
+				PaymentStatus: state.payment_status,
+				StatusPo: state.status_po,
 				EndDate: '',
 				StartDate: ''
 			});

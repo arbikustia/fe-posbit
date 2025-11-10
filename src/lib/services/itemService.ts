@@ -33,7 +33,7 @@ export const itemService = {
 
             // Extract filename from response headers or use default
             const contentDisposition = response.headers['content-disposition'];
-            let filename = `purchase-report-${new Date().getTime()}.xlsx`;
+            let filename = `stok-toko-${new Date().getTime()}.xlsx`;
 
             if (contentDisposition) {
                 const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
@@ -73,6 +73,11 @@ export const itemService = {
     getListitemBarcode: (params: { PageNumber: number, PageSize: number, SearchTerm: string }) => {
         return apiClient.get<RestApiResponse<unknown>>(
             `/view/paged-stok-barcode-toko?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
+        );
+    },
+    getListitemFormBarcode: (params: { PageNumber: number, PageSize: number, SearchTerm: string }) => {
+        return apiClient.get<RestApiResponse<unknown>>(
+            `/view/stok-barcode-toko`
         );
     },
 

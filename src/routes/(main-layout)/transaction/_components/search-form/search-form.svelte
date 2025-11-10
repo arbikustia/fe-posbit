@@ -129,7 +129,7 @@
 		nota += `Payment: ${pageState.paymentMethod}\n`;
 		nota += '--------------------------------\n';
 		nota += '         DA.ALUS HIJAB         \n';
-		nota += '        IG @daalushijab		 \n';
+		nota += '      IG daalushijab.store		 \n';
 		nota += '        tiktok : da.alus        \n';
 		nota += ' Terima kasih telah berbelanja! \n';
 		nota += '*** Barang yang sudah dibeli ***\n';
@@ -169,7 +169,7 @@
 		});
 
 		if (
-			pageState.totalAll > 0 &&
+			pageState.itemTable.length > 0 &&
 			pageState.customerName !== '' &&
 			pageState.customerNumber !== ''
 		) {

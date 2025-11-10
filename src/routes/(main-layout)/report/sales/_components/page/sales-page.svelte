@@ -148,26 +148,28 @@
 				const total = price * qty;
 				subtotal += total;
 
-				// Lebar maksimum kertas thermal (misal 12 karakter nama)
-				const namaCol = 8;
+				// Lebar maksimum kertas thermal (misal 32 karakter total)
+				const namaCol = 12; // lebar kolom nama
 				const hargaCol = 8;
 				const qtyCol = 3;
+				const totalCol = 9;
 
-				// Bagi nama menjadi beberapa baris
-				const namaPotong: string[] = [];
+				// Bagi nama jadi beberapa baris (setiap baris maks 12 karakter)
+				const namaPotong = [];
 				let sisa = String(name);
+
 				while (sisa.length > 0) {
 					namaPotong.push(sisa.substring(0, namaCol));
 					sisa = sisa.substring(namaCol);
 				}
 
-				// Baris pertama nama + harga + qty
+				// Baris pertama (nama + angka)
 				const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
 				const hrg = String(price.toLocaleString('id-ID')).padStart(hargaCol, ' ');
 				const qtyStr = String(qty).padStart(qtyCol, ' ');
 				nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
 
-				// Baris tambahan untuk nama panjang
+				// Jika nama lebih panjang, cetak sisanya di bawah (hanya nama)
 				for (let i = 1; i < namaPotong.length; i++) {
 					nota += `${namaPotong[i]}\n`;
 				}
@@ -183,9 +185,7 @@
 		const kembali = bayar - totalBayar;
 
 		nota += `Subtotal    :Rp${subtotal.toLocaleString('id-ID')}\n`;
-		if (diskonNilai > 0) {
-			nota += `Diskon      :${diskonPersen}% (Rp${diskonNilai.toLocaleString('id-ID')})\n`;
-		}
+		nota += `Diskon      :${diskonNilai || 0}% (Rp${((subtotal * diskonNilai) / 100).toLocaleString('id-ID')})\n`;
 		nota += `Total Bayar :Rp${totalBayar.toLocaleString('id-ID')}\n`;
 		nota += `Bayar       :Rp${bayar.toLocaleString('id-ID')}\n`;
 		nota += `Kembali     :Rp${kembali.toLocaleString('id-ID')}\n`;
@@ -193,8 +193,8 @@
 		nota += '--------------------------------\n';
 		nota += `Payment: ${sale.payment_method || 'CASH'}\n`;
 		nota += '--------------------------------\n';
-		nota += '         DA.ALUS HIJAB         \n';
-		nota += '        IG @daalushijab		 \n';
+		nota += '          DA.ALUS HIJAB         \n';
+		nota += '      IG daalushijab.store		 \n';
 		nota += '        tiktok : da.alus        \n';
 		nota += ' Terima kasih telah berbelanja! \n';
 		nota += '*** Barang yang sudah dibeli ***\n';
@@ -360,7 +360,11 @@
 							>
 							<th
 								class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>Discount</th
+								>Discount(Rp)</th
+							>
+							<th
+								class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>Discount(%)</th
 							>
 							<th
 								class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
@@ -432,7 +436,12 @@
 									<td
 										class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 									>
-										{formatCurrency(row.discount_amount)}
+										{formatCurrency((row.total_amount * row.discount_amount) / 100)} 
+									</td>
+									<td
+										class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
+										{row.discount_amount} %
 									</td>
 									<td
 										class="px-3 py-2.5 text-right text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"

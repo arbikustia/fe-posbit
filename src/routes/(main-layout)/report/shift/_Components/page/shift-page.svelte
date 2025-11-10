@@ -13,6 +13,7 @@
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import Button from '@/components/ui/button/button.svelte';
 	import { summaryShiftService } from '@/services/shiftService';
+	import * as Select from '$lib/components/ui/select/index.js';
 
 	const { state, handlePageChange } = useSummaryShiftPage();
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
@@ -74,7 +75,7 @@
 	function downloadExcel() {
 		summaryShiftService.getReportExcel({
 			PageNumber: 1,
-			PageSize: 100000,
+			PageSize: state.pageSize,
 			SearchTerm: state.searchTerm,
 			EndDate: state.endDate,
 			StartDate: state.startDate
@@ -301,6 +302,16 @@
 
 		<!-- PAGINATION -->
 		<div class="w-full">
+			<!-- <Select.Root type="single">
+				<Select.Trigger class="w-[180px]"></Select.Trigger>
+				<Select.Content>
+					<Select.Item value="10">10</Select.Item>
+					<Select.Item value="30">30</Select.Item>
+					<Select.Item value="50">50</Select.Item>
+					<Select.Item value="80">80</Select.Item>
+					<Select.Item value="100">100</Select.Item>
+				</Select.Content>
+			</Select.Root> -->
 			<Pagination.Root count={state.totalCount} perPage={state.pageSize} page={state.currentPage}>
 				{#snippet children({ pages, currentPage })}
 					<div class="mt-4 flex w-full items-center justify-between">

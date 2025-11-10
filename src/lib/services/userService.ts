@@ -24,6 +24,11 @@ export const userService = {
 			`/users/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
 		);
 	},
+	getRole: () => {
+		return apiClient.get<RestApiResponse<unknown>>(
+			`/role/get-all-role`
+		);
+	},
 	delete: (id: string) => {
 		return apiClient.delete<RestApiResponse<unknown>>(
 			`/users/${id}`

@@ -1,15 +1,12 @@
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table/index.js';
 	import Icon from '@iconify/svelte';
 	import * as Pagination from '$lib/components/ui/pagination/index.js';
 	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
-	import Input from '$lib/components/ui/input/input.svelte';
 	import { goto } from '$app/navigation';
 	import { tick, onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { cn } from '$lib/utils';
 	import { usePurchasePage } from '../../create/use-create.svelte';
-	import { PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
 	import { purchaseService } from '@/services/purchaseService';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
@@ -17,7 +14,6 @@
 	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import dayjs from 'dayjs';
-	import { Root } from '@/components/ui/card';
 	import InvoicePage from '../../../report/purchase/_components/invoice-purchase/invoice-page.svelte';
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
@@ -142,7 +138,7 @@
 					</div>
 					<Select.Root
 						type="single"
-						bind:value={state.statusFilter}
+						bind:value={state.statusPo}
 						onValueChange={() => handleGetPaged(1)}
 					>
 						<Select.Trigger class="w-full text-sm">
@@ -156,7 +152,7 @@
 					</Select.Root>
 					<Select.Root
 						type="single"
-						bind:value={state.statusFilter}
+						bind:value={state.paymentStatus}
 						onValueChange={() => handleGetPaged(1)}
 					>
 						<Select.Trigger class="w-full text-sm">
@@ -382,6 +378,7 @@
 																item_id: d.item_id,
 																name: d.name,
 																qty: d.qty,
+																qty_keluar: d.qty_keluar,
 																price: 0,
 																priceKey: row.package_name || 'Harga Normal'
 															})) || [];

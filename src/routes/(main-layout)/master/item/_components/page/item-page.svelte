@@ -156,7 +156,7 @@
 									<td
 										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 									>
-										{row.qty}
+										{row.jumlah}
 									</td>
 								</tr>
 							{/each}

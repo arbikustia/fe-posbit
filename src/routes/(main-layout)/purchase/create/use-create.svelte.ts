@@ -238,6 +238,12 @@ export function usePurchasePage() {
 
         const values: any = get(formData);
 
+        const detailUpdate = values.details.map((item: any, index: number) => ({
+            item_id: item.item_id,
+            qty: item.qty,
+            qty_keluar: state?.detailFromParams?.[index]?.qty_keluar || 0
+        }));
+
         // Payload sesuai API - tambahkan label dan ongkir
         const body = {
             person_id: values.customer_id ?? 0,
@@ -251,37 +257,37 @@ export function usePurchasePage() {
             package_id: values.package_id ?? 'Harga Normal',
             create_by: getCookie('username') || 'system',
             keterangan: values.keterangan ?? '',
-            label: values.label ?? 0, // <-- tambahkan ini
-            ongkir: values.ongkir ?? 0, // <-- tambahkan ini
-            details: values.details ?? []
+            label: values.label ?? 0,
+            ongkir: values.ongkir ?? 0,
+            details: values.details ?? [] // Default tetap pakai values.details
         };
 
         try {
             if ((values as any).id) {
+                // Untuk update, gunakan detailUpdate
+                const updateBody = {
+                    ...body,
+                    details: detailUpdate // Ganti dengan detailUpdate untuk update
+                };
 
-                await purchaseService.update({ id: String((values as any).id), ...body });
+                await purchaseService.update({ id: String((values as any).id), ...updateBody });
+
                 const processLogsCombined = async (
                     increaseLogs: { inv_number: string; action: string; aktivitas: string }[],
                     decreaseLogs: { inv_number: string; action: string; aktivitas: string }[]
                 ) => {
-                    // Gabungkan: decrease dulu, lalu increase
-                    // Jadi increase akan menimpa decrease jika ada action code yang sama
                     const allLogs = [...decreaseLogs, ...increaseLogs];
-
                     if (allLogs.length === 0) return;
 
                     console.log('All logs to process:', allLogs);
 
-                    // Kelompokkan data berdasarkan action code (tanpa prefix)
-                    // Yang terakhir dalam array akan menang
                     const lastLogsByActionCode = allLogs.reduce((acc, current) => {
-                        acc[current.action] = current; // Action code sebagai key
+                        acc[current.action] = current;
                         return acc;
                     }, {} as { [key: string]: any });
 
                     console.log('Unique action codes:', Object.keys(lastLogsByActionCode));
 
-                    // Post semua last logs
                     for (const actionCode in lastLogsByActionCode) {
                         await purchaseService.purchaseLog(lastLogsByActionCode[actionCode]);
                         const log = lastLogsByActionCode[actionCode];
@@ -295,33 +301,28 @@ export function usePurchasePage() {
                     logType: 'increase' | 'decrease'
                 ) => {
                     const logs = logType === 'increase' ? increaseLogs : decreaseLogs;
-
                     if (logs.length === 0) return;
 
                     console.log(`Processing ${logType} item logs:`, logs);
 
-                    // Kelompokkan data berdasarkan action code
                     const lastLogsByActionCode = logs.reduce((acc, current) => {
-                        acc[current.action] = current; // Action code sebagai key
+                        acc[current.action] = current;
                         return acc;
                     }, {} as { [key: string]: any });
 
                     console.log(`Unique ${logType} item action codes:`, Object.keys(lastLogsByActionCode));
 
-                    // Post semua last logs
                     for (const actionCode in lastLogsByActionCode) {
-                        // Panggil API yang berbeda untuk item logs
                         await purchaseService.purchaseLog(lastLogsByActionCode[actionCode]);
                         console.log(`Posted ${logType} item log for action: ${actionCode}`);
                     }
                 };
 
-                // Usage:
+                // Process logs
                 if (state.poLogIncreaseQty.length > 0 || state.poLogDecreaseQty.length > 0) {
                     await processLogsCombined(state.poLogIncreaseQty, state.poLogDecreaseQty);
                 }
 
-                // Usage:
                 if (state.poLogIncreaseItem.length > 0) {
                     await processItemLogs(state.poLogIncreaseItem, [], 'increase');
                 }
@@ -329,10 +330,18 @@ export function usePurchasePage() {
                 if (state.poLogDecreaseItem.length > 0) {
                     await processItemLogs([], state.poLogDecreaseItem, 'decrease');
                 }
+
                 toast.success('Purchase updated successfully');
             } else {
-                await purchaseService.create(body);
-                toast.success('Purchase created successfully');
+                // Untuk create, tetap pakai values.details
+                await purchaseService.create(body)
+                    .then((res) => {
+                        if (res.data.messages[0] == "Tidak dapat membuat PO baru karena terdapat PO dengan status OPEN untuk customer ini.") {
+                            toast.warning('Tidak dapat membuat PO baru karena terdapat PO dengan status OPEN untuk customer ini.');
+                        } else {
+                            toast.success('Purchase created successfully');
+                        }
+                    })
             }
             goto('/purchase');
         } catch (err) {

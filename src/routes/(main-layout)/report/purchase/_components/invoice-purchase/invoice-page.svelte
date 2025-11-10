@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Button from '@/components/ui/button/button.svelte';
+	import { Row } from '@/components/ui/table';
 	import { onMount } from 'svelte';
 
 	const { row } = $props();
@@ -165,8 +166,23 @@
 			const grandTotal = subtotal;
 
 			doc.setFont('helvetica', 'normal');
+			doc.text('LABEL :', 420, y);
+			doc.text(`RP ${row.label.toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
+			y += 15
+			doc.setFont('helvetica', 'normal');
+			doc.text('ONGKIR :', 420, y);
+			doc.text(`RP ${row.ongkir.toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
+			y += 15
+
+			doc.setFont('helvetica', 'normal');
 			doc.text('SUB TOTAL :', 420, y);
 			doc.text(`RP ${subtotal.toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
+
+			y += 15;
+
+			doc.setFont('helvetica', 'normal');
+			doc.text('TOTAL BAYAR :', 420, y);
+			doc.text(`RP ${((row.label + row.ongkir) + subtotal).toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
 
 			y += 15;
 			doc.setFont('helvetica', 'bold');
@@ -176,7 +192,7 @@
 			});
 			y += 15;
 			doc.text('SISA :', 420, y);
-			doc.text(`RP ${(subtotal - row.down_payment).toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
+			doc.text(`RP ${((row.label + row.ongkir) + subtotal - row.down_payment).toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
 
 			y += 40;
 

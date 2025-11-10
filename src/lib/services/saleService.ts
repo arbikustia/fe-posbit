@@ -62,7 +62,7 @@ export const saleService = {
         StartDate: string,
     }): Promise<void> => {
         try {
-            const response = await apiClient.get(
+            const response:any = await apiClient.get(
                 `/sale/export-report-sales?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&StartDate=${params.StartDate}&EndDate=${params.EndDate}`,
                 {
                     responseType: 'blob' // Important for file download

@@ -9,8 +9,7 @@
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { onMount } from 'svelte';
 	import { modalService } from '@/services/modalService';
-	import { FormModalAwal } from '../dashboard/_components/form-modal-awal';
-	import HighlightCard from '../dashboard/_components/highlight-card/highlight-card.svelte';
+	import { HighlightCard } from '../dashboard/_components/highlight-card';
 	import { ChartVisitors } from '../dashboard/_components/chart-visitors';
 
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
@@ -49,31 +48,6 @@
 			df.format(dayjs(pageState.endDate).toDate())
 		);
 	}
-
-	let showModalAwal = $state(false);
-
-	onMount(async () => {
-		try {
-			const res = await modalService.getStatusModalAwal();
-			console.log('Response modal awal:', res);
-
-			// Perbaiki logika kondisi
-			if (res?.data?.data == null) {
-				// Jika data null, tampilkan modal
-				showModalAwal = false;
-			} else if (res.data?.data?.shift1 === '0' || res.data?.data?.shift2 === '0') {
-				// Jika shift1 atau shift2 adalah '0', tampilkan modal
-				showModalAwal = true;
-			} else {
-				showModalAwal = false;
-			}
-
-			console.log('showModalAwal set to:', showModalAwal);
-		} catch (error) {
-			console.error('Error fetching modal status:', error);
-			showModalAwal = false;
-		}
-	});
 </script>
 
 <svelte:head>
@@ -114,9 +88,6 @@
 		<div class="flex flex-col gap-4 md:gap-6">
 			<HighlightCard state={pageState} />
 			<ChartVisitors state={pageState} />
-			{#if showModalAwal}
-				<FormModalAwal type="create" {showModalAwal} />
-			{/if}
 		</div>
 	</div>
 </div>

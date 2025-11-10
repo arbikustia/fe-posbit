@@ -36,7 +36,7 @@ export const summaryShiftService = {
 
             // Extract filename from response headers or use default
             const contentDisposition = response.headers['content-disposition'];
-            let filename = `purchase-report-${new Date().getTime()}.xlsx`;
+            let filename = `shift-report-${new Date().getTime()}.xlsx`;
 
             if (contentDisposition) {
                 const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);

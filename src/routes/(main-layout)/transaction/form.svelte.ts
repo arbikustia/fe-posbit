@@ -164,7 +164,7 @@ export function useTransactionForm() {
 	async function handleGetListItemGudang() {
 		try {
 			state.isLoading = true;
-			const res: any = await itemService.getListitemBarcode({
+			const res: any = await itemService.getListitemFormBarcode({
 				PageNumber: 1,
 				PageSize: 10,
 				SearchTerm: ""

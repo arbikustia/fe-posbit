@@ -98,7 +98,7 @@
 			SearchTerm: state.searchTerm,
 			EndDate: state.endDate,
 			StartDate: state.startDate,
-			Status: state.statusFilter
+			Status: state.paymentStatus
 		});
 	}
 </script>
@@ -147,11 +147,11 @@
 					</div>
 					<Select.Root
 						type="single"
-						bind:value={state.statusFilter}
+						bind:value={state.paymentStatus}
 						onValueChange={() => handleGetPaged(1)}
 					>
 						<Select.Trigger class="w-full text-sm">
-							{'All Types'}
+							{'All Payment'}
 						</Select.Trigger>
 						<Select.Content>
 							<Select.Item value="">All</Select.Item>
@@ -160,7 +160,20 @@
 							<Select.Item value="CANCEL">CANCEL</Select.Item>
 						</Select.Content>
 					</Select.Root>
-					<!-- FILTER DATE -->
+					<Select.Root
+						type="single"
+						bind:value={state.statusPo}
+						onValueChange={() => handleGetPaged(1)}
+					>
+						<Select.Trigger class="w-full text-sm">
+							{'All Status Po'}
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Item value="">All</Select.Item>
+							<Select.Item value="OPEN">OPEN</Select.Item>
+							<Select.Item value="CLOSE">CLOSE</Select.Item>
+						</Select.Content>
+					</Select.Root>
 					<!-- FILTER DATE -->
 					<div class="flex gap-2">
 						<Popover.Root bind:open={popoverOpen}>
@@ -210,7 +223,8 @@
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Package Name</th
 								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Customer</th>
-								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Status</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Payment Status</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Status Po</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Down Payment</th
 								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
@@ -290,7 +304,8 @@
 										{/if}
 									</td>
 
-									<td class="px-3 py-2.5 text-xs">{row.status}</td>
+									<td class="px-3 py-2.5 text-xs">{row.payment_status}</td>
+									<td class="px-3 py-2.5 text-xs">{row.status_po}</td>
 									<td class="px-3 py-2.5 text-xs">Rp {row.down_payment.toLocaleString() || '-'}</td>
 									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
 									<td class="px-3 py-2.5 text-xs">{row.payment_method}</td>
@@ -327,7 +342,9 @@
 																<tr>
 																	<td class="py-1 text-gray-700">{detail.item_id}</td>
 																	<td class="py-1 text-gray-700">{detail.name}</td>
-																	<td class="py-1 text-gray-700">Rp{detail.price.toLocaleString()}</td>
+																	<td class="py-1 text-gray-700"
+																		>Rp{detail.price.toLocaleString()}</td
+																	>
 																	<td class="py-1 text-gray-700">{detail.description}</td>
 																	<td class="py-1 text-gray-700">{detail.qty}</td>
 																	<td class="py-1 text-center text-gray-700">{detail.qty_keluar}</td

@@ -60,7 +60,8 @@
 		{ value: 'DEBIT', label: 'Debit' }
 	];
 	const paymentStatusLabel = $derived(
-		paymentStatusOptions.find((r) => r.value === $formData.payment_status)?.label ?? 'Select Payment Status'
+		paymentStatusOptions.find((r) => r.value === $formData.payment_status)?.label ??
+			'Select Payment Status'
 	);
 	const statusPoLabel = $derived(
 		statusPoOptions.find((r) => r.value === $formData.status_po)?.label ?? 'Select Status Po'
@@ -182,18 +183,20 @@
 	}
 
 	// === UPDATE QUANTITY ===
-	function updateQty(id: string, newQty: number,oldQty:number, name: string) {
+	function updateQty(id: string, newQty: number, oldQty: number, name: string, qty_keluar: number) {
 		const item = pageState.listItem.find((i) => i.value === id);
+		console.log(qty_keluar ?? 0, 'lolo');
 		if (!item) return;
 
-		const qty = Math.max(1, Math.min(newQty, item.stock));
+		// Hanya batasi minimal (tidak boleh kurang dari qty_keluar), tidak ada batas maksimal
+		const minQty = Math.max(1, qty_keluar ?? 0); // Minimal tidak boleh kurang dari qty_keluar atau 1
+
+		// Tidak ada batasan maksimal, jadi qty bisa lebih dari stock
+		const qty = Math.max(minQty, newQty);
+
 		const detail = itemDetails.find((d) => d.item_id === id);
 		const price = detail?.price || getItemPriceByPackage(item, packageLabel);
 		const priceKey = detail?.priceKey || packageLabel;
-
-		// Dapatkan oldQty dari state saat ini, bukan dari params awal
-		// const oldDetail = itemDetails.find((d) => d.item_id === id);
-		// const oldQty = oldDetail?.qty || 0;
 
 		const updated = itemDetails.map((i) => (i.item_id === id ? { ...i, qty, price, priceKey } : i));
 		itemDetails = updated;
@@ -306,6 +309,7 @@
 					return {
 						item_id: d.item_id,
 						qty: d.qty,
+						qty_keluar: d.qty_keluar,
 						price: price,
 						priceKey: packageLabel,
 						name: d.name
@@ -477,12 +481,14 @@
 			{#each itemDetails as detail, index (detail.item_id)}
 				{@const item = itemOptions.find((i) => i.value === detail.item_id)}
 				{@const subtotal = (detail.price ?? 0) * detail.qty}
+				{@const minQty = Math.max(1, pageState?.detailFromParams?.[index]?.qty_keluar || 0)}
 
 				<div class="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:justify-between">
 					<div class="flex flex-col">
 						<p class="text-sm font-medium">{item?.label} - {item?.deskripsi}</p>
 						<div class="text-muted-foreground text-sm">
-							Stock: {item?.stock} • {packageLabel}: Rp {detail.price?.toLocaleString('id-ID')}
+							Stock: {item?.stock} • Rp {detail.price?.toLocaleString('id-ID')} • Qty Keluar : {pageState
+								?.detailFromParams?.[index]?.qty_keluar ?? 0}
 						</div>
 					</div>
 
@@ -492,29 +498,33 @@
 							<div class="flex items-center overflow-hidden rounded-lg border">
 								<button
 									type="button"
-									class="hover:bg-muted px-3 py-1 transition"
+									class="hover:bg-muted px-3 py-1 transition disabled:cursor-not-allowed disabled:opacity-50"
 									onclick={() =>
 										updateQty(
 											detail.item_id,
 											detail.qty - 1,
 											pageState?.detailFromParams?.[index]?.qty,
-											item?.label
-										)}>−</button
+											item?.label,
+											pageState?.detailFromParams?.[index]?.qty_keluar
+										)}
+									disabled={detail.qty <= minQty}>−</button
 								>
 
 								<input
 									type="number"
-									min="1"
-									max={item?.stock}
+									min={minQty}
 									class="bg-muted w-16 py-1 text-center text-sm font-medium focus:outline-none"
 									bind:value={detail.qty}
-									onchange={(e) =>
+									onchange={(e) => {
+										const newValue = parseInt(e.currentTarget.value) || minQty;
 										updateQty(
 											detail.item_id,
-											parseInt(e.currentTarget.value) || 1,
+											newValue,
 											pageState?.detailFromParams?.[index]?.qty,
-											item?.label
-										)}
+											item?.label,
+											pageState?.detailFromParams?.[index]?.qty_keluar
+										);
+									}}
 								/>
 
 								<button
@@ -525,7 +535,8 @@
 											detail.item_id,
 											detail.qty + 1,
 											pageState?.detailFromParams?.[index]?.qty,
-											item?.label
+											item?.label,
+											pageState?.detailFromParams?.[index]?.qty_keluar
 										)}>+</button
 								>
 							</div>

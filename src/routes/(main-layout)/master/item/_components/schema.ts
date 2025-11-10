@@ -14,7 +14,7 @@ export const masterItemSchema = z.object({
 	harga_jual: z
 		.number({ invalid_type_error: 'Harga jual must be a number' })
 		.nonnegative('Harga jual cannot be negative'),
-	qty: z
+	jumlah: z
 		.number({ invalid_type_error: 'Qty must be a number' })
 		.nonnegative('Qty cannot be negative'),
 	open: z.boolean().optional().default(true)

@@ -11,6 +11,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
+	import { userService } from '@/services/userService';
 
 	type UserFormProps = {
 		form: SuperForm<z.infer<typeof userSchema>>;
@@ -22,15 +23,23 @@
 	let { form, handleSubmit }: UserFormProps = $props();
 	const { form: formData, enhance, errors } = form;
 
-	const roleOptions = [
-		{ value: 'Admin', label: 'Admin' },
-		{ value: 'Cashier', label: 'Cashier' }
-	];
+	let roleOptions = $state([]);
 
 	let value = $state('');
 	const triggerContent = $derived(
 		roleOptions.find((r) => r.value === value)?.label ?? 'Select role'
 	);
+
+	onMount(() => {
+		userService.getRole().then((res: any) => {
+			console.log(res.data.data, 'ini');
+			const option = res.data.data;
+			roleOptions = option.map((item) => ({
+				value: item.role,
+				label: item.role
+			}));
+		});
+	});
 
 	onMount(() => {
 		const url = get(page).url;
