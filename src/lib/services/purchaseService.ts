@@ -72,6 +72,11 @@ export const purchaseService = {
             `/view/get-data-package`
         );
     },
+    getDataLabel: () => {
+        return apiClient.get<RestApiResponse<unknown>>(
+            `/label`
+        );
+    },
     delete: (id: string) => {
         return apiClient.delete<RestApiResponse<unknown>>(
             `/purchase-order/${id}`

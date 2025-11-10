@@ -12,7 +12,12 @@ export const invoiceSchema = z.object({
   discount_amount: z.number().min(0, 'Discount Amount must be 0 or greater'),
   payment_method: z.string().min(1, 'Payment Method is required'),
   package_id: z.string().min(1, 'Package ID is required'),
-  label: z.number().min(0, 'Label must be 0 or greater'),
+  labels: z
+    .array(
+      z.object({
+        label_id: z.string(),
+      })
+    ),
   ongkir: z.number().min(0, 'Ongkir must be 0 or greater'),
   details: z
     .array(

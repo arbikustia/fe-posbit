@@ -18,7 +18,7 @@ export const summaryShiftService = {
     }): Promise<void> => {
         try {
             const response:any = await apiClient.get(
-                `view/export-summary-shift?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&StartDate=${params.StartDate}&EndDate=${params.EndDate}`,
+                `view/export-summary-shift?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&Start=${params.StartDate}&End=${params.EndDate}`,
                 {
                     responseType: 'blob' // Important for file download
                 }

@@ -24,6 +24,8 @@
 
 	let customerOptions: { value: string; label: string }[] = $state([]);
 	let packageOptions: { value: string; label: string }[] = $state([]);
+	let lblOptions: { value: string; label: string , price:number}[] = $state([]);
+	let selectedLabels = $state<string[]>([]);
 
 	// === STATES ===
 	let selectedItems = $state<string[]>([]);
@@ -44,6 +46,11 @@
 	const packageLabel = $derived(
 		packageOptions.find((r) => r.value === $formData.package_id)?.label ?? 'Select package'
 	);
+	const lblDataLabel = $derived(
+		selectedLabels.length === 0 ? 'Select labels...' : `${selectedLabels.length} label(s) selected`
+	);
+
+	const isShopeePackage = $derived(packageLabel.toLowerCase() === 'shopee');
 
 	const paymentStatusOptions = [
 		{ value: 'LUNAS', label: 'Lunas' },
@@ -75,6 +82,11 @@
 	function getItemPriceByPackage(item: any, packageName: string) {
 		if (!item) return 0;
 
+		// Jika package adalah shopee, harga selalu 0
+		if (packageName.toLowerCase() === 'shopee') {
+			return 0;
+		}
+
 		switch (packageName) {
 			case 'Harga Normal':
 				return item.harga;
@@ -90,6 +102,8 @@
 				return item.harga_e;
 			case 'Harga F':
 				return item.harga_f;
+			case 'shopee':
+				return 0;
 			default:
 				return item.harga;
 		}
@@ -244,11 +258,21 @@
 
 	// === AUTO CALCULATE TOTAL ===
 	$effect(() => {
-		const total = itemDetails.reduce((sum, detail) => sum + (detail.price ?? 0) * detail.qty, 0);
+		let total = 0;
+
+		if (isShopeePackage) {
+			// Untuk package shopee, gunakan manual total_amount
+			total = 0;
+		} else {
+			// Untuk package lainnya, hitung otomatis
+			total = itemDetails.reduce((sum, detail) => sum + (detail.price ?? 0) * detail.qty, 0);
+		}
+
 		formData.update((f) => ({
 			...f,
 			total_amount: total,
-			final_amount: total - (f.discount_amount ?? 0)
+			final_amount: total - (f.discount_amount ?? 0),
+			labels: selectedLabels.map((id) => ({ label_id: id }))
 		}));
 	});
 
@@ -260,7 +284,36 @@
 		const rawKeterangan = qp.get('keterangan') ?? '';
 		if (rawKeterangan) {
 			const decodedKeterangan = decodeURIComponent(decodeURIComponent(rawKeterangan));
+			console.warn(decodedKeterangan,'decodedKeterangan')
 			formData.update((f) => ({ ...f, keterangan: decodedKeterangan }));
+		}
+		const rawLabels = qp.get('labels') ?? '';
+		if (rawLabels) {
+			const decodedLabels = decodeURIComponent(decodeURIComponent(rawLabels));
+			console.warn(JSON.parse(decodedLabels),'decodedLabels')
+			formData.update((f) => ({ ...f, labels: JSON.parse(decodedLabels) }));
+		}
+		
+		
+
+		// Load labels
+		try {
+			const labelRes: any = await purchaseService.getDataLabel(); // Sesuaikan dengan service Anda
+			lblOptions = labelRes.data.data.map((item: { id: string; name: string , price:number}) => ({
+				value: item.id,
+				label: item.name,
+				price:item.price
+			}));
+			
+			// Restore labels dari formData (untuk edit mode)
+			// Cek apakah menggunakan key 'label' atau 'labels'
+			console.warn($formData.labels,'okokoko')
+			const labelsData = $formData.labels || $formData.labels;
+			if (labelsData && labelsData.length > 0) {
+				selectedLabels = labelsData.map((l: any) => l.label_id);
+			}
+		} catch (err) {
+			console.error('Failed to load labels:', err);
 		}
 
 		// Load customers
@@ -346,6 +399,13 @@
 		$formData.ongkir = Number(raw || 0);
 		target.value = formatIDR(raw);
 	}
+
+	function handleTotalAmountInput(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const raw = target.value.replace(/[^\d]/g, '');
+		$formData.total_amount = Number(raw || 0);
+		target.value = formatIDR(raw);
+	}
 </script>
 
 <form
@@ -428,7 +488,7 @@
 									{#each itemOptions as item}
 										<Command.Item
 											value={item.value}
-											keywords={[item.label, item.value]}
+											keywords={[item.label, item.value, item.deskripsi]}
 											onSelect={() => toggleItem(item.value, item.label)}
 											class="flex items-center justify-between"
 										>
@@ -440,7 +500,9 @@
 													)}
 												/>
 												<div class="flex flex-col">
-													<span class="text-xs font-medium">{item.label} - {item.deskripsi}</span>
+													<span class="text-xs font-medium"
+														>{item.label} {item.deskripsi ? '-' : ''} {item.deskripsi}</span
+													>
 													<span class="text-muted-foreground text-xs">
 														{item.kode_barang}
 													</span>
@@ -487,8 +549,11 @@
 					<div class="flex flex-col">
 						<p class="text-sm font-medium">{item?.label} - {item?.deskripsi}</p>
 						<div class="text-muted-foreground text-sm">
-							Stock: {item?.stock} • Rp {detail.price?.toLocaleString('id-ID')} • Qty Keluar : {pageState
-								?.detailFromParams?.[index]?.qty_keluar ?? 0}
+							Stock: {item?.stock} • {#if isShopeePackage}
+								<span class="text-red-500">Rp 0 (Shopee)</span>
+							{:else}
+								Rp {detail.price?.toLocaleString('id-ID')}
+							{/if} • Qty Keluar : {pageState?.detailFromParams?.[index]?.qty_keluar ?? 0}
 						</div>
 					</div>
 
@@ -666,7 +731,7 @@
 		</Form.Field>
 
 		<!-- LABEL -->
-		<Form.Field {form} name="label">
+		<!-- <Form.Field {form} name="label">
 			<Form.Control>
 				<Form.Label>Label</Form.Label>
 				<Input
@@ -677,6 +742,87 @@
 					oninput={handleLabelInput}
 					class="text-left"
 				/>
+			</Form.Control>
+			<Form.FieldErrors class="text-sm text-red-600" />
+		</Form.Field> -->
+
+		<Form.Field {form} name="labels">
+			<Form.Control>
+				<Form.Label>Label</Form.Label>
+				<Popover.Root>
+					<Popover.Trigger class="w-full">
+						{#snippet child({ props })}
+							<Button
+								variant="outline"
+								class="min-h-[2.5rem] w-full justify-between text-left font-normal"
+								{...props}
+								role="combobox"
+							>
+								<div class="flex flex-1 flex-wrap gap-1.5">
+									{#if selectedLabels.length === 0}
+										<span class="text-muted-foreground">Select labels...</span>
+									{:else}
+										{#each selectedLabels as labelId}
+											{@const label = lblOptions.find((l) => l.value === labelId)}
+											<span
+												class="bg-primary/10 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium"
+											>
+												{label?.label}
+												<button
+													type="button"
+													onclick={(e) => {
+														e.stopPropagation();
+														selectedLabels = selectedLabels.filter((id) => id !== labelId);
+													}}
+													class="hover:text-destructive transition"
+												>
+													<XIcon class="size-3" />
+												</button>
+											</span>
+										{/each}
+									{/if}
+								</div>
+								<ChevronsUpDownIcon class="ml-2 size-4 shrink-0 opacity-50" />
+							</Button>
+						{/snippet}
+					</Popover.Trigger>
+
+					<Popover.Content class="w-[300px] p-0" align="start">
+						<Command.Root>
+							<Command.Input placeholder="Search labels..." class="h-9" />
+							<Command.List>
+								<Command.Empty>No labels found.</Command.Empty>
+								<Command.Group>
+									{#each lblOptions as label}
+										<Command.Item
+											value={label.value}
+											keywords={[label.label, label.value]}
+											onSelect={() => {
+												if (selectedLabels.includes(label.value)) {
+													selectedLabels = selectedLabels.filter((id) => id !== label.value);
+												} else {
+													selectedLabels = [...selectedLabels, label.value];
+												}
+											}}
+											class="flex items-center gap-2 text-xs"
+										>
+											<CheckIcon
+												class={cn(
+													'size-4',
+													!selectedLabels.includes(label.value) && 'text-transparent'
+												)}
+											/>
+											<div class="flex flex-col">
+												<span class="font-bold">{label.label}</span>
+												<span class="font-normal">{formatIDR(label.price)}</span>
+											</div>
+										</Command.Item>
+									{/each}
+								</Command.Group>
+							</Command.List>
+						</Command.Root>
+					</Popover.Content>
+				</Popover.Root>
 			</Form.Control>
 			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
@@ -715,6 +861,22 @@
 			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
 	</div>
+
+	{#if isShopeePackage}
+		<Form.Field {form} name="total_amount">
+			<Form.Control>
+				<Form.Label>Total Amount (Manual) <span class="text-red-500">*</span></Form.Label>
+				<Input
+					type="text"
+					inputmode="numeric"
+					placeholder="Input Total Amount"
+					value={formatIDR($formData.total_amount)}
+					oninput={handleTotalAmountInput}
+					class="text-left"
+				/>
+			</Form.Control>
+		</Form.Field>
+	{/if}
 
 	<!-- TOTAL SUMMARY -->
 	<!-- <div class="rounded-lg border bg-gray-50 p-4">

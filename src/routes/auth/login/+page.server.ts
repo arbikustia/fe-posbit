@@ -40,12 +40,14 @@ export const actions: Actions = {
 
 		if (success) {
 			if (role == 'Admin') {
+				return redirect(302, '/purchase');
+			} else if (role == "Superadmin") {
 				return redirect(302, '/dashboard');
 			} else if (role == "Cashier") {
 				return redirect(302, '/transaction');
-			} else if(role == "Gudang"){
+			} else if (role == "Gudang") {
 				return redirect(302, '/report/purchase');
-			}else{
+			} else {
 				return redirect(302, '/unauthorized');
 
 			}

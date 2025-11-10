@@ -211,14 +211,16 @@
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Package Name</th
 								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Customer</th>
-								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Payment Status</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700"
+									>Payment Status</th
+								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Status Po</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Down Payment</th
 								>
-								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
-								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Label</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Ongkir</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Payment</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Label</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created By</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created At</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700"
@@ -295,10 +297,59 @@
 									<td class="px-3 py-2.5 text-xs">{row.payment_status}</td>
 									<td class="px-3 py-2.5 text-xs">{row.status_po}</td>
 									<td class="px-3 py-2.5 text-xs">Rp {row.down_payment.toLocaleString() || '-'}</td>
-									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
-									<td class="px-3 py-2.5 text-xs">Rp {row.label?.toLocaleString() || '0'}</td>
+
 									<td class="px-3 py-2.5 text-xs">Rp {row.ongkir?.toLocaleString() || '0'}</td>
+									
 									<td class="px-3 py-2.5 text-xs">{row.payment_method}</td>
+									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
+
+									<td class="px-3 py-2.5 text-xs">
+										{#if row.label && row.label.length > 0}
+											<Popover.Root>
+												<Popover.Trigger
+													class="cursor-pointer text-xs font-medium text-blue-500 underline hover:text-blue-600"
+												>
+													{row.label.length} Label(s)
+												</Popover.Trigger>
+
+												<Popover.Content
+													class="max-h-60 w-80 overflow-y-auto rounded-lg bg-white p-3 shadow-lg"
+												>
+													<p class="mb-2 text-sm font-semibold text-gray-700">Label Details</p>
+													<table class="min-w-full text-xs">
+														<thead>
+															<tr class="border-b border-gray-200 text-gray-500">
+																<th class="py-1 text-left">Name</th>
+																<th class="py-1 text-right">Price</th>
+															</tr>
+														</thead>
+														<tbody>
+															{#each row.label as labelItem}
+																<tr class="border-b border-gray-100 last:border-0">
+																	<td class="py-2 text-gray-700">{labelItem.name}</td>
+																	<td class="py-2 text-right text-gray-700">
+																		Rp {labelItem.price?.toLocaleString('id-ID') || '0'}
+																	</td>
+																</tr>
+															{/each}
+														</tbody>
+														<tfoot>
+															<tr class="border-t-2 border-gray-300">
+																<td class="py-2 font-semibold text-gray-800">Total</td>
+																<td class="py-2 text-right font-semibold text-gray-800">
+																	Rp {row.label
+																		.reduce((sum, item) => sum + (item.price || 0), 0)
+																		.toLocaleString('id-ID')}
+																</td>
+															</tr>
+														</tfoot>
+													</table>
+												</Popover.Content>
+											</Popover.Root>
+										{:else}
+											<span class="text-xs text-gray-400 italic">No labels</span>
+										{/if}
+									</td>
 									<td class="px-3 py-2.5 text-xs">{row.created_by}</td>
 									<td class="px-3 py-2.5 text-xs">{row.created_at}</td>
 
@@ -315,7 +366,17 @@
 												<Popover.Content
 													class="max-h-60 w-[500px] overflow-y-auto rounded-lg bg-white p-3 shadow-lg"
 												>
-													<p class="mb-2 text-sm font-semibold text-gray-700">Order Details</p>
+													<div class="flex justify-between">
+														<span class="mb-2 text-sm font-semibold text-gray-700"
+															>Order Details</span
+														>
+														<span class="mb-2 text-sm font-semibold text-gray-700"
+															>Total Qty = {row.purchase_order_details.reduce(
+																(total: number, item: any) => total + (item.qty || 0),
+																0
+															)}</span
+														>
+													</div>
 													<table class="min-w-full text-xs">
 														<thead>
 															<tr class="border-b border-gray-200 text-gray-500">
@@ -337,7 +398,8 @@
 																	>
 																	<td class="py-1 text-gray-700">{detail.description}</td>
 																	<td class="py-1 text-gray-700">{detail.qty}</td>
-																	<td class="py-1 text-center text-gray-700">{detail.qty_keluar || 0}</td
+																	<td class="py-1 text-center text-gray-700"
+																		>{detail.qty_keluar || 0}</td
 																	>
 																</tr>
 															{/each}
@@ -382,19 +444,26 @@
 																price: 0,
 																priceKey: row.package_name || 'Harga Normal'
 															})) || [];
-														console.log('🔍 keterangan before append:', row.keterangan);
+														const labels =
+															row.label?.map((d: any) => ({
+																label_id: d.label_id,
+																name: d.name,
+																price: d.price,
+															})) || [];
+														console.log('🔍 label before append:', row.label);
 
 														const params = new URLSearchParams();
 														params.append('id', String(row.id || ''));
 														params.append('customer_id', String(row.person_id || ''));
-														params.append('status', row.status || 'DP');
 														params.append('payment_method', row.payment_method || 'CASH');
+														params.append('payment_status', row.payment_status || 'LUNAS');
+														params.append('status_po', row.status_po || 'OPEN');
 														params.append('package_id', row.package_id || '');
 														params.append('total', String(row.total_amount || 0));
 														params.append('final', String(row.final_amount || 0));
 														params.append('discount', String(row.discount_amount || 0));
 														params.append('down_payment', String(row.down_payment || 0));
-														params.append('label', String(row.label || 0)); // <-- tambahkan ini
+														params.append('labels',JSON.stringify(labels)); // <-- tambahkan ini
 														params.append('ongkir', String(row.ongkir || 0)); // <-- tambahkan ini
 														params.append('keterangan', row.keterangan || '');
 														params.append('details', JSON.stringify(details));

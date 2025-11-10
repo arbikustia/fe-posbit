@@ -14,6 +14,7 @@
 	$: isMasterActive = $page.url.pathname.startsWith('/master');
 	$: isReportActive = $page.url.pathname.startsWith('/report');
 	const user = getUserRole();
+	$: isSuperadmin = checkRole(ROLES.SUPERADMIN);
 	$: isAdmin = checkRole(ROLES.ADMIN);
 	$: isCashier = checkRole(ROLES.CASHIER);
 	$: isGudang = checkRole(ROLES.GUDANG);
@@ -31,7 +32,7 @@
 
 <nav class="flex items-center justify-center gap-2">
 	<!-- Dashboard -->
-	{#if isAdmin}
+	{#if isSuperadmin}
 		<LayoutNavBarMenuItem href="/dashboard" label="Dashboard">
 			<svg
 				class="size-5!"
@@ -47,7 +48,7 @@
 	{/if}
 
 	<!-- Master Group -->
-	{#if isAdmin || isCashier}
+	{#if isSuperadmin || isCashier}
 		<Popover.Root bind:open>
 			<Popover.Trigger
 				class={cn(
@@ -80,7 +81,7 @@
 			</Popover.Trigger>
 
 			<Popover.Content class="w-52 space-y-2 p-3">
-				{#if isAdmin}
+				{#if isSuperadmin}
 					<LayoutNavBarMenuItem
 						href="/master/user"
 						label="User"
@@ -106,7 +107,7 @@
 					</LayoutNavBarMenuItem>
 				{/if}
 
-				{#if isAdmin}
+				{#if isSuperadmin}
 					<LayoutNavBarMenuItem
 						href="/master/point"
 						label="Point"
@@ -136,7 +137,7 @@
 					</LayoutNavBarMenuItem>
 				{/if}
 
-				{#if isAdmin || isCashier}
+				{#if isSuperadmin || isCashier}
 					<LayoutNavBarMenuItem
 						href="/master/customer"
 						label="Customer"
@@ -168,7 +169,7 @@
 					</LayoutNavBarMenuItem>
 				{/if}
 
-				{#if isAdmin}
+				{#if isSuperadmin}
 					<LayoutNavBarMenuItem
 						href="/master/item"
 						label="Item"
@@ -200,7 +201,7 @@
 		</Popover.Root>
 	{/if}
 
-	{#if isAdmin || isCashier}
+	{#if isSuperadmin || isCashier}
 		<LayoutNavBarMenuItem href="/transaction" label={'Transaction'}>
 			<svg
 				slot="icon"
@@ -229,7 +230,7 @@
 		</LayoutNavBarMenuItem>
 	{/if}
 
-	{#if isAdmin}
+	{#if isSuperadmin || isAdmin}
 		<LayoutNavBarMenuItem href="/purchase" label={'Purchase'}>
 			<svg
 				slot="icon"
@@ -255,7 +256,7 @@
 		</LayoutNavBarMenuItem>
 	{/if}
 
-	{#if isAdmin || isGudang}
+	{#if isSuperadmin || isGudang || isAdmin}
 		<Popover.Root bind:open={reportOpen}>
 			<Popover.Trigger
 				class={cn(
@@ -296,7 +297,7 @@
 			</Popover.Trigger>
 
 			<Popover.Content class="w-52 space-y-2 p-3">
-				{#if isAdmin || isCashier}
+				{#if isSuperadmin || isCashier || isAdmin}
 					<LayoutNavBarMenuItem
 						href="/report/sales"
 						label="Sales"
@@ -317,7 +318,7 @@
 						</svg>
 					</LayoutNavBarMenuItem>
 				{/if}
-				{#if isAdmin || isGudang}
+				{#if isSuperadmin || isGudang || isAdmin}
 					<LayoutNavBarMenuItem
 						href="/report/purchase"
 						label="Invoice"
@@ -351,7 +352,7 @@
 						</svg>
 					</LayoutNavBarMenuItem>
 				{/if}
-				{#if isAdmin}
+				{#if isSuperadmin || isAdmin}
 					<LayoutNavBarMenuItem
 						href="/report/shift"
 						label="Summary Shift"

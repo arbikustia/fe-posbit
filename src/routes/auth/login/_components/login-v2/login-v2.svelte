@@ -32,9 +32,46 @@
 		}
 	});
 
+	const deleteClientCookies = () => {
+		// Hapus cookies yang tidak httpOnly
+		document.cookie.split(';').forEach((cookie) => {
+			const name = cookie.split('=')[0].trim();
+			// Hapus dengan berbagai path dan domain
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.${window.location.hostname}`;
+		});
+
+		// Hapus specific cookies
+		const cookiesToDelete = ['user_info', 'username', 'theme', 'language'];
+		cookiesToDelete.forEach((name) => {
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+		});
+	};
+
+	// Fungsi untuk menghapus semua storage
+	const clearAllStorage = () => {
+		// Local Storage
+		localStorage.clear();
+
+		// Session Storage
+		sessionStorage.clear();
+
+		// IndexedDB (optional)
+		if ('indexedDB' in window) {
+			indexedDB.databases?.().then((databases) => {
+				databases.forEach((db) => {
+					if (db.name) indexedDB.deleteDatabase(db.name);
+				});
+			});
+		}
+	};
+
 	const { form: formData, enhance, submitting } = form;
 
 	onMount(() => {
+		deleteClientCookies()
+		clearAllStorage()
 		try {
 			const el = document.documentElement;
 

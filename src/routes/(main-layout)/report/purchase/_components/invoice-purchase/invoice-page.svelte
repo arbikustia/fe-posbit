@@ -56,7 +56,9 @@
 			doc.setFontSize(10);
 			doc.setFont('helvetica', 'normal');
 			doc.text('Ruko B-15 no 17', pageWidth - margin, y + 15, { align: 'right' });
-			doc.text('Mutiara Gading Timur, Mustikajaya, Bekasi', pageWidth - margin, y + 25, { align: 'right' });
+			doc.text('Mutiara Gading Timur, Mustikajaya, Bekasi', pageWidth - margin, y + 25, {
+				align: 'right'
+			});
 			doc.text('085817346722 / 0895372220952', pageWidth - margin, y + 40, { align: 'right' });
 
 			// Header line
@@ -75,8 +77,6 @@
 			doc.text(row.telephone || '', margin, y + 30);
 
 			// Right side info
-			doc.setFont('helvetica', 'bold');
-			doc.text('TANGGAL :', pageWidth - margin, y, { align: 'right' });
 			doc.setFont('helvetica', 'normal');
 
 			// Format tanggal
@@ -95,12 +95,12 @@
 				}
 			};
 
-			doc.text(formatDate(row.created_at), pageWidth - margin, y + 15, { align: 'right' });
+			doc.text(formatDate(row.created_at), pageWidth - margin, y, { align: 'right' });
 
 			doc.setFont('helvetica', 'bold');
-			doc.text('NO INVOICE :', pageWidth - margin, y + 45, { align: 'right' });
+			doc.text('NO INVOICE ', pageWidth - margin, y + 35, { align: 'right' });
 			doc.setFont('helvetica', 'normal');
-			doc.text(row.inv_number || '001', pageWidth - margin, y + 60, { align: 'right' });
+			doc.text(row.inv_number || '001', pageWidth - margin, y + 50, { align: 'right' });
 
 			y += 90;
 
@@ -110,7 +110,7 @@
 			doc.setTextColor(0, 0, 0);
 			doc.setFont('helvetica', 'bold');
 			doc.setFontSize(10);
-			doc.text('KETERANGAN', margin + 5, y + 5);
+			doc.text('ITEM', margin + 5, y + 5);
 			doc.text('HARGA', 260, y + 5);
 			doc.text('JML', 380, y + 5);
 			doc.text('TOTAL', 450, y + 5);
@@ -122,78 +122,138 @@
 			const items = row.purchase_order_details || [];
 			let subtotal = 0;
 
-			items.forEach((item: any) => {
-				const price = Number(item.price) || 0;
-				const qty = Number(item.qty) || 0;
-				const total = price * qty;
-				subtotal += total;
+			items
+				.sort((a: any, b: any) => {
+					const nameA = (a.name + ' ' + (a.description || '')).toLowerCase();
+					const nameB = (b.name + ' ' + (b.description || '')).toLowerCase();
+					return nameA.localeCompare(nameB);
+				})
+				.forEach((item: any) => {
+					const price = Number(item.price) || 0;
+					const qty = Number(item.qty) || 0;
+					const total = price * qty;
+					subtotal += total;
 
-				// Handle long item names
-				const itemName = item.name || item.description || '';
-				const maxNameLength = 40;
-				const truncatedName =
-					itemName.length > maxNameLength
-						? itemName.substring(0, maxNameLength - 3) + '...'
-						: itemName;
+					// Handle long item names
+					const itemName = item.name + ' ' + (item.description || '');
+					const maxNameLength = 40;
+					const truncatedName =
+						itemName.length > maxNameLength
+							? itemName.substring(0, maxNameLength - 3) + '...'
+							: itemName;
 
-				doc.text(truncatedName, margin + 5, y);
-				doc.text(`RP ${price.toLocaleString('id-ID')}`, 260, y);
-				doc.text(`${qty}`, 380, y);
-				doc.text(`RP ${total.toLocaleString('id-ID')}`, 450, y);
+					doc.text(truncatedName, margin + 5, y);
+					doc.text(`RP ${price.toLocaleString('id-ID')}`, 260, y);
+					doc.text(`${qty}`, 380, y);
+					doc.text(`RP ${total.toLocaleString('id-ID')}`, 450, y);
 
-				doc.setDrawColor(200);
-				doc.setLineWidth(0.3);
-				doc.line(margin, y + 5, pageWidth - margin, y + 5);
-				y += 20;
+					doc.setDrawColor(200);
+					doc.setLineWidth(0.3);
+					doc.line(margin, y + 5, pageWidth - margin, y + 5);
+					y += 20;
 
-				// Check if we need a new page
-				if (y > 700) {
-					doc.addPage();
-					y = margin;
-				}
-			});
+					// Check if we need a new page
+					if (y > 700) {
+						doc.addPage();
+						y = margin;
+					}
+				});
 
 			y += 15;
 
 			// === PAYMENT INFO ===
-			doc.setFont('helvetica', 'normal');
+			doc.setFont('helvetica', 'bold');
 			doc.text(`PEMBAYARAN : ${row.payment_method}`, margin, y);
-			doc.text(`Nama : Bintaya Zahriati Khayah`, margin, y + 15);
-			doc.text(`No Rek : 0030903617 - BCA `, margin, y + 30);
+			doc.setFont('helvetica', 'normal');
+			doc.text(`Nama : Bintaya Zahriati Khayah`, margin, y + 25);
+			doc.text(`No Rek : 0030903617 - BCA `, margin, y + 40);
+
+			// === CALCULATE TOTALS ===
+			const labelArray = row.label || [];
+			const totalLabel = labelArray.reduce((sum: number, label: any) => {
+				return sum + (Number(label.price) || 0);
+			}, 0);
+			
+			const totalOngkir = Number(row.ongkir) || 0;
+			const totalBayar = subtotal + totalLabel + totalOngkir;
+			const downPayment = Number(row.down_payment) || 0;
+			const sisaBayar = totalBayar - downPayment;
 
 			// === TOTALS (right side) ===
-			const sisa = 0;
-			const grandTotal = subtotal;
+			doc.setFont('helvetica', 'normal');
+			doc.text('TOTAL QTY :', 320, y);
+			doc.text(
+				`${row.purchase_order_details.reduce((total: number, item: any) => total + (item.qty || 0), 0)}`,
+				pageWidth - margin,
+				y,
+				{ align: 'right' }
+			);
+			y += 15;
 
 			doc.setFont('helvetica', 'normal');
-			doc.text('LABEL :', 420, y);
-			doc.text(`RP ${row.label.toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
-			y += 15
-			doc.setFont('helvetica', 'normal');
-			doc.text('ONGKIR :', 420, y);
-			doc.text(`RP ${row.ongkir.toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
-			y += 15
-
-			doc.setFont('helvetica', 'normal');
-			doc.text('SUB TOTAL :', 420, y);
+			doc.text('SUB TOTAL :', 320, y);
 			doc.text(`RP ${subtotal.toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
-
 			y += 15;
 
+			// === LABEL SECTION ===
+			if (labelArray.length > 0) {
+				doc.setFont('helvetica', 'normal');
+				labelArray.forEach((label: any) => {
+					const labelName = label.name || 'Unknown Label';
+					const labelPrice = Number(label.price) || 0;
+
+					doc.text(`${labelName} :`, 320, y);
+					doc.text(`RP ${labelPrice.toLocaleString('id-ID')}`, pageWidth - margin, y, {
+						align: 'right'
+					});
+					y += 15;
+
+					// Check if we need a new page
+					if (y > 700) {
+						doc.addPage();
+						y = margin;
+					}
+				});
+			} else {
+				// Jika tidak ada label, tampilkan 0
+				doc.setFont('helvetica', 'normal');
+				doc.text('LABEL :', 320, y);
+				doc.text(`RP 0`, pageWidth - margin, y, { align: 'right' });
+				y += 15;
+			}
+
+			// ONGKIR
 			doc.setFont('helvetica', 'normal');
-			doc.text('TOTAL BAYAR :', 420, y);
-			doc.text(`RP ${((row.label + row.ongkir) + subtotal).toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
-
-			y += 15;
-			doc.setFont('helvetica', 'bold');
-			doc.text('DP :', 420, y);
-			doc.text(`RP ${row.down_payment.toLocaleString('id-ID')}`, pageWidth - margin, y, {
+			doc.text('ONGKIR :', 320, y);
+			doc.text(`RP ${totalOngkir.toLocaleString('id-ID')}`, pageWidth - margin, y, {
 				align: 'right'
 			});
 			y += 15;
-			doc.text('SISA :', 420, y);
-			doc.text(`RP ${((row.label + row.ongkir) + subtotal - row.down_payment).toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
 
+			// TOTAL BAYAR
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(11);
+			doc.text('TOTAL BAYAR :', 320, y);
+			doc.text(`RP ${totalBayar.toLocaleString('id-ID')}`, pageWidth - margin, y, {
+				align: 'right'
+			});
+			y += 15;
+
+			// DP
+			doc.setFont('helvetica', 'normal');
+			doc.setFontSize(10);
+			doc.text('DP :', 320, y);
+			doc.text(`RP ${downPayment.toLocaleString('id-ID')}`, pageWidth - margin, y, {
+				align: 'right'
+			});
+			y += 15;
+
+			// SISA
+			doc.setFont('helvetica', 'bold');
+			doc.text('SISA :', 320, y);
+			doc.text(`RP ${sisaBayar.toLocaleString('id-ID')}`, pageWidth - margin, y, {
+				align: 'right'
+			});
 			y += 40;
 
 			// === FOOTER SIGNATURE ===
@@ -206,7 +266,6 @@
 
 			// Signature area on the right
 			doc.setFont('helvetica', 'italic');
-
 			doc.setFontSize(20);
 			doc.text('', pageWidth - margin, footerY + 30, { align: 'right' });
 

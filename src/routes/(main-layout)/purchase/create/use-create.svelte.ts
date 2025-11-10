@@ -257,7 +257,7 @@ export function usePurchasePage() {
             package_id: values.package_id ?? 'Harga Normal',
             create_by: getCookie('username') || 'system',
             keterangan: values.keterangan ?? '',
-            label: values.label ?? 0,
+            labels: values.labels ?? [],
             ongkir: values.ongkir ?? 0,
             details: values.details ?? [] // Default tetap pakai values.details
         };
@@ -368,6 +368,18 @@ export function usePurchasePage() {
         if (hasAny) {
             state.isEditing = true;
 
+            let labels: any[] = [];
+            const labelsParam = qp.get('labels');
+
+            if (labelsParam) {
+                try {
+                    labels = JSON.parse(decodeURIComponent(labelsParam));
+                    console.warn('Failed to parse labels:', labels);
+                } catch (e) {
+                    console.error('Failed to parse labels:', e);
+                }
+            }
+
             // Parse details dari query param jika ada
             let details: any[] = [];
             const detailsParam = qp.get('details');
@@ -380,8 +392,8 @@ export function usePurchasePage() {
                     console.error('Failed to parse details:', e);
                 }
             }
-            console.log(details,
-                'detail params'
+            console.warn(labels,
+                'labels params'
             )
 
             formData.update((f) => ({
@@ -397,7 +409,7 @@ export function usePurchasePage() {
                 final_amount: parseFloat(qp.get('final') ?? '0'),
                 discount_amount: parseFloat(qp.get('discount') ?? '0'),
                 down_payment: parseFloat(qp.get('down_payment') ?? '0'),
-                label: parseFloat(qp.get('label') ?? '0'), // <-- tambahkan ini
+                labels: labels.length > 0 ? labels : f.labels,
                 ongkir: parseFloat(qp.get('ongkir') ?? '0'), // <-- tambahkan ini
                 keterangan: qp.get('keterangan') ?? '',
                 details: details.length > 0 ? details : f.details

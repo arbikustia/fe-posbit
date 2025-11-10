@@ -10,20 +10,26 @@ export const load: LayoutServerLoad = async (event) => {
         redirect(307, "/auth/login");
     }
 
-	console.log(currentUser,'ok p')
+    console.log(currentUser, 'ok p')
 
     const userRole = currentUser.userInfo.role; // Ambil role dari currentUser
     const currentPath = event.url.pathname;
 
     // Definisikan role permissions
     const rolePermissions = {
-        [ROLES.ADMIN]: [
+        [ROLES.SUPERADMIN]: [
             '/dashboard',
             '/master/user',
             '/master/point',
             '/master/customer',
             '/master/item',
             '/transaction',
+            '/purchase',
+            '/report/sales',
+            '/report/purchase',
+            '/report/shift'
+        ],
+        [ROLES.ADMIN]: [
             '/purchase',
             '/report/sales',
             '/report/purchase',
@@ -42,12 +48,14 @@ export const load: LayoutServerLoad = async (event) => {
     // Cek role user dan dapatkan allowed routes
     let allowedRoutes: string[] = [];
 
-    if (userRole === ROLES.ADMIN) {
+    if (userRole === ROLES.SUPERADMIN) {
+        allowedRoutes = rolePermissions[ROLES.SUPERADMIN];
+    } else if (userRole === ROLES.ADMIN) {
         allowedRoutes = rolePermissions[ROLES.ADMIN];
-    } else if (userRole === ROLES.CASHIER) {
-        allowedRoutes = rolePermissions[ROLES.CASHIER];
     } else if (userRole === ROLES.GUDANG) {
         allowedRoutes = rolePermissions[ROLES.GUDANG];
+    } else if (userRole === ROLES.CASHIER) {
+        allowedRoutes = rolePermissions[ROLES.CASHIER];
     } else {
         // Jika role tidak dikenali
         redirect(307, "/unauthorized");

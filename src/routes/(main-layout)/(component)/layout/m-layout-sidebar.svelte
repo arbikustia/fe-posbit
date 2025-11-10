@@ -36,13 +36,12 @@
 	};
 
 	// Sidebar items with subpages
-	// Sidebar items dengan struktur yang lebih baik
 	const sidebarItems = $derived([
 		{
 			icon: DashboardIcon,
 			label: 'Dashboard',
 			href: '/dashboard',
-			access: [ROLES.ADMIN] // Semua role bisa akses
+			access: [ROLES.SUPERADMIN] // Semua role bisa akses
 		},
 		{
 			icon: MasterIcon,
@@ -52,37 +51,37 @@
 				{
 					label: 'User',
 					href: '/master/user',
-					childAccess: [ROLES.ADMIN]
+					childAccess: [ROLES.SUPERADMIN]
 				},
 				{
 					label: 'Point',
 					href: '/master/point',
-					childAccess: [ROLES.ADMIN]
+					childAccess: [ROLES.SUPERADMIN]
 				},
 				{
 					label: 'Customer',
 					href: '/master/customer',
-					childAccess: [ROLES.CASHIER, ROLES.ADMIN]
+					childAccess: [ROLES.CASHIER, ROLES.SUPERADMIN]
 				},
 				{
 					label: 'Item',
 					href: '/master/item',
-					childAccess: [ROLES.ADMIN]
+					childAccess: [ROLES.SUPERADMIN]
 				}
 			],
-			access: [ROLES.ADMIN, ROLES.CASHIER]
+			access: [ROLES.SUPERADMIN, ROLES.CASHIER]
 		},
 		{
 			icon: TransactionIcon,
 			label: 'Transaction',
 			href: '/transaction',
-			access: [ROLES.ADMIN, ROLES.CASHIER]
+			access: [ROLES.SUPERADMIN, ROLES.CASHIER]
 		},
 		{
 			icon: PurchaseIcon,
 			label: 'Purchase',
 			href: '/purchase',
-			access: [ROLES.ADMIN]
+			access: [ROLES.SUPERADMIN, ROLES.ADMIN]
 		},
 		{
 			icon: MasterIcon,
@@ -92,20 +91,20 @@
 				{
 					label: 'Sales',
 					href: '/report/sales',
-					childAccess: [ROLES.CASHIER, ROLES.ADMIN]
+					childAccess: [ROLES.CASHIER, ROLES.SUPERADMIN, ROLES.ADMIN]
 				},
 				{
 					label: 'Invoice',
 					href: '/report/purchase',
-					childAccess: [ROLES.GUDANG, ROLES.ADMIN]
+					childAccess: [ROLES.GUDANG, ROLES.SUPERADMIN, ROLES.ADMIN]
 				},
 				{
 					label: 'Summary Shift',
 					href: '/report/shift',
-					childAccess: [ROLES.ADMIN]
+					childAccess: [ROLES.SUPERADMIN, ROLES.ADMIN]
 				}
 			],
-			access: [ROLES.ADMIN, ROLES.CASHIER, ROLES.GUDANG]
+			access: [ROLES.SUPERADMIN, ROLES.CASHIER, ROLES.GUDANG, ROLES.ADMIN]
 		}
 	]);
 
