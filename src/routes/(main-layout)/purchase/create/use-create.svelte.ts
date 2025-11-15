@@ -143,6 +143,68 @@ export function usePurchasePage() {
         }
     }
 
+    onMount(() => {
+        handleGetPaged();
+        handleGetListItemGudang();
+
+        // ✅ Load data untuk edit dari session storage
+        if (browser) {
+            const url = get(page).url;
+            const isEdit = url.searchParams.get('edit') === 'true';
+
+            if (isEdit) {
+                loadPurchaseDataFromStorage();
+            }
+        }
+    });
+
+    function loadPurchaseDataFromStorage() {
+        try {
+            if (!browser) return;
+
+            const storedData = sessionStorage.getItem('editing_purchase');
+            if (!storedData) {
+                toast.error('No purchase data found for editing');
+                goto('/purchase');
+                return;
+            }
+
+            const purchaseData = JSON.parse(storedData);
+            state.isEditing = true;
+
+            // Update form data
+            formData.update((f) => ({
+                ...f,
+                id: purchaseData.id,
+                inv_number: purchaseData.inv_number,
+                customer_id: String(purchaseData.customer_id || ''),
+                payment_status: purchaseData.payment_status,
+                status_po: purchaseData.status_po,
+                payment_method: purchaseData.payment_method,
+                package_id: purchaseData.package_id,
+                total_amount: purchaseData.total_amount || 0,
+                final_amount: purchaseData.final_amount || 0,
+                biaya_label: purchaseData.biaya_label || 0,
+                down_payment: purchaseData.down_payment || 0,
+                labels: purchaseData.labels || [],
+                ongkir: purchaseData.ongkir || 0,
+                keterangan: purchaseData.keterangan || '',
+                details: purchaseData.details || [],
+            }));
+
+            // Simpan detail asli untuk perbandingan
+            state.detailFromParams = purchaseData.details || [];
+
+            // Bersihkan session storage setelah digunakan
+            // sessionStorage.removeItem('editing_purchase');
+
+        } catch (err) {
+            console.error('Failed to load purchase data from storage:', err);
+            toast.error('Failed to load purchase data');
+            goto('/purchase');
+        }
+    }
+
     // Transform API data for table
     function transformPurchaseData(apiData: any[]) {
         return apiData.map((item, index) => ({
@@ -159,7 +221,7 @@ export function usePurchasePage() {
             status_po: item.status_po ?? '-',
             total_amount: item.total_amount ?? 0,
             final_amount: item.final_amount ?? 0,
-            discount_amount: item.discount_amount ?? 0,
+            biaya_label: item.biaya_label ?? 0,
             down_payment: item.down_payment ?? 0,
             payment_method: item.payment_method ?? '-',
             package_id: item.package_id ?? '-',
@@ -170,6 +232,7 @@ export function usePurchasePage() {
             label: item.label ?? 0, // <-- tambahkan ini
             ongkir: item.ongkir ?? 0, // <-- tambahkan ini
             purchase_order_details: item.purchase_order_details ?? [],
+            log_po: item.log_po ?? [],
             open: true
         }));
     }
@@ -252,7 +315,7 @@ export function usePurchasePage() {
             down_payment: values.down_payment ?? 0,
             total_amount: values.total_amount ?? 0,
             final_amount: values.final_amount ?? 0,
-            discount_amount: values.discount_amount ?? 0,
+            biaya_label: values.biaya_label ?? 0,
             payment_method: values.payment_method ?? 'CASH',
             package_id: values.package_id ?? 'Harga Normal',
             create_by: getCookie('username') || 'system',
@@ -374,7 +437,11 @@ export function usePurchasePage() {
             if (labelsParam) {
                 try {
                     labels = JSON.parse(decodeURIComponent(labelsParam));
-                    console.warn('Failed to parse labels:', labels);
+                    // 🔥 Pastikan setiap label memiliki qty
+                    labels = labels.map(label => ({
+                        ...label,
+                        qty: label.qty || 1 // Default qty = 1 jika tidak ada
+                    }));
                 } catch (e) {
                     console.error('Failed to parse labels:', e);
                 }
@@ -407,7 +474,7 @@ export function usePurchasePage() {
                 package_id: qp.get('package_id') ?? f.package_id,
                 total_amount: parseFloat(qp.get('total') ?? '0'),
                 final_amount: parseFloat(qp.get('final') ?? '0'),
-                discount_amount: parseFloat(qp.get('discount') ?? '0'),
+                biaya_label: parseFloat(qp.get('discount') ?? '0'),
                 down_payment: parseFloat(qp.get('down_payment') ?? '0'),
                 labels: labels.length > 0 ? labels : f.labels,
                 ongkir: parseFloat(qp.get('ongkir') ?? '0'), // <-- tambahkan ini

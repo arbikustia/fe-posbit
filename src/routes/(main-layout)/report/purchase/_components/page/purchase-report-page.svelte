@@ -232,6 +232,7 @@
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Payment</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Label</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Log PO</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created By</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created At</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700"
@@ -246,7 +247,11 @@
 								<tr class="hover:bg-gray-50">
 									<td class="px-3 py-2.5 text-xs text-gray-500">{row.no}</td>
 									<td class="px-3 py-2.5 text-xs"><InvoicePage {row} /></td>
-									<td class="px-3 py-2.5 text-xs text-gray-500">{row.package_name}</td>
+									<td class="px-3 py-2.5 text-xs text-gray-500"
+										>{row.package_name.toLowerCase() == 'shopee'
+											? 'Marketplace'
+											: row.package_name}</td
+									>
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.person_id}
 											<Popover.Root>
@@ -330,6 +335,7 @@
 															<tr class="border-b border-gray-200 text-gray-500">
 																<th class="py-1 text-left">Name</th>
 																<th class="py-1 text-right">Price</th>
+																<th class="py-1 text-right">Qty</th>
 															</tr>
 														</thead>
 														<tbody>
@@ -339,6 +345,7 @@
 																	<td class="py-2 text-right text-gray-700">
 																		Rp {labelItem.price?.toLocaleString('id-ID') || '0'}
 																	</td>
+																	<td class="py-2 text-right text-gray-700">{labelItem.qty}</td>
 																</tr>
 															{/each}
 														</tbody>
@@ -419,7 +426,146 @@
 											<span class="text-xs text-gray-400 italic">No details</span>
 										{/if}
 									</td>
-									<td class="px-3 py-2.5 text-xs">{row.keterangan}</td>
+									<td class="px-3 py-2.5 text-xs">
+										{#if row.keterangan && row.keterangan.trim().length > 0}
+											<Popover.Root>
+												<Popover.Trigger
+													class="cursor-pointer text-xs font-medium text-blue-500 underline hover:text-blue-600"
+												>
+													See description
+												</Popover.Trigger>
+
+												<Popover.Content class="max-w-sm rounded-lg bg-white p-4 shadow-lg">
+													<p class="mb-2 text-sm font-semibold text-gray-700">Description</p>
+													<div class="max-h-40 overflow-y-auto text-xs text-gray-600">
+														{row.keterangan}
+													</div>
+												</Popover.Content>
+											</Popover.Root>
+										{:else}
+											<span class="text-xs text-gray-400 italic">No description</span>
+										{/if}
+									</td>
+									<td class="px-3 py-2.5 text-xs">
+										{#if row.log_po && row.log_po.length > 0}
+											<Popover.Root>
+												<Popover.Trigger
+													class="flex cursor-pointer items-center gap-1 text-xs font-medium text-green-600 hover:text-green-700"
+												>
+													<span>View Log ({row.log_po.length})</span>
+												</Popover.Trigger>
+
+												<Popover.Content
+													class="max-h-80 w-[500px] overflow-y-auto rounded-lg bg-white p-4 shadow-lg"
+												>
+													<div class="mb-4 flex items-center justify-between">
+														<div class="flex items-center gap-2">
+															<Icon
+																icon="mdi:history"
+																width="18"
+																height="18"
+																class="text-green-600"
+															/>
+															<h3 class="text-sm font-semibold text-gray-700">
+																Purchase Order Log
+															</h3>
+														</div>
+														<div
+															class="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700"
+														>
+															{row.log_po.length} activities
+														</div>
+													</div>
+
+													<!-- Tree View Timeline -->
+													<div class="space-y-3">
+														{#each row.log_po as log, index}
+															<div class="flex gap-3">
+																<!-- Timeline Line -->
+																<div class="flex flex-col items-center">
+																	<div
+																		class="flex h-6 w-6 items-center justify-center rounded-full {log.aktivitas.includes(
+																			'Increase'
+																		)
+																			? 'bg-green-100 text-green-600'
+																			: log.aktivitas.includes('Decrease')
+																				? 'bg-red-100 text-red-600'
+																				: 'bg-blue-100 text-blue-600'}"
+																	>
+																		{#if log.aktivitas.includes('Increase')}
+																			<Icon icon="mdi:arrow-up" width="12" height="12" />
+																		{:else if log.aktivitas.includes('Decrease')}
+																			<Icon icon="mdi:arrow-down" width="12" height="12" />
+																		{:else}
+																			<Icon icon="mdi:information" width="12" height="12" />
+																		{/if}
+																	</div>
+																	{#if index < row.log_po.length - 1}
+																		<div class="mt-1 h-full w-0.5 bg-gray-200"></div>
+																	{/if}
+																</div>
+
+																<!-- Content -->
+																<div class="flex-1 pb-3">
+																	<div
+																		class="rounded-lg border border-gray-200 bg-white p-3 shadow-sm"
+																	>
+																		<!-- Header -->
+																		<div class="mb-2 flex items-start justify-between">
+																			<div class="flex items-center gap-2">
+																				<span class="text-xs font-medium text-gray-900">
+																					{log.action}
+																				</span>
+																				{#if log.aktivitas.includes('Increase')}
+																					<span
+																						class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700"
+																					>
+																						Increase
+																					</span>
+																				{:else if log.aktivitas.includes('Decrease')}
+																					<span
+																						class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700"
+																					>
+																						Decrease
+																					</span>
+																				{:else}
+																					<span
+																						class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700"
+																					>
+																						Update
+																					</span>
+																				{/if}
+																			</div>
+																			<span class="text-xs text-gray-500">
+																				{dayjs(log.created_at).format('DD MMM YYYY')}
+																			</span>
+																		</div>
+
+																		<!-- Activity Details -->
+																		<div class="mb-2">
+																			<p class="text-xs text-gray-700">{log.aktivitas}</p>
+																		</div>
+
+																		<!-- Time -->
+																		<div class="flex items-center gap-1 text-xs text-gray-400">
+																			<Icon icon="mdi:clock-outline" width="12" height="12" />
+																			<span>{dayjs(log.created_at).format('HH:mm:ss')}</span>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														{/each}
+													</div>
+
+												</Popover.Content>
+											</Popover.Root>
+										{:else}
+											<div class="flex items-center gap-1 text-gray-400">
+												<Icon icon="mdi:history-off" width="14" height="14" />
+												<span class="text-xs italic">No log</span>
+											</div>
+										{/if}
+									</td>
 								</tr>
 							{/each}
 						</tbody>

@@ -171,11 +171,24 @@
 			// === CALCULATE TOTALS ===
 			const labelArray = row.label || [];
 			const totalLabel = labelArray.reduce((sum: number, label: any) => {
-				return sum + (Number(label.price) || 0);
+				return sum + (Number(label.price * label.qty) || 0);
 			}, 0);
-			
+
 			const totalOngkir = Number(row.ongkir) || 0;
-			const totalBayar = subtotal + totalLabel + totalOngkir;
+			let totalBayar = 0;
+			if (row.biaya_label !== null) {
+				if (row.package_name.toLowerCase() == 'shopee') {
+					totalBayar = row.total_amount + totalLabel + totalOngkir + row.biaya_label;
+				} else {
+					totalBayar = subtotal + totalLabel + totalOngkir + row.biaya_label;
+				}
+			} else {
+				if (row.package_name.toLowerCase() == 'shopee') {
+					totalBayar = row.total_amount + totalLabel + totalOngkir ;
+				} else {
+					totalBayar = subtotal + totalLabel + totalOngkir ;
+				}
+			}
 			const downPayment = Number(row.down_payment) || 0;
 			const sisaBayar = totalBayar - downPayment;
 
@@ -192,7 +205,12 @@
 
 			doc.setFont('helvetica', 'normal');
 			doc.text('SUB TOTAL :', 320, y);
-			doc.text(`RP ${subtotal.toLocaleString('id-ID')}`, pageWidth - margin, y, { align: 'right' });
+			doc.text(
+				`RP ${row.package_name.toLowerCase() == 'shopee' ? row.total_amount.toLocaleString('id-ID') : subtotal.toLocaleString('id-ID')}`,
+				pageWidth - margin,
+				y,
+				{ align: 'right' }
+			);
 			y += 15;
 
 			// === LABEL SECTION ===
@@ -200,9 +218,9 @@
 				doc.setFont('helvetica', 'normal');
 				labelArray.forEach((label: any) => {
 					const labelName = label.name || 'Unknown Label';
-					const labelPrice = Number(label.price) || 0;
+					const labelPrice = Number(label.price * label.qty) || 0;
 
-					doc.text(`${labelName} :`, 320, y);
+					doc.text(`${labelName} ${label.qty} :`, 320, y);
 					doc.text(`RP ${labelPrice.toLocaleString('id-ID')}`, pageWidth - margin, y, {
 						align: 'right'
 					});
@@ -222,6 +240,15 @@
 				y += 15;
 			}
 
+			if (row.biaya_label !== null || row.biaya_label !== 0) {
+				// biaya_label
+				doc.setFont('helvetica', 'normal');
+				doc.text('BIAYA PASANG LABEL :', 320, y);
+				doc.text(`RP ${row.biaya_label.toLocaleString('id-ID')}`, pageWidth - margin, y, {
+					align: 'right'
+				});
+				y += 15;
+			}
 			// ONGKIR
 			doc.setFont('helvetica', 'normal');
 			doc.text('ONGKIR :', 320, y);

@@ -24,21 +24,25 @@
 	} satisfies Chart.ChartConfig;
 
 	const formatCurrencyID = (value: number) => {
-		const numInThousands = value; // value sudah dalam ribuan
+    const actualValue = value;
 
-		if (numInThousands >= 1000000) {
-			// Jika >= 1 juta (karena 1000 * 1000 = 1.000.000)
-			return `Rp ${(numInThousands / 1000).toFixed(0)}Jt`;
-		} else {
-			return `${formatTooltip(numInThousands)}`;
-		}
-	};
+    // Pembulatan untuk nilai 900.000 ke atas menjadi 1Jt
+    if (actualValue >= 900000) {
+        return `1Jt`;
+    } else if (actualValue >= 1000000) {
+        return `${(actualValue / 1000000).toFixed(0)}Jt`;
+    } else if (actualValue >= 1000) {
+        return `${(actualValue / 1000).toFixed(0)}rb`;
+    } else {
+        return `Rp ${actualValue.toLocaleString('id-ID')}`;
+    }
+};
 
 	// Format untuk tooltip (tampilkan nilai penuh)
-	const formatTooltip = (value: number) => {
-		const actualValue = value; // Konversi ke nilai sebenarnya
-		return `Rp ${actualValue.toLocaleString('id-ID')}`;
-	};
+// Format untuk tooltip (tampilkan nilai penuh)
+const formatTooltip = (value: number) => {
+    return `Rp ${value.toLocaleString('id-ID')}`;
+};
 </script>
 
 <div class="w-full space-y-6">
@@ -52,7 +56,7 @@
 			</div>
 		</Card.Header>
 
-		<Card.Content class="pt-4 md:pl-20 sm:px-10 sm:pt-6">
+		<Card.Content class="pt-4 sm:px-10 sm:pt-6 md:pl-20">
 			<Chart.Container config={chartConfig} class="aspect-auto h-[300px] w-full">
 				<AreaChart
 					legend={false}

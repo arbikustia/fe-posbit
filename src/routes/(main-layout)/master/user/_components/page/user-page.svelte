@@ -175,7 +175,8 @@
 												'inline-flex rounded-md px-2 py-0.5 text-xs font-medium md:py-1 md:text-sm',
 												row.role == 'Admin' && 'bg-green-500/10 text-green-700',
 												row.role == 'Cashier' && 'bg-blue-500/10 text-blue-700',
-												row.role == 'Gudang' && 'bg-yellow-500/10 text-yellow-700'
+												row.role == 'Gudang' && 'bg-yellow-500/10 text-yellow-700',
+												row.role == 'Superadmin' && 'bg-red-500/10 text-red-700',
 											)}
 										>
 											{row.role}

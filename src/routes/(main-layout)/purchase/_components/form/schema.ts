@@ -16,6 +16,7 @@ export const invoiceSchema = z.object({
     .array(
       z.object({
         label_id: z.string(),
+        qty: z.number().min(1, 'Quantity must be at least 1'), 
       })
     ),
   ongkir: z.number().min(0, 'Ongkir must be 0 or greater'),
