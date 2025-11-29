@@ -481,7 +481,8 @@ export function usePurchasePage() {
         const detailUpdate = values.details.map((item: any, index: number) => ({
             item_id: item.item_id,
             qty: item.qty,
-            qty_keluar: state?.detailFromParams?.[index]?.qty_keluar || 0
+            qty_keluar: state?.detailFromParams?.[index]?.qty_keluar || 0,
+            price: item.price,
         }));
         console.warn(validateForm, 'lklkl')
         const body = {
