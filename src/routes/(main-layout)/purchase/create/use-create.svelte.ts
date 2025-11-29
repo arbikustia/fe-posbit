@@ -397,7 +397,7 @@ export function usePurchasePage() {
             console.error('Failed to load purchase data from params:', err);
         }
     }
-
+    let isMarketplace = false;
     function loadPurchaseDataFromStorage() {
         try {
             if (!browser) return;
@@ -431,6 +431,9 @@ export function usePurchasePage() {
                 qty: label.qty || 1,
                 price: label.price || 0
             })) || [];
+            if (purchaseData.package_name.toLowerCase() === 'shopee') {
+                isMarketplace = true;
+            }
 
             // Update form data
             formData.update((f) => ({
@@ -483,6 +486,7 @@ export function usePurchasePage() {
             qty: item.qty,
             qty_keluar: state?.detailFromParams?.[index]?.qty_keluar || 0,
             price: item.price,
+
         }));
         console.warn(validateForm, 'lklkl')
         const body = {
@@ -504,8 +508,10 @@ export function usePurchasePage() {
 
         try {
             if ((values as any).id) {
+                console.log(isMarketplace, 'isMarketplace')
                 const updateBody = {
                     ...body,
+                    total_amount: isMarketplace ? body.total_amount : 0,
                     details: detailUpdate
                 };
 

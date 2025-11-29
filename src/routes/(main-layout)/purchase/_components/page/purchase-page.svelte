@@ -96,6 +96,7 @@
 			payment_status: row.payment_status,
 			status_po: row.status_po,
 			package_id: row.package_id,
+			package_name: row.package_name,
 			total_amount: row.total_amount,
 			final_amount: row.final_amount,
 			biaya_label: row.biaya_label,
@@ -276,7 +277,7 @@
 							{#each state.table as row}
 								<tr class="hover:bg-gray-50">
 									<td class="px-3 py-2.5 text-xs text-gray-500">{row.no}</td>
-									<td class="px-3 py-2.5 text-xs">{row.inv_number}</td>
+									<td class="px-3 py-2.5 text-xs"><InvoicePage {row} /></td>
 									<td class="px-3 py-2.5 text-xs text-gray-500"
 										>{row.package_name.toLowerCase() == 'shopee'
 											? 'Marketplace'
