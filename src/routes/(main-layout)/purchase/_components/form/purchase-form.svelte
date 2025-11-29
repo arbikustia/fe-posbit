@@ -52,13 +52,13 @@
 
 	let labelOpen = $state(false);
 
-	function toggleLabel(labelId: string) {
+	function toggleLabel(labelId: string, price: number) {
 		const existingLabel = selectedLabels.find((l) => l.label_id === labelId);
 
 		if (existingLabel) {
 			selectedLabels = selectedLabels.filter((l) => l.label_id !== labelId);
 		} else {
-			selectedLabels = [...selectedLabels, { label_id: labelId, qty: 1 }];
+			selectedLabels = [...selectedLabels, { label_id: labelId, qty: 1, price: price }];
 		}
 		updateFormLabels();
 	}
@@ -178,6 +178,10 @@
 		}
 	}
 
+	$effect(() => {
+		console.log('Selected Formdata100:', $formData);
+	});
+
 	function removeItem(itemValue: string, e: Event, label: string) {
 		e.stopPropagation();
 		const oldCount = selectedItems.length;
@@ -226,9 +230,21 @@
 			const existing = itemDetails.find((d) => d.item_id === id);
 			const item = pageState.listItem.find((i) => i.value === id);
 			const qty = existing?.qty ?? 1;
-			// Preserve existing price if in edit mode, otherwise calculate
-			const price = existing?.price || getItemPriceByPackage(item, packageLabel);
-			const priceKey = existing?.priceKey || packageLabel;
+
+			// PERBAIKAN: Prioritaskan existing price saat edit
+			let price;
+			let priceKey;
+
+			if (existing && existing.price !== undefined && existing.price !== null) {
+				// Gunakan existing price jika ada (untuk edit mode)
+				price = existing.price;
+				priceKey = existing.priceKey;
+			} else {
+				// Calculate baru untuk item baru
+				price = getItemPriceByPackage(item, packageLabel);
+				priceKey = packageLabel;
+			}
+
 			const name = existing?.name;
 			return { item_id: id, qty, price, priceKey, name };
 		});
@@ -240,7 +256,7 @@
 	// === UPDATE QUANTITY ===
 	function updateQty(id: string, newQty: number, oldQty: number, name: string, qty_keluar: number) {
 		const item = pageState.listItem.find((i) => i.value === id);
-		console.log(qty_keluar ?? 0, 'lolo');
+		console.log(qty_keluar ?? 0, 'qty_keluar for item:', id);
 		if (!item) return;
 
 		// Hanya batasi minimal (tidak boleh kurang dari qty_keluar), tidak ada batas maksimal
@@ -253,7 +269,9 @@
 		const price = detail?.price || getItemPriceByPackage(item, packageLabel);
 		const priceKey = detail?.priceKey || packageLabel;
 
-		const updated = itemDetails.map((i) => (i.item_id === id ? { ...i, qty, price, priceKey } : i));
+		const updated = itemDetails.map((i) =>
+			i.item_id === id ? { ...i, qty, price, priceKey, qty_keluar: qty_keluar ?? 0 } : i
+		);
 		itemDetails = updated;
 		formData.update((f) => ({ ...f, details: updated }));
 
@@ -276,45 +294,102 @@
 	// === WATCH PACKAGE CHANGES ===
 	let previousPackageId = $state<string | undefined>(undefined);
 
+	// Effect untuk update harga ketika package berubah
+	// Effect untuk update harga ketika package berubah
 	$effect(() => {
 		if (
+			$formData.package_id &&
 			$formData.package_id !== previousPackageId &&
-			itemDetails.length > 0 &&
-			previousPackageId !== undefined
+			selectedItems.length > 0
 		) {
-			previousPackageId = $formData.package_id;
+			// PERBAIKAN: Hanya update harga jika bukan edit mode atau user memang ganti package
+			// Cek apakah ini perubahan package pertama kali (edit mode load) atau user action
+			const isInitialLoad = previousPackageId === undefined && pageState.isEditing;
 
-			const updated = itemDetails.map((detail) => {
-				const item = pageState.listItem.find((i) => i.value === detail.item_id);
-				const price = getItemPriceByPackage(item, packageLabel);
-				return { ...detail, price, priceKey: packageLabel };
+			if (!isInitialLoad) {
+				// Update harga semua item berdasarkan package baru
+				itemDetails = itemDetails.map((detail) => {
+					const item = pageState.listItem.find((i) => i.value === detail.item_id);
+					const newPrice = getItemPriceByPackage(item, packageLabel);
+					return {
+						...detail,
+						price: newPrice,
+						priceKey: packageLabel
+					};
+				});
+
+				formData.update((f) => ({ ...f, details: itemDetails }));
+			}
+
+			previousPackageId = $formData.package_id;
+		}
+	});
+
+	$effect(() => {
+		// Sync ketika formData.details berubah (untuk edit mode)
+		if ($formData.details && $formData.details.length > 0 && selectedItems.length === 0) {
+			console.log('Syncing form data to UI:', $formData.details);
+
+			selectedItems = $formData.details.map((d: any) => d.item_id);
+
+			itemDetails = $formData.details.map((d: any) => {
+				const item = pageState.listItem.find((i: any) => i.value === d.item_id);
+
+				// PERBAIKAN: Gunakan price dari data yang ada, jangan recalculate
+				return {
+					item_id: d.item_id,
+					qty: d.qty || 1,
+					qty_keluar: d.qty_keluar || 0,
+					price: d.price, // Langsung gunakan price dari data
+					priceKey: d.priceKey || packageLabel,
+					name: d.name || item?.label || ''
+				};
 			});
 
-			itemDetails = updated;
-			formData.update((f) => ({ ...f, details: updated }));
-		} else if (previousPackageId === undefined && $formData.package_id) {
-			previousPackageId = $formData.package_id;
+			// Update detailFromParams untuk tracking perubahan quantity
+			if (pageState.detailFromParams.length === 0) {
+				pageState.detailFromParams = [...itemDetails];
+			}
+		}
+
+		// Sync labels
+		if ($formData.labels && $formData.labels.length > 0 && selectedLabels.length === 0) {
+			console.log('Syncing labels from form data:', $formData.labels);
+			selectedLabels = $formData.labels.map((label: any) => ({
+				label_id: label.label_id || label.id,
+				qty: label.qty || 1,
+				price: label.price || 0
+			}));
 		}
 	});
 
 	// === AUTO CALCULATE TOTAL ===
-	$effect(() => {
-		let total = 0;
+	// $effect(() => {
+	// 	let total = 0;
 
-		if (isShopeePackage) {
-			// Untuk package shopee, gunakan manual total_amount
-			total = 0;
-		} else {
-			// Untuk package lainnya, hitung otomatis
-			total = itemDetails.reduce((sum, detail) => sum + (detail.price ?? 0) * detail.qty, 0);
-		}
+	// 	if (isShopeePackage) {
+	// 		const storedData = sessionStorage.getItem('editing_purchase');
+	// 		if (!storedData) {
+	// 			console.warn('No purchase data found in session storage');
+	// 			return;
+	// 		}
 
-		formData.update((f) => ({
-			...f,
-			total_amount: total,
-			final_amount: total - (f.biaya_label ?? 0)
-		}));
-	});
+	// 		const purchaseData = JSON.parse(storedData);
+	// 		// Untuk package shopee, gunakan manual total_amount
+	// 		total = purchaseData.total_amount;
+	// 	} else {
+	// 		// Untuk package lainnya, hitung otomatis
+	// 		total = 0;
+	// 		console.warn(total, 'total calculated');
+	// 	}
+
+	// 	formData.update((f) => ({
+	// 		...f,
+	// 		total_amount: total,
+	// 		final_amount: total - (f.biaya_label ?? 0)
+	// 	}));
+	// 	// sessionStorage.removeItem('editing_purchase');
+	// });
 
 	// === INITIALIZE FORM DATA ON MOUNT ===
 	// === INITIALIZE FORM DATA ON MOUNT ===
@@ -351,7 +426,8 @@
 				// MENJADI INI:
 				selectedLabels = labelsData.map((label: any) => ({
 					label_id: label.label_id,
-					qty: label.qty || 1
+					qty: label.qty || 1,
+					price: label.price || 0
 				}));
 			}
 		} catch (err) {
@@ -395,18 +471,20 @@
 		// HANYA inisialisasi jika belum ada selectedItems (kasus create baru)
 		if (selectedItems.length === 0) {
 			// Restore items dari formData.details (untuk edit mode)
+			// Restore items dari formData.details (untuk edit mode)
 			if ($formData.details && $formData.details.length > 0) {
 				selectedItems = $formData.details.map((d: any) => d.item_id);
 
 				itemDetails = $formData.details.map((d: any) => {
 					const item = pageState.listItem.find((i: any) => i.value === d.item_id);
-					const price = getItemPriceByPackage(item, packageLabel);
+
+					// PERBAIKAN: Gunakan price dari data existing
 					return {
 						item_id: d.item_id,
 						qty: d.qty,
 						qty_keluar: d.qty_keluar,
-						price: price,
-						priceKey: packageLabel,
+						price: d.price, // Gunakan price yang sudah ada
+						priceKey: d.priceKey || packageLabel,
 						name: d.name
 					};
 				});
@@ -441,6 +519,12 @@
 		$formData.ongkir = Number(raw || 0);
 		target.value = formatIDR(raw);
 	}
+	function handleDownPaymentInput(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const raw = target.value.replace(/[^\d]/g, '');
+		$formData.down_payment = Number(raw || 0);
+		target.value = formatIDR(raw);
+	}
 	function handleLableInput(event: Event) {
 		const target = event.target as HTMLInputElement;
 		const raw = target.value.replace(/[^\d]/g, '');
@@ -466,7 +550,7 @@
 		{pageState.isEditing ? 'Edit Purchase' : 'Create New Purchase'}
 	</h2>
 
-	<div class="grid grid-cols-2 items-center gap-4">
+	<div class="grid grid-cols-1 items-center gap-4">
 		<!-- PACKAGE -->
 		<Form.Field {form} name="package_id">
 			<Form.Control>
@@ -512,7 +596,7 @@
 											<span
 												class="bg-primary/10 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium"
 											>
-												{item?.label}
+												{item?.label} - {item?.deskripsi}
 												<button
 													type="button"
 													onclick={(e) => removeItem(id, e, item?.label!)}
@@ -769,7 +853,15 @@
 			<Form.Field {form} name="down_payment">
 				<Form.Control>
 					<Form.Label>Down Payment <span class="text-red-500">*</span></Form.Label>
-					<Input type="number" placeholder="0" bind:value={$formData.down_payment} />
+					<!-- <Input type="number" placeholder="0" bind:value={$formData.down_payment} /> -->
+					<Input
+						type="text"
+						inputmode="numeric"
+						placeholder="Input Down Payment"
+						value={formatIDR($formData.down_payment)}
+						oninput={handleDownPaymentInput}
+						class="text-left"
+					/>
 				</Form.Control>
 				<Form.FieldErrors class="text-sm text-red-600" />
 			</Form.Field>
@@ -847,7 +939,7 @@
 										<Command.Item
 											value={label.value}
 											keywords={[label.label, label.value]}
-											onSelect={() => toggleLabel(label.value)}
+											onSelect={() => toggleLabel(label.value, label.price)}
 											class="flex items-center justify-between p-2 text-xs"
 										>
 											<div class="flex items-center gap-2">
@@ -926,10 +1018,10 @@
 		<Form.Field {form} name="biaya_label">
 			<Form.Control>
 				<Form.Label>Biaya Pemasangan Label</Form.Label>
-					<Input
+				<Input
 					type="text"
 					inputmode="numeric"
-					placeholder="Input Ongkir"
+					placeholder="Input Biaya Label"
 					value={formatIDR($formData.biaya_label)}
 					oninput={handleLableInput}
 					class="text-left"
@@ -951,7 +1043,7 @@
 	{#if isShopeePackage}
 		<Form.Field {form} name="total_amount">
 			<Form.Control>
-				<Form.Label>Total Amount (Manual) <span class="text-red-500">*</span></Form.Label>
+				<Form.Label required>Total Amount (Manual) </Form.Label>
 				<Input
 					type="text"
 					inputmode="numeric"
@@ -961,6 +1053,7 @@
 					class="text-left"
 				/>
 			</Form.Control>
+			<Form.FieldErrors class="text-sm text-red-600" />
 		</Form.Field>
 	{/if}
 

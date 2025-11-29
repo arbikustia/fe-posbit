@@ -167,6 +167,8 @@
 			doc.setFont('helvetica', 'normal');
 			doc.text(`Nama : Bintaya Zahriati Khayah`, margin, y + 25);
 			doc.text(`No Rek : 0030903617 - BCA `, margin, y + 40);
+			doc.text(`TERIMAKASIH ATAS `, margin, y + 85);
+			doc.text(`PEMBELIAN ANDA `, margin, y + 100);
 
 			// === CALCULATE TOTALS ===
 			const labelArray = row.label || [];
@@ -286,15 +288,6 @@
 			// === FOOTER SIGNATURE ===
 			const footerY = 650;
 
-			doc.setFont('helvetica', 'bold');
-			doc.setFontSize(10);
-			doc.text('TERIMAKASIH ATAS', margin, footerY);
-			doc.text('PEMBELIAN ANDA', margin, footerY + 15);
-
-			// Signature area on the right
-			doc.setFont('helvetica', 'italic');
-			doc.setFontSize(20);
-			doc.text('', pageWidth - margin, footerY + 30, { align: 'right' });
 
 			// Open PDF
 			const pdfBlob = doc.output('blob');

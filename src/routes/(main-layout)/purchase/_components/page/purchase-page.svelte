@@ -254,19 +254,20 @@
 								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Ongkir</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Payment</th>
-								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Label</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Pasang Label</th
+								>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700"
+									>Order Details</th
+								>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Sisa</th>
+								<th class="px-3 py-2.5 text-center text-xs font-medium text-gray-700"
+									>Description</th
 								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Log PO</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created By</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Created At</th>
-								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700"
-									>Order Details</th
-								>
-								<th class="px-3 py-2.5 text-center text-xs font-medium text-gray-700"
-									>Description</th
-								>
 								<th class="px-3 py-2.5 text-center text-xs font-medium text-gray-700">Action</th>
 							</tr>
 						</thead>
@@ -275,7 +276,7 @@
 							{#each state.table as row}
 								<tr class="hover:bg-gray-50">
 									<td class="px-3 py-2.5 text-xs text-gray-500">{row.no}</td>
-									<td class="px-3 py-2.5 text-xs"><InvoicePage {row} /></td>
+									<td class="px-3 py-2.5 text-xs">{row.inv_number}</td>
 									<td class="px-3 py-2.5 text-xs text-gray-500"
 										>{row.package_name.toLowerCase() == 'shopee'
 											? 'Marketplace'
@@ -336,14 +337,30 @@
 										{/if}
 									</td>
 
-									<td class="px-3 py-2.5 text-xs">{row.payment_status}</td>
-									<td class="px-3 py-2.5 text-xs">{row.status_po}</td>
+									<td class={cn('px-3 py-2.5 text-xs')}>
+										<span
+											class={cn(
+												'rounded-md p-1 text-[9px] font-bold',
+												row.payment_status == 'LUNAS' && 'bg-green-500/10 text-green-500 ',
+												row.payment_status == 'DP' && 'bg-blue-500/10 text-blue-500 ',
+												row.payment_status == 'CANCEL' && 'bg-red-500/10 text-red-500 '
+											)}>{row.payment_status}</span
+										>
+									</td>
+									<td class="px-3 py-2.5 text-xs">
+										<span
+											class={cn(
+												'rounded-md p-1 text-[9px] font-bold',
+												row.status_po == 'OPEN' && 'bg-fuchsia-500/10 text-fuchsia-500 ',
+												row.status_po == 'CLOSE' && 'bg-orange-500/10 text-orange-500 '
+											)}>{row.status_po}</span
+										>
+									</td>
 									<td class="px-3 py-2.5 text-xs">Rp {row.down_payment.toLocaleString() || '-'}</td>
 
 									<td class="px-3 py-2.5 text-xs">Rp {row.ongkir?.toLocaleString() || '0'}</td>
 
 									<td class="px-3 py-2.5 text-xs">{row.payment_method}</td>
-									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
 
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.label && row.label.length > 0}
@@ -395,8 +412,6 @@
 										{/if}
 									</td>
 									<td class="px-3 py-2.5 text-xs">Rp {row.biaya_label?.toLocaleString('id-ID')}</td>
-									<td class="px-3 py-2.5 text-xs">{row.created_by}</td>
-									<td class="px-3 py-2.5 text-xs">{row.created_at}</td>
 
 									<!-- Order Details Popover -->
 									<td class="px-3 py-2.5 text-xs">
@@ -409,7 +424,7 @@
 												</Popover.Trigger>
 
 												<Popover.Content
-													class="max-h-60 w-[500px] overflow-y-auto rounded-lg bg-white p-3 shadow-lg"
+													class="max-h-60 w-[800px] overflow-y-auto rounded-lg bg-white p-3 shadow-lg"
 												>
 													<div class="flex justify-between">
 														<span class="mb-2 text-sm font-semibold text-gray-700"
@@ -427,8 +442,8 @@
 															<tr class="border-b border-gray-200 text-gray-500">
 																<th class="py-1 text-left">Item ID</th>
 																<th class="py-1 text-left">Name</th>
-																<th class="py-1 text-left">Price</th>
 																<th class="py-1 text-left">Desc</th>
+																<th class="py-1 text-left">Price</th>
 																<th class="py-1 text-left">Qty</th>
 																<th class="py-1 text-left">Qty Keluar</th>
 															</tr>
@@ -438,10 +453,10 @@
 																<tr>
 																	<td class="py-1 text-gray-700">{detail.item_id}</td>
 																	<td class="py-1 text-gray-700">{detail.name}</td>
+																	<td class="py-1 text-gray-700">{detail.description}</td>
 																	<td class="py-1 text-gray-700"
 																		>Rp{detail.price.toLocaleString()}</td
 																	>
-																	<td class="py-1 text-gray-700">{detail.description}</td>
 																	<td class="py-1 text-gray-700">{detail.qty}</td>
 																	<td class="py-1 text-center text-gray-700"
 																		>{detail.qty_keluar || 0}</td
@@ -456,6 +471,8 @@
 											<span class="text-xs text-gray-400 italic">No details</span>
 										{/if}
 									</td>
+									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
+									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount - row.down_payment}</td>
 
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.keterangan && row.keterangan.trim().length > 0}
@@ -597,6 +614,8 @@
 											</div>
 										{/if}
 									</td>
+									<td class="px-3 py-2.5 text-xs">{row.created_by}</td>
+									<td class="px-3 py-2.5 text-xs">{row.created_at}</td>
 									<!-- Actions -->
 									<td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
 										{#if row.open}

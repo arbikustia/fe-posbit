@@ -83,7 +83,9 @@ export function usePurchasePage() {
             action: string,
             aktivitas: string
         }[]
-        detailFromParams: any[]
+        detailFromParams: any[];
+        allData: any[];
+        originalData: any[]; // Data asli dari API sebelum difilter
     };
 
     const state = $state<stateProps>({
@@ -110,7 +112,9 @@ export function usePurchasePage() {
         poLogDecreaseItem: [],
         poLogIncreaseQty: [],
         poLogDecreaseQty: [],
-        detailFromParams: []
+        detailFromParams: [],
+        allData: [],
+        originalData: [] // Data asli dari API
     });
 
     // Fetch items from gudang
@@ -143,68 +147,6 @@ export function usePurchasePage() {
         }
     }
 
-    onMount(() => {
-        handleGetPaged();
-        handleGetListItemGudang();
-
-        // ✅ Load data untuk edit dari session storage
-        if (browser) {
-            const url = get(page).url;
-            const isEdit = url.searchParams.get('edit') === 'true';
-
-            if (isEdit) {
-                loadPurchaseDataFromStorage();
-            }
-        }
-    });
-
-    function loadPurchaseDataFromStorage() {
-        try {
-            if (!browser) return;
-
-            const storedData = sessionStorage.getItem('editing_purchase');
-            if (!storedData) {
-                toast.error('No purchase data found for editing');
-                goto('/purchase');
-                return;
-            }
-
-            const purchaseData = JSON.parse(storedData);
-            state.isEditing = true;
-
-            // Update form data
-            formData.update((f) => ({
-                ...f,
-                id: purchaseData.id,
-                inv_number: purchaseData.inv_number,
-                customer_id: String(purchaseData.customer_id || ''),
-                payment_status: purchaseData.payment_status,
-                status_po: purchaseData.status_po,
-                payment_method: purchaseData.payment_method,
-                package_id: purchaseData.package_id,
-                total_amount: purchaseData.total_amount || 0,
-                final_amount: purchaseData.final_amount || 0,
-                biaya_label: purchaseData.biaya_label || 0,
-                down_payment: purchaseData.down_payment || 0,
-                labels: purchaseData.labels || [],
-                ongkir: purchaseData.ongkir || 0,
-                keterangan: purchaseData.keterangan || '',
-                details: purchaseData.details || [],
-            }));
-
-            // Simpan detail asli untuk perbandingan
-            state.detailFromParams = purchaseData.details || [];
-
-            // Bersihkan session storage setelah digunakan
-            // sessionStorage.removeItem('editing_purchase');
-
-        } catch (err) {
-            console.error('Failed to load purchase data from storage:', err);
-            toast.error('Failed to load purchase data');
-            goto('/purchase');
-        }
-    }
-
     // Transform API data for table
     function transformPurchaseData(apiData: any[]) {
         return apiData.map((item, index) => ({
@@ -229,16 +171,78 @@ export function usePurchasePage() {
             created_at: item.created_at ?? '-',
             created_by: item.created_by ?? '-',
             keterangan: item.keterangan ?? '',
-            label: item.label ?? 0, // <-- tambahkan ini
-            ongkir: item.ongkir ?? 0, // <-- tambahkan ini
+            label: item.label ?? 0,
+            ongkir: item.ongkir ?? 0,
             purchase_order_details: item.purchase_order_details ?? [],
             log_po: item.log_po ?? [],
             open: true
         }));
     }
 
+    // Fungsi untuk memfilter data di frontend
+    function filterData(data: any[], searchTerm: string) {
+        if (!searchTerm.trim()) return data;
+
+        const term = searchTerm.toLowerCase();
+        return data.filter(item =>
+            item.inv_number?.toLowerCase().includes(term) ||
+            item.customer_name?.toLowerCase().includes(term) ||
+            item.customer_code?.toLowerCase().includes(term) ||
+            item.telephone?.toLowerCase().includes(term) ||
+            item.mobile?.toLowerCase().includes(term) ||
+            item.payment_status?.toLowerCase().includes(term) ||
+            item.status_po?.toLowerCase().includes(term) ||
+            item.payment_method?.toLowerCase().includes(term) ||
+            item.keterangan?.toLowerCase().includes(term)
+        );
+    }
+
+    // Fungsi untuk apply pagination ke data yang sudah difilter
+    function applyPagination(data: any[], pageNumber: number, pageSize: number) {
+        const startIndex = (pageNumber - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        return data.slice(startIndex, endIndex);
+    }
+
+    // Fungsi untuk update table berdasarkan data yang ada
+    function updateTable() {
+        let filteredData = state.originalData;
+
+        // Apply status filter
+        if (state.paymentStatus) {
+            filteredData = filteredData.filter(
+                (p) => p.payment_status === state.paymentStatus
+            );
+        }
+        if (state.statusPo) {
+            filteredData = filteredData.filter(
+                (p) => p.status_po === state.statusPo
+            );
+        }
+
+        // Apply search filter
+        filteredData = filterData(filteredData, state.searchTerm);
+
+        // Simpan ke allData
+        state.allData = filteredData;
+
+        // Update pagination info
+        state.totalCount = filteredData.length;
+        state.totalPages = Math.ceil(filteredData.length / state.pageSize);
+
+        // Ensure current page is valid
+        if (state.currentPage > state.totalPages && state.totalPages > 0) {
+            state.currentPage = state.totalPages;
+        } else if (state.totalPages === 0) {
+            state.currentPage = 1;
+        }
+
+        // Apply pagination
+        state.table = applyPagination(filteredData, state.currentPage, state.pageSize);
+    }
+
     async function handleGetPaged(
-        pageNumber = state.currentPage,
+        pageNumber = 1,
         searchTerm = state.searchTerm,
         startDate = state.startDate,
         endDate = state.endDate
@@ -246,9 +250,9 @@ export function usePurchasePage() {
         try {
             state.isLoading = true;
             const res: any = await purchaseService.getPaged({
-                PageNumber: pageNumber,
-                PageSize: state.pageSize,
-                SearchTerm: searchTerm,
+                PageNumber: 1, // Ambil semua data
+                PageSize: 10000, // Ambil data dalam jumlah besar
+                SearchTerm: '', // Tidak pakai search di backend
                 PaymentStatus: state.paymentStatus,
                 StatusPo: state.statusPo,
                 StartDate: startDate,
@@ -256,41 +260,214 @@ export function usePurchasePage() {
             });
 
             if (res?.data?.data) {
-                let transformed = transformPurchaseData(res.data.data);
+                const transformed = transformPurchaseData(res.data.data);
 
-                // 🔹 Apply statusFilter
-                if (state.paymentStatus) {
-                    transformed = transformed.filter(
-                        (p) => p.payment_status === state.paymentStatus
-                    );
-                }
-                if (state.statusPo) {
-                    transformed = transformed.filter(
-                        (p) => p.status_po === state.statusPo
-                    );
-                }
+                // Simpan data asli
+                state.originalData = transformed;
 
-                state.table = transformed;
-                state.currentPage = res.data.page_number ?? pageNumber;
-                state.totalPages = res.data.total_pages ?? 1;
-                state.totalCount = res.data.total_count ?? state.table.length;
+                // Update table dengan data yang baru
+                updateTable();
+
             } else {
+                state.originalData = [];
+                state.allData = [];
                 state.table = [];
+                state.totalCount = 0;
+                state.totalPages = 0;
+                state.currentPage = 1;
             }
         } catch (err) {
             console.error('Pagination fetch failed:', err);
             toast.error('Failed to load purchases');
+            state.originalData = [];
+            state.allData = [];
             state.table = [];
+            state.totalCount = 0;
+            state.totalPages = 0;
+            state.currentPage = 1;
         } finally {
             state.isLoading = false;
         }
     }
 
+    // Fungsi untuk handle search di frontend
+    function handleSearch(searchTerm: string) {
+        state.searchTerm = searchTerm;
+        state.currentPage = 1; // Reset ke page 1 saat search
+
+        // Update table dengan filter search baru
+        updateTable();
+    }
+
     async function handlePageChange(pageNum: number) {
         if (pageNum < 1 || pageNum > state.totalPages) return;
+
         state.currentPage = pageNum;
-        await handleGetPaged(pageNum);
+
+        // Update table dengan page baru
+        updateTable();
     }
+
+    // 🔹 Effect untuk filter paymentStatus dan statusPo (tetap hit API)
+    $effect(() => {
+        if (state.paymentStatus !== undefined || state.statusPo !== undefined) {
+            handleGetPaged(1, state.searchTerm);
+        }
+    });
+
+    // 🔹 Effect untuk date range changes (hit API)
+    $effect(() => {
+        if (state.startDate && state.endDate) {
+            handleGetPaged(1, state.searchTerm);
+        }
+    });
+
+    onMount(() => {
+        handleGetPaged();
+        handleGetListItemGudang();
+
+        if (browser) {
+            const url = get(page).url;
+            const isEdit = url.searchParams.get('edit') === 'true';
+
+            if (isEdit) {
+                loadPurchaseDataFromStorage();
+            } else {
+                // Load dari URL params (jika ada)
+                loadPurchaseDataFromParams();
+            }
+        }
+    });
+
+    function loadPurchaseDataFromParams() {
+        try {
+            const url = get(page).url;
+            const qp = url.searchParams;
+            const hasAny = qp.has('id') || qp.has('customer_id') || qp.has('payment_status');
+
+            if (hasAny) {
+                state.isEditing = true;
+
+                let labels: any[] = [];
+                const labelsParam = qp.get('labels');
+                if (labelsParam) {
+                    try {
+                        labels = JSON.parse(decodeURIComponent(labelsParam));
+                        labels = labels.map(label => ({
+                            ...label,
+                            qty: label.qty || 1,
+                            price: label.price || 0
+                        }));
+                    } catch (e) {
+                        console.error('Failed to parse labels:', e);
+                    }
+                }
+
+                let details: any[] = [];
+                const detailsParam = qp.get('details');
+                if (detailsParam) {
+                    try {
+                        state.detailFromParams = JSON.parse(decodeURIComponent(detailsParam));
+                        details = JSON.parse(decodeURIComponent(detailsParam));
+                    } catch (e) {
+                        console.error('Failed to parse details:', e);
+                    }
+                }
+
+                formData.update((f) => ({
+                    ...f,
+                    id: qp.get('id') ?? (f as any).id,
+                    inv_number: qp.get('inv_number') ?? (f as any).inv_number,
+                    customer_id: String(qp.get('customer_id') ?? f.customer_id),
+                    payment_status: qp.get('payment_status')!,
+                    status_po: qp.get('status_po')!,
+                    payment_method: qp.get('payment_method') ?? f.payment_method,
+                    package_id: qp.get('package_id') ?? f.package_id,
+                    total_amount: parseFloat(qp.get('total_amount') ?? '0'),
+                    final_amount: parseFloat(qp.get('final') ?? '0'),
+                    biaya_label: parseFloat(qp.get('discount') ?? '0'),
+                    down_payment: parseFloat(qp.get('down_payment') ?? '0'),
+                    labels: labels.length > 0 ? labels : f.labels,
+                    ongkir: parseFloat(qp.get('ongkir') ?? '0'),
+                    keterangan: qp.get('keterangan') ?? '',
+                    details: details.length > 0 ? details : f.details
+                }));
+            }
+        } catch (err) {
+            console.error('Failed to load purchase data from params:', err);
+        }
+    }
+
+    function loadPurchaseDataFromStorage() {
+        try {
+            if (!browser) return;
+
+            const storedData = sessionStorage.getItem('editing_purchase');
+            if (!storedData) {
+                console.warn('No purchase data found in session storage');
+                // toast.error('No purchase data found for editing');
+                // goto('/purchase');
+                return;
+            }
+
+            const purchaseData = JSON.parse(storedData);
+            console.warn('Loaded from session storage:', purchaseData); // Debug log
+
+            state.isEditing = true;
+
+            // Pastikan details memiliki struktur yang benar
+            const formattedDetails = purchaseData.details?.map((detail: any) => ({
+                item_id: detail.item_id,
+                qty: detail.qty || 1,
+                qty_keluar: detail.qty_keluar || 0,
+                price: detail.price || 0,
+                priceKey: detail.priceKey || 'Harga Normal',
+                name: detail.name || ''
+            })) || [];
+
+            // Pastikan labels memiliki struktur yang benar
+            const formattedLabels = purchaseData.labels?.map((label: any) => ({
+                label_id: label.label_id || label.id,
+                qty: label.qty || 1,
+                price: label.price || 0
+            })) || [];
+
+            // Update form data
+            formData.update((f) => ({
+                ...f,
+                id: purchaseData.id,
+                inv_number: purchaseData.inv_number,
+                customer_id: String(purchaseData.customer_id || ''),
+                payment_status: purchaseData.payment_status,
+                status_po: purchaseData.status_po,
+                payment_method: purchaseData.payment_method,
+                package_id: purchaseData.package_id,
+                total_amount: purchaseData.total_amount,
+                final_amount: purchaseData.final_amount,
+                biaya_label: purchaseData.biaya_label || 0,
+                down_payment: purchaseData.down_payment || 0,
+                labels: formattedLabels,
+                ongkir: purchaseData.ongkir || 0,
+                keterangan: purchaseData.keterangan || '',
+                details: formattedDetails,
+            }));
+
+            // Simpan detail asli untuk perbandingan
+            state.detailFromParams = [...formattedDetails];
+
+            // Hapus data dari session storage setelah digunakan
+            // sessionStorage.removeItem('editing_purchase');
+
+        } catch (err) {
+            console.error('Failed to load purchase data from storage:', err);
+            toast.error('Failed to load purchase data');
+            goto('/purchase');
+        }
+    }
+
+    onMount(() => {
+        console.warn(state?.detailFromParams, 'state?.detailFromParams test1')
+    })
 
     async function handleSubmit() {
         const result = await validateForm({ update: true });
@@ -306,14 +483,13 @@ export function usePurchasePage() {
             qty: item.qty,
             qty_keluar: state?.detailFromParams?.[index]?.qty_keluar || 0
         }));
-
-        // Payload sesuai API - tambahkan label dan ongkir
+        console.warn(validateForm, 'lklkl')
         const body = {
             person_id: values.customer_id ?? 0,
             payment_status: values.payment_status ?? 'DP',
             status_po: values.status_po ?? 'OPEN',
             down_payment: values.down_payment ?? 0,
-            total_amount: values.total_amount ?? 0,
+            total_amount: values.total_amount > 0 ? values.total_amount : 0,
             final_amount: values.final_amount ?? 0,
             biaya_label: values.biaya_label ?? 0,
             payment_method: values.payment_method ?? 'CASH',
@@ -322,19 +498,19 @@ export function usePurchasePage() {
             keterangan: values.keterangan ?? '',
             labels: values.labels ?? [],
             ongkir: values.ongkir ?? 0,
-            details: values.details ?? [] // Default tetap pakai values.details
+            details: values.details ?? []
         };
 
         try {
             if ((values as any).id) {
-                // Untuk update, gunakan detailUpdate
                 const updateBody = {
                     ...body,
-                    details: detailUpdate // Ganti dengan detailUpdate untuk update
+                    details: detailUpdate
                 };
 
                 await purchaseService.update({ id: String((values as any).id), ...updateBody });
 
+                // ... (kode processLogs tetap sama)
                 const processLogsCombined = async (
                     increaseLogs: { inv_number: string; action: string; aktivitas: string }[],
                     decreaseLogs: { inv_number: string; action: string; aktivitas: string }[]
@@ -342,19 +518,13 @@ export function usePurchasePage() {
                     const allLogs = [...decreaseLogs, ...increaseLogs];
                     if (allLogs.length === 0) return;
 
-                    console.log('All logs to process:', allLogs);
-
                     const lastLogsByActionCode = allLogs.reduce((acc, current) => {
                         acc[current.action] = current;
                         return acc;
                     }, {} as { [key: string]: any });
 
-                    console.log('Unique action codes:', Object.keys(lastLogsByActionCode));
-
                     for (const actionCode in lastLogsByActionCode) {
                         await purchaseService.purchaseLog(lastLogsByActionCode[actionCode]);
-                        const log = lastLogsByActionCode[actionCode];
-                        console.log(`Posted last log for action: ${actionCode}, type: ${log.aktivitas.includes('Increase') ? 'increase' : 'decrease'}`);
                     }
                 };
 
@@ -366,22 +536,16 @@ export function usePurchasePage() {
                     const logs = logType === 'increase' ? increaseLogs : decreaseLogs;
                     if (logs.length === 0) return;
 
-                    console.log(`Processing ${logType} item logs:`, logs);
-
                     const lastLogsByActionCode = logs.reduce((acc, current) => {
                         acc[current.action] = current;
                         return acc;
                     }, {} as { [key: string]: any });
 
-                    console.log(`Unique ${logType} item action codes:`, Object.keys(lastLogsByActionCode));
-
                     for (const actionCode in lastLogsByActionCode) {
                         await purchaseService.purchaseLog(lastLogsByActionCode[actionCode]);
-                        console.log(`Posted ${logType} item log for action: ${actionCode}`);
                     }
                 };
 
-                // Process logs
                 if (state.poLogIncreaseQty.length > 0 || state.poLogDecreaseQty.length > 0) {
                     await processLogsCombined(state.poLogIncreaseQty, state.poLogDecreaseQty);
                 }
@@ -396,7 +560,6 @@ export function usePurchasePage() {
 
                 toast.success('Purchase updated successfully');
             } else {
-                // Untuk create, tetap pakai values.details
                 await purchaseService.create(body)
                     .then((res) => {
                         if (res.data.messages[0] == "Tidak dapat membuat PO baru karena terdapat PO dengan status OPEN untuk customer ini.") {
@@ -413,77 +576,6 @@ export function usePurchasePage() {
         }
     }
 
-    // 🔹 Tambahkan $effect supaya refresh otomatis jika statusFilter berubah
-    $effect(() => {
-        handleGetPaged(1, state.searchTerm);
-    });
-
-
-    onMount(() => {
-        handleGetPaged();
-        handleGetListItemGudang();
-
-        // ✅ Load data untuk edit dari URL query params
-        const url = get(page).url;
-        const qp = url.searchParams;
-        const hasAny = qp.has('id') || qp.has('customer_id') || qp.has('payment_status');
-
-        if (hasAny) {
-            state.isEditing = true;
-
-            let labels: any[] = [];
-            const labelsParam = qp.get('labels');
-
-            if (labelsParam) {
-                try {
-                    labels = JSON.parse(decodeURIComponent(labelsParam));
-                    // 🔥 Pastikan setiap label memiliki qty
-                    labels = labels.map(label => ({
-                        ...label,
-                        qty: label.qty || 1 // Default qty = 1 jika tidak ada
-                    }));
-                } catch (e) {
-                    console.error('Failed to parse labels:', e);
-                }
-            }
-
-            // Parse details dari query param jika ada
-            let details: any[] = [];
-            const detailsParam = qp.get('details');
-            if (detailsParam) {
-                try {
-                    state.detailFromParams = JSON.parse(decodeURIComponent(detailsParam))
-                    console.log(state.detailFromParams, 'detailFromParams')
-                    details = JSON.parse(decodeURIComponent(detailsParam));
-                } catch (e) {
-                    console.error('Failed to parse details:', e);
-                }
-            }
-            console.warn(labels,
-                'labels params'
-            )
-
-            formData.update((f) => ({
-                ...f,
-                id: qp.get('id') ?? (f as any).id,
-                inv_number: qp.get('inv_number') ?? (f as any).inv_number,
-                customer_id: String(qp.get('customer_id') ?? f.customer_id),
-                payment_status: qp.get('payment_status')!,
-                status_po: qp.get('status_po')!,
-                payment_method: qp.get('payment_method') ?? f.payment_method,
-                package_id: qp.get('package_id') ?? f.package_id,
-                total_amount: parseFloat(qp.get('total') ?? '0'),
-                final_amount: parseFloat(qp.get('final') ?? '0'),
-                biaya_label: parseFloat(qp.get('discount') ?? '0'),
-                down_payment: parseFloat(qp.get('down_payment') ?? '0'),
-                labels: labels.length > 0 ? labels : f.labels,
-                ongkir: parseFloat(qp.get('ongkir') ?? '0'), // <-- tambahkan ini
-                keterangan: qp.get('keterangan') ?? '',
-                details: details.length > 0 ? details : f.details
-            }));
-        }
-    });
-
     return {
         state,
         form,
@@ -491,6 +583,7 @@ export function usePurchasePage() {
         handleSubmit,
         handleGetPaged,
         handlePageChange,
-        handleGetListItemGudang
+        handleGetListItemGudang,
+        handleSearch
     };
 }

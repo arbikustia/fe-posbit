@@ -95,7 +95,7 @@
 				SearchTerm: ''
 			})
 			.then((res: any) => {
-				let user = res.data.data.find((u: any) => u.username === username).email;
+				let user = res.data.data.find((u: any) => u.username === username)?.email;
 				email = user;
 			});
 	});
