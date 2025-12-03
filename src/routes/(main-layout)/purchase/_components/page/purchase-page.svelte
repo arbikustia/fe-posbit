@@ -400,7 +400,10 @@
 																<td class="py-2 font-semibold text-gray-800">Total</td>
 																<td class="py-2 text-right font-semibold text-gray-800">
 																	Rp {row.label
-																		.reduce((sum, item) => sum + (item.price || 0), 0)
+																		.reduce(
+																			(sum, item) => sum + (item.price || 0) * (item.qty || 0),
+																			0
+																		)
 																		.toLocaleString('id-ID')}
 																</td>
 															</tr>
