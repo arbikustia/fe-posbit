@@ -88,6 +88,7 @@
 	}
 
 	async function handleEdit(row: TableRow) {
+		console.log("row Edit", row)
 		// Siapkan data untuk edit
 		const editData = {
 			id: row.id,
@@ -476,8 +477,7 @@
 										{/if}
 									</td>
 									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
-									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount - row.down_payment}</td>
-
+									<td class="px-3 py-2.5 text-xs">Rp {(row.total_amount - row.down_payment).toLocaleString()}</td>
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.keterangan && row.keterangan.trim().length > 0}
 											<Popover.Root>

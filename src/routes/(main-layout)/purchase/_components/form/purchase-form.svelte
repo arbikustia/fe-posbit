@@ -180,9 +180,11 @@
 
 	$effect(() => {
 		console.log('Selected Formdata100:', $formData);
+		console.log('page state', pageState?.detailFromParams ?? 0)
 	});
 
 	function removeItem(itemValue: string, e: Event, label: string) {
+		console.log("remove", itemValue, e, label);
 		e.stopPropagation();
 		const oldCount = selectedItems.length;
 
@@ -684,17 +686,18 @@
 			{#each itemDetails as detail, index (detail.item_id)}
 				{@const item = itemOptions.find((i) => i.value === detail.item_id)}
 				{@const subtotal = (detail.price ?? 0) * detail.qty}
-				{@const minQty = Math.max(1, pageState?.detailFromParams?.[index]?.qty_keluar || 0)}
+				{@const detailFromParam = pageState?.detailFromParams?.find((d) => d.item_id === detail.item_id) ?? {}}
+				{@const minQty = Math.max(1, detailFromParam.qty_keluar ?? 0)}
 
 				<div class="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:justify-between">
 					<div class="flex flex-col">
-						<p class="text-sm font-medium">{item?.label} - {item?.deskripsi}</p>
+						<p class="text-sm font-medium">{item?.kode_barang} - {item?.label} - {item?.deskripsi}</p>
 						<div class="text-muted-foreground text-sm">
 							Stock: {item?.stock} • {#if isShopeePackage}
 								<span class="text-red-500">Rp 0 (Marketplace)</span>
 							{:else}
 								Rp {detail.price?.toLocaleString('id-ID')}
-							{/if} • Qty Keluar : {pageState?.detailFromParams?.[index]?.qty_keluar ?? 0}
+							{/if} • Qty Keluar : {detailFromParam.qty_keluar ?? 0}
 						</div>
 					</div>
 
@@ -709,9 +712,9 @@
 										updateQty(
 											detail.item_id,
 											detail.qty - 1,
-											pageState?.detailFromParams?.[index]?.qty,
+											detailFromParam.qty ?? detail.qty,
 											item?.label,
-											pageState?.detailFromParams?.[index]?.qty_keluar
+											detailFromParam.qty_keluar ?? 0
 										)}
 									disabled={detail.qty <= minQty}>−</button
 								>
@@ -726,9 +729,9 @@
 										updateQty(
 											detail.item_id,
 											newValue,
-											pageState?.detailFromParams?.[index]?.qty,
+											detailFromParam.qty ?? detail.qty,
 											item?.label,
-											pageState?.detailFromParams?.[index]?.qty_keluar
+											detailFromParam.qty_keluar ?? 0
 										);
 									}}
 								/>
@@ -740,9 +743,9 @@
 										updateQty(
 											detail.item_id,
 											detail.qty + 1,
-											pageState?.detailFromParams?.[index]?.qty,
+											detailFromParam.qty ?? detail.qty,
 											item?.label,
-											pageState?.detailFromParams?.[index]?.qty_keluar
+											detailFromParam.qty_keluar ?? 0
 										)}>+</button
 								>
 							</div>
