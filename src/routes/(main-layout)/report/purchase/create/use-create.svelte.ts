@@ -140,8 +140,6 @@ export function usePurchaseReportPage() {
 				state.table = [];
 			}
 		} catch (err) {
-			console.error('Pagination fetch failed:', err);
-			toast.error('Failed to load purchase report');
 			state.table = [];
 		} finally {
 			state.isLoading = false;

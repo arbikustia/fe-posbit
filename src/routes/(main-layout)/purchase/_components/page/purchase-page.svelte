@@ -16,7 +16,7 @@
 	import dayjs from 'dayjs';
 	import InvoicePage from '../../../report/purchase/_components/invoice-purchase/invoice-page.svelte';
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
-
+	import { browser } from '$app/environment';
 	const { state, handleGetPaged, handlePageChange } = usePurchasePage();
 
 	async function toggleSearch() {
@@ -27,6 +27,34 @@
 		}
 	}
 
+	function getCookie(name: string) {
+		if (!browser) return null;
+		const value = `; ${document.cookie}`;
+		const parts = value.split(`; ${name}=`);
+		if (parts.length === 2) {
+			const cookieValue = parts.pop()?.split(';').shift();
+			return cookieValue ? decodeURIComponent(cookieValue) : null;
+		}
+		return null;
+	}
+
+	let role = '';
+
+	onMount(() => {
+		const data = getCookie('user_info');
+		console.log(data, 'raw user_info'); // {"role":"Superadmin"}
+
+		if (data) {
+			try {
+				const parsedData = JSON.parse(data);
+				console.log(parsedData, 'parsed user_info'); // {role: "Superadmin"}
+				console.log('Role:', parsedData.role); // "Superadmin"
+				role = parsedData.role;
+			} catch (error) {
+				console.error('Error parsing user_info cookie:', error);
+			}
+		}
+	});
 	type TableRow = {
 		id: number;
 		inv_number: string;

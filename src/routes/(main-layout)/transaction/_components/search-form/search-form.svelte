@@ -56,15 +56,38 @@
 	function printThermalNota() {
 		if (!browser) return;
 
-		// === DATA NOTA ===
-		const toko = 'DA.ALUS HIJAB';
-		const alamat = 'Ruko B-15 no 17, ';
-		const telp = 'Mutiara Gading Timur, Mustikajaya, Bekasi';
+				// === DATA NOTA ===
 		const tanggal = pageState.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
 		const kasir = pageState.username || '';
 		const customer = pageState.customerName || '';
-		const member = pageState?.customerData !== null ? 'PREMIUM' : 'REGULAR';
-		const point = pageState?.customerData?.point || 0;
+
+		// === GABUNGKAN ITEM YANG SAMA BERDASARKAN BARCODE ===
+		const mergedItems = [];
+		const itemMap = new Map();
+
+		// Gabungkan item dengan barcode yang sama
+		for (const item of pageState.itemTable) {
+			const { barcode_id, name, harga_jual, qty = 1 } = item;
+
+			if (itemMap.has(barcode_id)) {
+				// Jika sudah ada, tambahkan qty
+				const existing = itemMap.get(barcode_id);
+				existing.qty += qty;
+				existing.total = existing.qty * existing.harga_jual;
+			} else {
+				// Jika belum ada, tambahkan baru
+				itemMap.set(barcode_id, {
+					barcode_id,
+					name,
+					harga_jual,
+					qty,
+					total: harga_jual * qty
+				});
+			}
+		}
+
+		// Konversi map ke array
+		mergedItems.push(...itemMap.values());
 
 		// === FORMAT STRUK DALAM TEKS ===
 		let nota = '';

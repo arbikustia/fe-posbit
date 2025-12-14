@@ -273,8 +273,6 @@ export function usePurchasePage() {
 				state.currentPage = 1;
 			}
 		} catch (err) {
-			console.error('Pagination fetch failed:', err);
-			toast.error('Failed to load purchases');
 			state.originalData = [];
 			state.allData = [];
 			state.table = [];

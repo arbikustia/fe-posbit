@@ -77,12 +77,8 @@ export function useTransactionForm() {
 			);
 
 			if (existingItemIndex !== -1) {
-				// Jika sudah ada, tambahkan quantity
-				const updatedItemTable = [...state.itemTable];
-				updatedItemTable[existingItemIndex].qty += 1;
-
-				state.itemTable = updatedItemTable;
-				toast.success(`${newItem.name} quantity ditambahkan menjadi ${updatedItemTable[existingItemIndex].qty}`);
+				// 🔹 JANGAN TAMBAH QTY - cukup tampilkan pesan bahwa item sudah ada
+				toast.warning(`${newItem.name} sudah ada di keranjang`);
 			} else {
 				// Jika belum ada, tambahkan item baru dengan qty = 1
 				state.itemTable = [...state.itemTable, { ...newItem, qty: 1 }];

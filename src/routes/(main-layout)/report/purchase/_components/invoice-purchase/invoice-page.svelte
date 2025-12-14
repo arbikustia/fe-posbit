@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 
 	const { row } = $props();
-
+	
 	let jsPDF: any = null;
 	let isGenerating = false;
 
@@ -167,8 +167,12 @@
 			doc.setFont('helvetica', 'normal');
 			doc.text(`Nama : Bintaya Zahriati Khayah`, margin, y + 25);
 			doc.text(`No Rek : 0030903617 - BCA `, margin, y + 40);
-			doc.text(`TERIMAKASIH ATAS `, margin, y + 85);
-			doc.text(`PEMBELIAN ANDA `, margin, y + 100);
+			doc.text(`MOHON CHECK KEMBALI QUANTITY DAN  `, margin, y + 85);
+			doc.text(`NOMINAL ORDERAN NYA `, margin, y + 100);
+			doc.text(`UANG YANG SUDAH DI TRANSFER TIDAK DAPAT  `, margin, y + 115);
+			doc.text(`DI REFUND. `, margin, y + 130);
+			doc.text(`TERIMAKASIH ATAS `, margin, y + 165);
+			doc.text(`PEMBELIAN ANDA `, margin, y + 180);
 
 			// === CALCULATE TOTALS ===
 			const labelArray = row.label || [];
