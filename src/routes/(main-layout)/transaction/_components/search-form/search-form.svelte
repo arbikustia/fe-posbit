@@ -56,7 +56,7 @@
 	function printThermalNota() {
 		if (!browser) return;
 
-				// === DATA NOTA ===
+		// === DATA NOTA ===
 		const tanggal = pageState.currentTime || dayjs().format('DD/MM/YYYY HH:mm');
 		const kasir = pageState.username || '';
 		const customer = pageState.customerName || '';
@@ -196,6 +196,7 @@
 			pageState.customerName !== '' &&
 			pageState.customerNumber !== ''
 		) {
+			printThermalNota();
 			saleService
 				.create({
 					customer_id: pageState?.customerData?.id || null,
@@ -218,27 +219,26 @@
 					}))
 				})
 				.then(async (res) => {
-					printThermalNota();
-
-					// 🔹 Reset data form
-					pageState.customerName = '';
-					pageState.customerNumber = null;
-					pageState.customerData = null;
-					pageState.itemTable = [];
-					pageState.amountPaid = null;
-					pageState.totalAll = 0;
-					pageState.grandTotal = 0;
-					pageState.discount = 0;
-					pageState.searchProduct = '';
-					pageState.paymentMethod = 'CASH';
 
 					// ✅ Refresh item gudang setelah transaksi
-					await handleGetListItemGudang();
-
-					toast.success('Purchase completed and item list updated');
+					if (res.data.status) {
+						pageState.customerName = '';
+						pageState.customerNumber = null;
+						pageState.customerData = null;
+						pageState.itemTable = [];
+						pageState.amountPaid = null;
+						pageState.totalAll = 0;
+						pageState.grandTotal = 0;
+						pageState.discount = 0;
+						pageState.searchProduct = '';
+						pageState.paymentMethod = 'CASH';
+						await handleGetListItemGudang();
+						toast.success('Purchase completed and item list updated');
+					} else {
+						toast.error('Failed to complete purchase');
+					}
 				})
 				.catch((err) => {
-					console.error(err);
 					toast.error('Failed to complete purchase');
 				});
 		}
