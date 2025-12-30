@@ -25,10 +25,11 @@ export const load: LayoutServerLoad = async (event) => {
             '/master/item',
             '/transaction',
             '/purchase',
+            '/sto',
             '/report/sales',
             '/report/purchase',
             '/report/shift'
-        ],
+        ],  
         [ROLES.ADMIN]: [
             '/purchase',
             '/report/sales',

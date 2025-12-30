@@ -8,14 +8,10 @@ export const itemService = {
             `/item/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
         );
     },
-    getExportExcel: async (params: {
-        PageNumber: number,
-        PageSize: number,
-        SearchTerm: string,
-    }): Promise<void> => {
+    getExportExcel: async (): Promise<void> => {
         try {
             const response: any = await apiClient.get(
-                `view/export-stock-toko?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`,
+                `/view/export-barcode-toko`,
                 {
                     responseType: 'blob' // Important for file download
                 }

@@ -140,7 +140,7 @@ export function usePurchasePage() {
 				})) || [];
 		} catch (err) {
 			console.error('Failed to fetch gudang items:', err);
-			toast.error('Failed to load items from gudang');
+			// toast.error('Failed to load items from gudang');
 			state.listItem = [];
 		} finally {
 			state.isLoading = false;
@@ -224,8 +224,8 @@ export function usePurchasePage() {
 		state.allData = filteredData;
 
 		// Update pagination info
-		state.totalCount = filteredData.length;
-		state.totalPages = Math.ceil(filteredData.length / state.pageSize);
+		// state.totalCount = filteredData.length;
+		// state.totalPages = Math.ceil(filteredData.length / state.pageSize);
 
 		// Ensure current page is valid
 		if (state.currentPage > state.totalPages && state.totalPages > 0) {
@@ -247,8 +247,8 @@ export function usePurchasePage() {
 		try {
 			state.isLoading = true;
 			const res: any = await purchaseService.getPaged({
-				PageNumber: 1, // Ambil semua data
-				PageSize: 10000, // Ambil data dalam jumlah besar
+				PageNumber: pageNumber, // Ambil semua data
+				PageSize: state.pageSize, // Ambil data dalam jumlah besar
 				SearchTerm: '', // Tidak pakai search di backend
 				PaymentStatus: state.paymentStatus,
 				StatusPo: state.statusPo,
@@ -257,16 +257,18 @@ export function usePurchasePage() {
 			});
 
 			if (res?.data?.data) {
+				state.totalPages = res.data.total_pages;
+				state.totalCount = res.data.total_count;
 				const transformed = transformPurchaseData(res.data.data);
 
 				// Simpan data asli
-				state.originalData = transformed;
+				state.table = transformed;
 
 				// Update table dengan data yang baru
-				updateTable();
+				// updateTable();
 			} else {
 				state.originalData = [];
-				state.allData = [];
+				state.allData = []; 	
 				state.table = [];
 				state.totalCount = 0;
 				state.totalPages = 0;
@@ -290,31 +292,27 @@ export function usePurchasePage() {
 		state.currentPage = 1; // Reset ke page 1 saat search
 
 		// Update table dengan filter search baru
-		updateTable();
+		// updateTable();
 	}
 
 	async function handlePageChange(pageNum: number) {
 		if (pageNum < 1 || pageNum > state.totalPages) return;
 
 		state.currentPage = pageNum;
+		handleGetPaged(pageNum, state.searchTerm);
 
 		// Update table dengan page baru
-		updateTable();
+		// updateTable(); 
 	}
 
-	// 🔹 Effect untuk filter paymentStatus dan statusPo (tetap hit API)
 	$effect(() => {
-		if (state.paymentStatus !== undefined || state.statusPo !== undefined) {
-			handleGetPaged(1, state.searchTerm);
-		}
+		(async () => {
+			if (state.searchTerm) {
+				handleGetPaged(1, state.searchTerm);
+			}
+		})();
 	});
 
-	// 🔹 Effect untuk date range changes (hit API)
-	$effect(() => {
-		if (state.startDate && state.endDate) {
-			handleGetPaged(1, state.searchTerm);
-		}
-	});
 
 	onMount(() => {
 		handleGetPaged();

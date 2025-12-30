@@ -255,6 +255,31 @@
 			</svg>
 		</LayoutNavBarMenuItem>
 	{/if}
+	{#if isSuperadmin || isAdmin}
+		<LayoutNavBarMenuItem href="/sto" label={'STO '}>
+			<svg
+				slot="icon"
+				class="size-5!"
+				xmlns="http://www.w3.org/2000/svg"
+				width="100"
+				height="100"
+				viewBox="0 0 32 32"
+			>
+				<g
+					fill="none"
+					stroke="currentColor"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="1.5"
+				>
+					<path
+						d="M28 6H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h24a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2m0 2v3H4V8ZM4 24V13h24v11Z"
+					/>
+					<path d="M6 20h10v2H6z" />
+				</g>
+			</svg>
+		</LayoutNavBarMenuItem>
+	{/if}
 
 	{#if isSuperadmin || isGudang || isAdmin}
 		<Popover.Root bind:open={reportOpen}>

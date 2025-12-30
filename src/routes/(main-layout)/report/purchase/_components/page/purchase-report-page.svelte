@@ -17,12 +17,14 @@
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import dayjs from 'dayjs';
 	import { Root } from '@/components/ui/card';
-	import { usePurchasePage } from '../../../../purchase/create/use-create.svelte';
+	// import { usePurchasePage } from '../../../../purchase/create/use-create.svelte';
 	import InvoicePage from '../invoice-purchase/invoice-page.svelte';
+	import { getUserRole } from '@/rbacUtils';
+	import { usePurchasePage } from '../../create/use-create.svelte';
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
 	const { state, handleGetPaged, handlePageChange } = usePurchasePage();
-
+	const role = getUserRole()?.toLocaleLowerCase();
 	async function toggleSearch() {
 		state.showSearch = !state.showSearch;
 		if (state.showSearch) {
@@ -90,6 +92,10 @@
 			df.format(dayjs(state.startDate).toDate()) + ' - ' + df.format(dayjs(state.endDate).toDate())
 		);
 	}
+
+	onMount(() => {
+		console.log(state.table,'test data  table ')
+	})
 
 	function downloadExcel() {
 		purchaseService.getReportExcel({
@@ -332,9 +338,9 @@
 											)}>{row.status_po}</span
 										>
 									</td>
-									<td class="px-3 py-2.5 text-xs">Rp {row.down_payment.toLocaleString() || '-'}</td>
+									<td class="px-3 py-2.5 text-xs">Rp {role == 'gudang' ? '*****' : row.down_payment.toLocaleString() || '-'}</td>
 
-									<td class="px-3 py-2.5 text-xs">Rp {row.ongkir?.toLocaleString() || '0'}</td>
+									<td class="px-3 py-2.5 text-xs">Rp {role == 'gudang' ? '*****' : row.ongkir?.toLocaleString() || '0'}</td>
 
 									<td class="px-3 py-2.5 text-xs">{row.payment_method}</td>
 
@@ -447,8 +453,8 @@
 											<span class="text-xs text-gray-400 italic">No details</span>
 										{/if}
 									</td>
-									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
-									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount - row.down_payment}</td>
+									<td class="px-3 py-2.5 text-xs">Rp {role == 'gudang' ? '*****' : row.total_amount.toLocaleString()}</td>
+									<td class="px-3 py-2.5 text-xs">Rp {role == 'gudang' ? '*****' : (row.total_amount - row.down_payment)}</td>
 
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.keterangan && row.keterangan.trim().length > 0}

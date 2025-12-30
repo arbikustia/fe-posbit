@@ -219,7 +219,6 @@
 					}))
 				})
 				.then(async (res) => {
-
 					// ✅ Refresh item gudang setelah transaksi
 					if (res.data.status) {
 						pageState.customerName = '';
@@ -268,6 +267,28 @@
 	let triggerRef = $state<HTMLButtonElement>(null!);
 	const itemOptions = $derived(pageState.listItem ?? []);
 	let open = $state(false);
+
+	let searchQuery = $state('');
+	const LIMIT = 50;
+	const filteredItems = $derived.by(() => {
+		if (!itemOptions?.length) return [];
+
+		const q = searchQuery?.toLowerCase().trim();
+
+		// belum search → tampilkan 50 pertama
+		if (!q) {
+			return itemOptions.slice(0, LIMIT);
+		}
+
+		return itemOptions
+			.filter((item: any) => {
+				const label = String(item.label ?? '').toLowerCase();
+				const value = String(item.value ?? '').toLowerCase();
+
+				return label.includes(q) || value.includes(q);
+			})
+			.slice(0, LIMIT); // tetap batasi render
+	});
 
 	function toggleItem(itemValue: string) {
 		console.log(itemValue, 'item value');
@@ -337,33 +358,30 @@
 								{/snippet}
 							</Popover.Trigger>
 
-							<Popover.Content class="w-[300px] p-0">
-								<Command.Root>
-									<Command.Input placeholder="Search items..." class="h-9" />
-									<Command.List>
-										<Command.Empty>No items found.</Command.Empty>
-										<Command.Group>
-											{#each itemOptions as item}
-												<Command.Item
-													value={item.value}
-													keywords={[item.label, item.value]}
-													onSelect={() => toggleItem(item.value)}
-													class="flex items-center justify-between"
+							<Popover.Content class="w-[600px] p-0">
+								<div>
+									<Input placeholder="Search items..." class="h-9" bind:value={searchQuery} />
+									<div>
+										{#if filteredItems.length === 0}
+											<div class="w-full text-center h-20 flex justify-center items-center">No items found.</div>
+										{/if}
+										<div class="max-h-44  overflow-y-auto">
+											{#each filteredItems as item (item.value)}
+												<Button
+													variant="ghost"
+													onclick={() => toggleItem(item.value)}
+													class="flex w-full items-center justify-between"
 												>
-													<div class="flex items-center gap-2">
-														<div class="flex flex-col">
-															<span class="text-xs font-medium">{item.label}</span>
-															<span class="text-muted-foreground text-xs">
-																{item.value}
-															</span>
-														</div>
+													<div class="flex flex-col items-start">
+														<span class="text-xs font-medium">{item.label}</span>
+														<span class="text-muted-foreground text-xs">{item.value}</span>
 													</div>
 													<span class="text-muted-foreground text-xs">{item.stock}</span>
-												</Command.Item>
+												</Button>
 											{/each}
-										</Command.Group>
-									</Command.List>
-								</Command.Root>
+										</div>
+									</div>
+								</div>
 							</Popover.Content>
 						</Popover.Root>
 					</div>

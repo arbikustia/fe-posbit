@@ -1,0 +1,1 @@
+export {default as StoActualComponent} from './actual.svelte';

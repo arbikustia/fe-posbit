@@ -87,7 +87,7 @@
 	
 
 	onMount(async () => {
-		let username = getCookie('username') || 'superadmin';
+		let username =  ('username') || 'superadmin';
 		await userService
 			.getPaged({
 				PageNumber: 1,

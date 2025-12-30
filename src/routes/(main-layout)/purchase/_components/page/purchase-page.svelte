@@ -67,7 +67,7 @@
 	};
 
 	onMount(async () => {
-		await handleGetPaged();
+		// await handleGetPaged();
 	});
 
 	function openDeleteModal(row: TableRow) {
@@ -104,6 +104,7 @@
 
 			// Tutup Popover otomatis setelah end date dipilih
 			popoverOpen = false;
+			handleGetPaged(1, state.searchTerm);
 		}
 	}
 
@@ -116,7 +117,7 @@
 	}
 
 	async function handleEdit(row: TableRow) {
-		console.log("row Edit", row)
+		console.log('row Edit', row);
 		// Siapkan data untuk edit
 		const editData = {
 			id: row.id,
@@ -207,7 +208,7 @@
 						onValueChange={() => handleGetPaged(1)}
 					>
 						<Select.Trigger class="w-full text-sm">
-							{'Status PO'}
+							{state.statusPo == '' ? 'ALL Status PO' : state.statusPo}
 						</Select.Trigger>
 						<Select.Content>
 							<Select.Item value="">All</Select.Item>
@@ -221,7 +222,7 @@
 						onValueChange={() => handleGetPaged(1)}
 					>
 						<Select.Trigger class="w-full text-sm">
-							{'Payment Status'}
+							{state.paymentStatus == '' ? 'ALL Payment Status' : state.paymentStatus}
 						</Select.Trigger>
 						<Select.Content>
 							<Select.Item value="">All</Select.Item>
@@ -505,7 +506,9 @@
 										{/if}
 									</td>
 									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
-									<td class="px-3 py-2.5 text-xs">Rp {(row.total_amount - row.down_payment).toLocaleString()}</td>
+									<td class="px-3 py-2.5 text-xs"
+										>Rp {(row.total_amount - row.down_payment).toLocaleString()}</td
+									>
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.keterangan && row.keterangan.trim().length > 0}
 											<Popover.Root>
@@ -691,7 +694,20 @@
 		</div>
 
 		<!-- PAGINATION -->
-		<div class="w-full">
+		<div class="w-full flex justify-between items-center">
+			<Select.Root type="single" value={String(state.pageSize)} onValueChange={(v) => { state.pageSize = Number(v); handleGetPaged(state.currentPage); }}>
+				<Select.Trigger class="w-[80px] mt-4">{state.pageSize}</Select.Trigger>
+				<Select.Content>
+					<Select.Item value="5">5</Select.Item>
+					<Select.Item value="10">10</Select.Item>
+					<Select.Item value="20">20</Select.Item>
+					<Select.Item value="30">30</Select.Item>
+					<Select.Item value="40">40</Select.Item>
+					<Select.Item value="50">50</Select.Item>
+					<Select.Item value="70">70</Select.Item>
+					<Select.Item value="100">100</Select.Item>
+				</Select.Content>
+			</Select.Root>
 			<Pagination.Root count={state.totalCount} perPage={state.pageSize}>
 				{#snippet children({ pages, currentPage })}
 					<div class="mt-4 flex w-full justify-end">
