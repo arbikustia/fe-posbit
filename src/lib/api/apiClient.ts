@@ -8,6 +8,7 @@ const showApiRequestError = true;
 
 const apiClient = axios.create({
 	baseURL: 'https://bantupos.daalushijab.site/api/',
+	// baseURL: 'http://localhost:5100/api/',
 	// baseURL: 'http://10.219.201.166:5000/api/',
 	timeout: 10000,
 	headers: {

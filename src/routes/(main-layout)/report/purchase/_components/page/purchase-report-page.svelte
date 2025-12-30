@@ -94,8 +94,8 @@
 	}
 
 	onMount(() => {
-		console.log(state.table,'test data  table ')
-	})
+		console.log(state.table, 'test data  table ');
+	});
 
 	function downloadExcel() {
 		purchaseService.getReportExcel({
@@ -110,7 +110,7 @@
 </script>
 
 <div class="w-full">
-	<div class="mx-auto max-w-7xl">
+	<div class="max-w-8xl mx-auto">
 		<!-- HEADER -->
 		<header class="mb-4 sm:mb-6 md:mb-8">
 			<div class="flex items-center justify-between">
@@ -338,9 +338,13 @@
 											)}>{row.status_po}</span
 										>
 									</td>
-									<td class="px-3 py-2.5 text-xs">Rp {role == 'gudang' ? '*****' : row.down_payment.toLocaleString() || '-'}</td>
+									<td class="px-3 py-2.5 text-xs"
+										>Rp {role == 'gudang' ? '*****' : row.down_payment.toLocaleString() || '-'}</td
+									>
 
-									<td class="px-3 py-2.5 text-xs">Rp {role == 'gudang' ? '*****' : row.ongkir?.toLocaleString() || '0'}</td>
+									<td class="px-3 py-2.5 text-xs"
+										>Rp {role == 'gudang' ? '*****' : row.ongkir?.toLocaleString() || '0'}</td
+									>
 
 									<td class="px-3 py-2.5 text-xs">{row.payment_method}</td>
 
@@ -453,8 +457,12 @@
 											<span class="text-xs text-gray-400 italic">No details</span>
 										{/if}
 									</td>
-									<td class="px-3 py-2.5 text-xs">Rp {role == 'gudang' ? '*****' : row.total_amount.toLocaleString()}</td>
-									<td class="px-3 py-2.5 text-xs">Rp {role == 'gudang' ? '*****' : (row.total_amount - row.down_payment)}</td>
+									<td class="px-3 py-2.5 text-xs"
+										>Rp {role == 'gudang' ? '*****' : row.total_amount.toLocaleString()}</td
+									>
+									<td class="px-3 py-2.5 text-xs"
+										>Rp {role == 'gudang' ? '*****' : row.total_amount - row.down_payment}</td
+									>
 
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.keterangan && row.keterangan.trim().length > 0}
@@ -607,7 +615,27 @@
 		</div>
 
 		<!-- PAGINATION -->
-		<div class="w-full">
+		<div class="flex w-full items-center justify-between">
+			<Select.Root
+				type="single"
+				value={String(state.pageSize)}
+				onValueChange={(v) => {
+					state.pageSize = Number(v);
+					handleGetPaged(state.currentPage);
+				}}
+			>
+				<Select.Trigger class="mt-4 w-[80px]">{state.pageSize}</Select.Trigger>
+				<Select.Content>
+					<Select.Item value="5">5</Select.Item>
+					<Select.Item value="10">10</Select.Item>
+					<Select.Item value="20">20</Select.Item>
+					<Select.Item value="30">30</Select.Item>
+					<Select.Item value="40">40</Select.Item>
+					<Select.Item value="50">50</Select.Item>
+					<Select.Item value="70">70</Select.Item>
+					<Select.Item value="100">100</Select.Item>
+				</Select.Content>
+			</Select.Root>
 			<Pagination.Root count={state.totalCount} perPage={state.pageSize}>
 				{#snippet children({ pages, currentPage })}
 					<div class="mt-4 flex w-full justify-end">

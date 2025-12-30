@@ -12,9 +12,6 @@ import { browser } from '$app/environment';
 import dayjs from 'dayjs';
 
 export function usePurchasePage() {
-	
-
-
 	type stateProps = {
 		table: any[];
 		showSearch: boolean;
@@ -231,8 +228,8 @@ export function usePurchasePage() {
 		try {
 			state.isLoading = true;
 			const res: any = await purchaseService.getPaged({
-				PageNumber: 1, // Ambil semua data
-				PageSize: 10000, // Ambil data dalam jumlah besar
+				PageNumber: pageNumber, // Ambil semua data
+				PageSize: state.pageSize, // Ambil data dalam jumlah besar
 				SearchTerm: '', // Tidak pakai search di backend
 				PaymentStatus: state.paymentStatus,
 				StatusPo: state.statusPo,
@@ -241,13 +238,14 @@ export function usePurchasePage() {
 			});
 
 			if (res?.data?.status) {
+				state.totalPages = res.data.total_pages;
+				state.totalCount = res.data.total_count;
 				const transformed = transformPurchaseData(res.data.data);
 
 				// Simpan data asli
-				state.originalData = transformed;
+				state.table = transformed;
 
 				// Update table dengan data yang baru
-				updateTable();
 			} else {
 				state.originalData = [];
 				state.allData = [];
@@ -272,40 +270,26 @@ export function usePurchasePage() {
 		state.currentPage = 1; // Reset ke page 1 saat search
 
 		// Update table dengan filter search baru
-		updateTable();
 	}
 
 	async function handlePageChange(pageNum: number) {
 		if (pageNum < 1 || pageNum > state.totalPages) return;
 
 		state.currentPage = pageNum;
-
-		// Update table dengan page baru
-		updateTable();
+		handleGetPaged(pageNum, state.searchTerm);
 	}
-
-	// 🔹 Effect untuk filter paymentStatus dan statusPo (tetap hit API)
 	$effect(() => {
-		if (state.paymentStatus !== undefined || state.statusPo !== undefined) {
-			handleGetPaged(1, state.searchTerm);
-		}
-	});
-
-	// 🔹 Effect untuk date range changes (hit API)
-	$effect(() => {
-		if (state.startDate && state.endDate) {
-			handleGetPaged(1, state.searchTerm);
-		}
+		(async () => {
+			if (state.searchTerm) {
+				handleGetPaged(1, state.searchTerm);
+			}
+		})();
 	});
 
 	onMount(() => {
 		handleGetPaged();
 		handleGetListItemGudang();
-
 	});
-
-
-	
 
 	return {
 		state,

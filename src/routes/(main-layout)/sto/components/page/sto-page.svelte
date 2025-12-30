@@ -184,7 +184,6 @@
 											{:else}
 												<Switch
 													checked={row.is_active}
-													disabled={row.is_active}
 													onCheckedChange={() => updateStatus(row)}
 												/>
 											{/if}

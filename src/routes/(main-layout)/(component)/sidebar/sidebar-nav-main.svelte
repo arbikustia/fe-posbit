@@ -9,7 +9,8 @@
 		PlanningIcon,
 		ReportIcon,
 		Home,
-		TransactionIcon
+		TransactionIcon,
+		Sync
 	} from '$lib/components/icons';
 	import { currentPage } from '$lib/helpers/page-helper';
 	import  ChevronDown from '@lucide/svelte/icons/chevron-down';
@@ -39,6 +40,12 @@
 			name: 'Transaction',
 			href: '/transaction',
 			icon: TransactionIcon,
+			children: []
+		},
+		{
+			name: 'STO',
+			href: '/sto',
+			icon: Sync,
 			children: []
 		},
 		{

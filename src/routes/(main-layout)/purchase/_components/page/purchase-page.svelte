@@ -155,7 +155,7 @@
 </script>
 
 <div class="w-full">
-	<div class="mx-auto max-w-7xl">
+	<div class="mx-auto max-w-8xl">
 		<!-- HEADER -->
 		<header class="mb-4 sm:mb-6 md:mb-8">
 			<div class="flex items-center justify-between">

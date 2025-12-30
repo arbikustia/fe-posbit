@@ -14,14 +14,14 @@
 		<div class="flex w-full flex-col items-center justify-center">
 			<div class="flex w-full flex-col gap-3">
 				<div class="flex items-center justify-center gap-2">
-					<span>Sto Name</span>  <Input
+					<span>Sto Code</span>  <Input
 						class="w-72"
 						placeholder="STO-{generateTimestampCode()}"
 						readonly
 					/>
 				</div>
 				<div class="flex items-center justify-center gap-2">
-					<span>Username</span>  <Input
+					<span>Create By</span>  <Input
 						class="w-72"
 						placeholder={getCookie('username')}
 						readonly

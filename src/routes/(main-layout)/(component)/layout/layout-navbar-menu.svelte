@@ -259,23 +259,33 @@
 		<LayoutNavBarMenuItem href="/sto" label={'STO '}>
 			<svg
 				slot="icon"
-				class="size-5!"
+				class="size-4!"
 				xmlns="http://www.w3.org/2000/svg"
-				width="100"
-				height="100"
-				viewBox="0 0 32 32"
+				width="80"
+				height="80"
+				viewBox="0 0 1024 1024"
 			>
 				<g
 					fill="none"
 					stroke="currentColor"
 					stroke-linecap="round"
 					stroke-linejoin="round"
-					stroke-width="1.5"
+					stroke-width="40"
 				>
 					<path
-						d="M28 6H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h24a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2m0 2v3H4V8ZM4 24V13h24v11Z"
+						d="
+			M198 826v-42h130l-44-44q-48-48-70-104t-22-114
+			q0-101 58-183t152-117v45
+			q-76 32-122 102t-46 153
+			q0 51 19 99t60 89l43 43V642h42v200z
+
+			M602 814v-45
+			q76-32 122-102t46-153
+			q0-51-19-99t-60-88l-43-43v126h-42V210h200v42H694l44 44
+			q48 48 70 104t22 114
+			q0 101-58 183t-152 117z
+			"
 					/>
-					<path d="M6 20h10v2H6z" />
 				</g>
 			</svg>
 		</LayoutNavBarMenuItem>

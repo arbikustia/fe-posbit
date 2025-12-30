@@ -15,7 +15,8 @@
 		DashboardIcon,
 		TransactionIcon,
 		PurchaseIcon,
-		MasterIcon
+		MasterIcon,
+		Sync
 	} from '$lib/components/icons';
 	import MLanguageSwitch from '../language-switch/m-language-switch.svelte';
 	import { themeConfigStore } from '$lib/stores/themeConfigStore';
@@ -76,6 +77,12 @@
 			label: 'Transaction',
 			href: '/transaction',
 			access: [ROLES.SUPERADMIN, ROLES.CASHIER]
+		},
+		{
+			icon: Sync,
+			label: 'STO',
+			href: '/sto',
+			access: [ROLES.SUPERADMIN, ROLES.ADMIN]
 		},
 		{
 			icon: PurchaseIcon,

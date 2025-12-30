@@ -80,18 +80,28 @@
 						<span>Back</span>
 					</Button>
 				</span>
-				<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">
-					STO Data Detail
+				<h1
+					class="flex space-x-3 text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl"
+				>
+					<span>STO Data Detail</span>
+					<div
+						class="flex items-center justify-center rounded-md border border-blue-500 bg-blue-500/10 px-2 text-xs font-normal text-blue-700"
+					>
+						Data {state.totalCount}
+					</div>
 				</h1>
 			</div>
 
-			<div class="s mt-3 flex flex-row gap-3 sm:mt-4 sm:flex-row sm:items-center justify-between md:mt-6">
-				<div class="flex flex-row gap-3 items-center">
+			<div
+				class="s mt-3 flex flex-row justify-between gap-3 sm:mt-4 sm:flex-row sm:items-center md:mt-6"
+			>
+				<div class="flex flex-row items-center gap-3">
 					{#if state.isScanning}
 						<Input placeholder="Scanning..." readonly class="w-56" />
 					{:else}
 						<Input placeholder="Scan Barcode" onkeyup={(e) => scanBarcode(e)} class="w-56" />
 					{/if}
+
 					<div class="rounded-md border border-green-500 bg-green-500/10 px-2 py-1 text-green-700">
 						Data Sudah di Scan {state.sudahScanCount}
 					</div>
@@ -99,7 +109,33 @@
 						Data Belum di Scan {state.belumScanCount}
 					</div>
 				</div>
-				<div>
+				<div class="flex items-center gap-3">
+					<div class="relative flex w-full items-center justify-end sm:w-auto">
+						<div class="overflow-hidden">
+							{#if state.showSearch}
+								<input
+									bind:this={state.searchEl}
+									bind:value={state.searchTerm}
+									transition:fly={{ x: 120, duration: 250 }}
+									placeholder="Search status..."
+									class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
+								/>
+							{/if}
+						</div>
+
+						<button
+							type="button"
+							class="absolute right-0 rounded-full p-2 transition hover:bg-gray-100 dark:hover:bg-gray-800"
+							onclick={toggleSearch}
+						>
+							<Icon
+								icon="majesticons:search-line"
+								width="20"
+								height="20"
+								class="text-gray-600 md:h-[22px] md:w-[22px]"
+							/>
+						</button>
+					</div>
 					<Button onclick={downloadExcel}>Export</Button>
 				</div>
 			</div>
@@ -131,7 +167,7 @@
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
-									Created By
+									Scan By
 								</th>
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"

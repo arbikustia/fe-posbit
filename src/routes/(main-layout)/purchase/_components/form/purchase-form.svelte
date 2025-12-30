@@ -15,6 +15,7 @@
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
 	import { customerService } from '@/services/customerService';
 	import { purchaseService } from '@/services/purchaseService';
+	import { toast } from 'svelte-sonner';
 
 	const { form, handleSubmit, state: pageState } = usePurchasePage();
 	const { form: formData, enhance, errors } = form;
@@ -29,6 +30,7 @@
 
 	// === STATES ===
 	let selectedItems = $state<string[]>([]);
+
 	let itemDetails = $state<
 		{ item_id: string; qty: number; price: number; priceKey: string; name: string }[]
 	>([]);
@@ -180,12 +182,13 @@
 
 	$effect(() => {
 		console.log('Selected Formdata100:', $formData);
-		console.log('page state', pageState?.detailFromParams ?? 0)
+		console.log('page state', pageState?.detailFromParams ?? 0);
 	});
 
 	function removeItem(itemValue: string, e: Event, label: string) {
-		console.log("remove", itemValue, e, label);
+		console.log('remove', itemValue, e, label);
 		e.stopPropagation();
+
 		const oldCount = selectedItems.length;
 
 		selectedItems = selectedItems.filter((id) => id !== itemValue);
@@ -585,36 +588,35 @@
 						{#snippet child({ props })}
 							<Button
 								variant="outline"
-								class="min-h-[2.5rem] w-full justify-between text-left font-normal"
+								class="h-6 min-h-[2.5rem] w-full justify-between overflow-hidden  text-left  font-normal "
 								{...props}
 								role="combobox"
 							>
-								<div class="flex flex-1 flex-wrap gap-1.5">
+								<div class="flex h-6 w-96 flex-1 gap-1.5 rounded-md overflow-hidden">
 									{#if selectedItems.length === 0}
 										<span class="text-muted-foreground">Select items...</span>
 									{:else}
-										{#each selectedItems as id}
+										{#each [...selectedItems].sort((a, b) => {
+											const itemA = itemOptions.find((i) => i.value === a);
+											const itemB = itemOptions.find((i) => i.value === b);
+
+											const textA = `${itemA?.label ?? ''} - ${itemA?.deskripsi ?? ''}`.toLowerCase();
+											const textB = `${itemB?.label ?? ''} - ${itemB?.deskripsi ?? ''}`.toLowerCase();
+
+											return textA.localeCompare(textB);
+										}) as id}
 											{@const item = itemOptions.find((i) => i.value === id)}
 											<span
 												class="bg-primary/10 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium"
 											>
-												{item?.label} - {item?.deskripsi}
-												<button
-													type="button"
-													onclick={(e) => removeItem(id, e, item?.label!)}
-													class="hover:text-destructive transition"
-												>
-													<XIcon class="size-3" />
-												</button>
+												{item?.label} - {item?.deskripsi} - {id}
 											</span>
 										{/each}
-										{#if selectedItems.length > 3}
-											<button type="button" onclick={clearAll} title="Clear all">
-												<XIcon class="text-destructive ml-1 size-4" />
-											</button>
-										{/if}
 									{/if}
 								</div>
+								{#if selectedItems.length > 2}
+									....
+								{/if}
 								<ChevronsUpDownIcon class="ml-2 size-4 shrink-0 opacity-50" />
 							</Button>
 						{/snippet}
@@ -679,19 +681,43 @@
 	</div>
 	<!-- ITEM DETAILS -->
 	{#if selectedItems.length > 0}
-		<div>
-			Total Qty = {itemDetails.reduce((total: number, item: any) => total + (item.qty || 0), 0)}
+		<div class="mt-4 flex items-center justify-between">
+			<div>
+				Total Qty = {itemDetails.reduce((total: number, item: any) => total + (item.qty || 0), 0)}
+			</div>
+			<!-- {#if selectedItems.length > 3}
+				<Button
+					variant="outline"
+					onclick={clearAll}
+					title="Clear all"
+					class="flex items-center gap-1 text-sm"
+				>
+					<XIcon class="text-destructive mb-0.5 ml-1 size-4" />
+					<span>Delete All </span>
+				</Button>
+			{/if} -->
 		</div>
 		<div class="space-y-3">
-			{#each itemDetails as detail, index (detail.item_id)}
+			{#each [...itemDetails].sort((a, b) => {
+				const itemA = itemOptions.find((i) => i.value === a.item_id);
+				const itemB = itemOptions.find((i) => i.value === b.item_id);
+
+				const textA = `${itemA?.label ?? ''} - ${itemA?.deskripsi ?? ''}`.toLowerCase();
+				const textB = `${itemB?.label ?? ''} - ${itemB?.deskripsi ?? ''}`.toLowerCase();
+
+				return textA.localeCompare(textB);
+			}) as detail, index (detail.item_id)}
 				{@const item = itemOptions.find((i) => i.value === detail.item_id)}
 				{@const subtotal = (detail.price ?? 0) * detail.qty}
-				{@const detailFromParam = pageState?.detailFromParams?.find((d) => d.item_id === detail.item_id) ?? {}}
+				{@const detailFromParam =
+					pageState?.detailFromParams?.find((d) => d.item_id === detail.item_id) ?? {}}
 				{@const minQty = Math.max(1, detailFromParam.qty_keluar ?? 0)}
 
 				<div class="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:justify-between">
 					<div class="flex flex-col">
-						<p class="text-sm font-medium">{item?.kode_barang} - {item?.label} - {item?.deskripsi}</p>
+						<p class="text-sm font-medium">
+							{item?.label} - {item?.deskripsi} - {item?.kode_barang}
+						</p>
 						<div class="text-muted-foreground text-sm">
 							Stock: {item?.stock} • {#if isShopeePackage}
 								<span class="text-red-500">Rp 0 (Marketplace)</span>
@@ -758,6 +784,22 @@
 								<p class="font-semibold">Rp 0</p>
 							{/if}
 						</div>
+						<button
+							type="button"
+							onclick={(e) => {
+								if (detailFromParam.qty_keluar > 0) {
+									toast.error(
+										`Cannot remove item ${item?.label} because qty keluar is greater than 0.`
+									);
+									return;
+								} else {
+									removeItem(item?.kode_barang, e, item?.label!);
+								}
+							}}
+							class="hover:text-destructive transition"
+						>
+							<XIcon class="size-3" />
+						</button>
 					</div>
 				</div>
 			{/each}
@@ -1046,7 +1088,7 @@
 	{#if isShopeePackage}
 		<Form.Field {form} name="total_amount">
 			<Form.Control>
-				<Form.Label required>Total Amount (Manual) </Form.Label>
+				<Form.Label required>Total Amount (Manual)</Form.Label>
 				<Input
 					type="text"
 					inputmode="numeric"
