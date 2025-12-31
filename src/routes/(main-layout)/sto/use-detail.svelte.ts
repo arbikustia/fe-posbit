@@ -25,6 +25,9 @@ export function useStoDetailPage() {
 		belumScanCount: number;
 		sudahScanCount: number;
 		isScanning: boolean;
+		isFailed: boolean;
+		barcode: string;
+		scanBuffer: string;
 	};
 
 	const state = $state<stateProps>({
@@ -43,8 +46,18 @@ export function useStoDetailPage() {
 		isSubmitting: false, // 👈 init,
 		belumScanCount: 0,
 		sudahScanCount: 0,
-		isScanning: false
+		isScanning: false,
+		isFailed: false,
+		barcode: '',
+		scanBuffer: ''
 	});
+
+let scanInputRef!: HTMLInputElement;
+function focusScanInput() {
+	queueMicrotask(() => {
+		scanInputRef?.focus();
+	});
+}
 
 	// 🔹 Transform data dari API ke table
 	function transformStoData(apiData: any[]) {
@@ -233,31 +246,83 @@ export function useStoDetailPage() {
 		}
 	};
 
-	const scanBarcode = async (e: KeyboardEvent) => {
-		if (e.key === 'Enter') {
-			state.isScanning = true;
-			const input = e.target as HTMLInputElement;
-			const scannedCode = input.value.trim();
-			if (scannedCode) {
-				const body = {
-					barcode_id: scannedCode,
-					created_by: getCookie('username') || 'superadmin'
-				};
-				stoService.scanBarcode(body).then((res) => {
-					if (res?.data?.status) {
-						toast.success(`Scanned: ${scannedCode}`);
-						handleGetPaged(1, '');
-						input.value = '';
-						state.isScanning = false;
-					} else {
-						toast.error(`Failed to scan: ${scannedCode}`);
-						input.value = '';
-						state.isScanning = false;
-					}
+	const scanBarcode = async (value: string) => {
+		if (state.isScanning) return;
+
+		state.isScanning = true;
+		const scannedCode = value.trim();
+		if (!scannedCode) return;
+
+		try {
+			const body = {
+				barcode_id: scannedCode,
+				created_by: getCookie('username') || 'superadmin'
+			};
+
+			const res = await stoService.scanBarcode(body);
+
+			if (res?.data?.status) {
+				toast.success(`Scanned: ${scannedCode}`);
+				handleGetPaged(1, '');
+focusScanInput(); // 🔥 KUNCI
+			
+			} else {
+				state.isFailed = true;
+				toast.error(`Failed to scan: ${scannedCode}`, {
+					closeButton: true,
+					duration: Infinity,
+					onDismiss: () => (state.isFailed = false)
 				});
 			}
+		} catch (err) {
+			console.error(err);
+			toast.error('Scan error');
+		} finally {
+			resetScan();
 		}
 	};
+
+	function resetScan() {
+		state.scanBuffer = '';
+		state.barcode = '';
+		state.isScanning = false;
+	}
+
+	// 🔹 Handler keyboard global untuk auto-scan
+	function handleGlobalKeydown(e: KeyboardEvent) {
+		const target = e.target as HTMLElement;
+
+		// 🔥 Jika sedang fokus di input barcode → biarkan normal
+		if (target === scanInputRef) return;
+
+		// Scanner non-input (background scan)
+		if (e.key === 'Enter') {
+			if (state.scanBuffer.trim()) {
+				e.preventDefault();
+				scanBarcode(state.scanBuffer.trim());
+				resetScan();
+			}
+			return;
+		}
+
+		if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+			state.scanBuffer += e.key;
+
+			if (scanTimer) clearTimeout(scanTimer);
+			scanTimer = setTimeout(() => {
+				if (state.scanBuffer.trim()) {
+					scanBarcode(state.scanBuffer.trim());
+					resetScan();
+				}
+			}, 100);
+		}
+	}
+
+	let scanTimer: NodeJS.Timeout | null = null;
+onMount(() => {
+	handleGetPaged(1, '');
+	focusScanInput();
+});
 
 	return {
 		state,
@@ -266,6 +331,7 @@ export function useStoDetailPage() {
 		handleSubmit,
 		handleGetPaged,
 		handlePageChange,
-		scanBarcode
+		scanBarcode,
+		scanInputRef
 	};
 }

@@ -16,6 +16,7 @@
 	const { state, handlePageChange, scanBarcode } = useStoDetailPage();
 	const { id } = $props();
 
+	let scanInputRef: HTMLInputElement;
 	async function toggleSearch() {
 		state.showSearch = !state.showSearch;
 		if (state.showSearch) {
@@ -58,10 +59,15 @@
 	function downloadExcel() {
 		stoService.getDetailExcel({
 			PageNumber: 1,
-			PageSize: state.pageSize,
+			PageSize: 100000,
 			SearchTerm: state.searchTerm,
 			id: id
 		});
+	}
+
+	function closeAndFocusTrigger() {
+		open = false;
+		tick().then(() => triggerRef?.focus());
 	}
 </script>
 
@@ -98,8 +104,34 @@
 				<div class="flex flex-row items-center gap-3">
 					{#if state.isScanning}
 						<Input placeholder="Scanning..." readonly class="w-56" />
+					{:else if state.isFailed}
+						<Input
+							placeholder="Scan Failed"
+							readonly
+							class="w-56 border border-red-400 text-red-500 placeholder:text-red-500"
+						/>
 					{:else}
-						<Input placeholder="Scan Barcode" onkeyup={(e) => scanBarcode(e)} class="w-56" />
+						<!-- <Input bind:value={state.barcode} placeholder="Scan Barcode" onkeyup={(e) => scanBarcode(e)} class="w-56" /> -->
+						<!-- <Input bind:value={state.barcode} placeholder="Scan Barcode" class="w-56" /> -->
+						<Input
+							bind:this={scanInputRef}
+							bind:value={state.barcode}
+							placeholder="Scan or type barcode..."
+							class="w-56"
+							onkeydown={(e) => {
+								if (e.key === 'Enter') {
+									e.preventDefault();
+
+									const value = state.barcode.trim();
+									if (!value) return;
+
+									scanBarcode(value);
+									state.barcode = '';
+
+									// queueMicrotask(() => scanInputRef.focus());
+								}
+							}}
+						/>
 					{/if}
 
 					<div class="rounded-md border border-green-500 bg-green-500/10 px-2 py-1 text-green-700">

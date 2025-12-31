@@ -58,7 +58,7 @@
 	function downloadExcel() {
 		stoService.getActualExcel({
 			PageNumber: 1,
-			PageSize: state.pageSize,
+			PageSize: 10000,
 			SearchTerm: state.searchTerm,
 			id: id
 		});
