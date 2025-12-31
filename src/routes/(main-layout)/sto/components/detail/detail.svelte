@@ -13,10 +13,8 @@
 	import { stoService } from '@/services/stoService';
 	import { useStoDetailPage } from '../../use-detail.svelte';
 
-	const { state, handlePageChange, scanBarcode } = useStoDetailPage();
+	let { state, handlePageChange, scanBarcode } = useStoDetailPage();
 	const { id } = $props();
-
-	let scanInputRef: HTMLInputElement;
 	async function toggleSearch() {
 		state.showSearch = !state.showSearch;
 		if (state.showSearch) {
@@ -65,10 +63,6 @@
 		});
 	}
 
-	function closeAndFocusTrigger() {
-		open = false;
-		tick().then(() => triggerRef?.focus());
-	}
 </script>
 
 <div class="container w-full space-y-5">
@@ -111,13 +105,12 @@
 							class="w-56 border border-red-400 text-red-500 placeholder:text-red-500"
 						/>
 					{:else}
-						<!-- <Input bind:value={state.barcode} placeholder="Scan Barcode" onkeyup={(e) => scanBarcode(e)} class="w-56" /> -->
-						<!-- <Input bind:value={state.barcode} placeholder="Scan Barcode" class="w-56" /> -->
-						<Input
-							bind:this={scanInputRef}
+						<!-- svelte-ignore a11y_autofocus -->
+						<input
 							bind:value={state.barcode}
+							autofocus 
 							placeholder="Scan or type barcode..."
-							class="w-56"
+							class="w-56 rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm"
 							onkeydown={(e) => {
 								if (e.key === 'Enter') {
 									e.preventDefault();
@@ -127,8 +120,6 @@
 
 									scanBarcode(value);
 									state.barcode = '';
-
-									// queueMicrotask(() => scanInputRef.focus());
 								}
 							}}
 						/>

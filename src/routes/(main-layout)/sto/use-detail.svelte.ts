@@ -6,6 +6,7 @@ import { page } from '$app/stores';
 import { stoService } from '@/services/stoService';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
+import { tick } from 'svelte';
 
 export function useStoDetailPage() {
 	type stateProps = {
@@ -51,13 +52,6 @@ export function useStoDetailPage() {
 		barcode: '',
 		scanBuffer: ''
 	});
-
-let scanInputRef!: HTMLInputElement;
-function focusScanInput() {
-	queueMicrotask(() => {
-		scanInputRef?.focus();
-	});
-}
 
 	// 🔹 Transform data dari API ke table
 	function transformStoData(apiData: any[]) {
@@ -214,37 +208,8 @@ function focusScanInput() {
 		handleGetPaged(1, '');
 
 		const url = get(page).url;
-		const qp = url.searchParams;
 	});
 
-	const updateStatus = async (row: any) => {
-		if (row.isUpdating) return;
-
-		try {
-			row.isUpdating = true;
-
-			const body = {
-				id: row.id,
-				is_active: !row.is_active,
-				update_by: getCookie('username') || 'superadmin'
-			};
-
-			const res = await stoService.update(body, row.id);
-
-			if (res?.data?.status) {
-				row.is_active = body.is_active; // ✅ optimistic update
-				toast.success('STO Updated Successfully');
-				handleGetPaged(1, '');
-			} else {
-				toast.error('Failed to Update STO');
-			}
-		} catch (err) {
-			console.error(err);
-			toast.error('Failed to Update STO');
-		} finally {
-			row.isUpdating = false;
-		}
-	};
 
 	const scanBarcode = async (value: string) => {
 		if (state.isScanning) return;
@@ -264,8 +229,6 @@ function focusScanInput() {
 			if (res?.data?.status) {
 				toast.success(`Scanned: ${scannedCode}`);
 				handleGetPaged(1, '');
-focusScanInput(); // 🔥 KUNCI
-			
 			} else {
 				state.isFailed = true;
 				toast.error(`Failed to scan: ${scannedCode}`, {
@@ -288,42 +251,7 @@ focusScanInput(); // 🔥 KUNCI
 		state.isScanning = false;
 	}
 
-	// 🔹 Handler keyboard global untuk auto-scan
-	function handleGlobalKeydown(e: KeyboardEvent) {
-		const target = e.target as HTMLElement;
-
-		// 🔥 Jika sedang fokus di input barcode → biarkan normal
-		if (target === scanInputRef) return;
-
-		// Scanner non-input (background scan)
-		if (e.key === 'Enter') {
-			if (state.scanBuffer.trim()) {
-				e.preventDefault();
-				scanBarcode(state.scanBuffer.trim());
-				resetScan();
-			}
-			return;
-		}
-
-		if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-			state.scanBuffer += e.key;
-
-			if (scanTimer) clearTimeout(scanTimer);
-			scanTimer = setTimeout(() => {
-				if (state.scanBuffer.trim()) {
-					scanBarcode(state.scanBuffer.trim());
-					resetScan();
-				}
-			}, 100);
-		}
-	}
-
-	let scanTimer: NodeJS.Timeout | null = null;
-onMount(() => {
-	handleGetPaged(1, '');
-	focusScanInput();
-});
-
+	
 	return {
 		state,
 		generateTimestampCode,
@@ -332,6 +260,5 @@ onMount(() => {
 		handleGetPaged,
 		handlePageChange,
 		scanBarcode,
-		scanInputRef
 	};
 }
