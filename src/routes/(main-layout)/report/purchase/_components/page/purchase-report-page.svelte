@@ -45,13 +45,9 @@
 	};
 
 	onMount(async () => {
-		await handleGetPaged();
+		 handleGetPaged();
+		 console.log('l')
 	});
-
-	function openDeleteModal(row: TableRow) {
-		state.selectedPurchase = row;
-		state.showDeleteModal = true;
-	}
 
 	function closeDeleteModal() {
 		state.showDeleteModal = false;
@@ -157,7 +153,7 @@
 						onValueChange={() => handleGetPaged(1)}
 					>
 						<Select.Trigger class="w-full text-sm">
-							{'All Payment'}
+							{state.paymentStatus == '' ? 'ALL Payment Status' : state.paymentStatus}
 						</Select.Trigger>
 						<Select.Content>
 							<Select.Item value="">All</Select.Item>
@@ -172,7 +168,7 @@
 						onValueChange={() => handleGetPaged(1)}
 					>
 						<Select.Trigger class="w-full text-sm">
-							{'All Status Po'}
+							{state.statusPo == '' ? 'ALL Status PO' : state.statusPo}
 						</Select.Trigger>
 						<Select.Content>
 							<Select.Item value="">All</Select.Item>

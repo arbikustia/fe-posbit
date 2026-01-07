@@ -17,6 +17,7 @@
 	import InvoicePage from '../../../report/purchase/_components/invoice-purchase/invoice-page.svelte';
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 	import { browser } from '$app/environment';
+	import { getUserRole } from '@/rbacUtils';
 	const { state, handleGetPaged, handlePageChange } = usePurchasePage();
 
 	async function toggleSearch() {
@@ -39,6 +40,7 @@
 	}
 
 	let role = '';
+	const roleUser = getUserRole()?.toLocaleLowerCase();
 
 	onMount(() => {
 		const data = getCookie('user_info');
@@ -155,7 +157,7 @@
 </script>
 
 <div class="w-full">
-	<div class="mx-auto max-w-8xl">
+	<div class="max-w-8xl mx-auto">
 		<!-- HEADER -->
 		<header class="mb-4 sm:mb-6 md:mb-8">
 			<div class="flex items-center justify-between">
@@ -655,19 +657,21 @@
 									<td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
 										{#if row.open}
 											<div class="flex items-center justify-center gap-2 md:gap-3">
-												<button
-													type="button"
-													onclick={() => openDeleteModal(row)}
-													class="rounded-full p-1.5 transition hover:scale-110 hover:bg-red-50 md:p-2"
-												>
-													<Icon
-														icon="material-symbols-light:delete-rounded"
-														width="18"
-														height="18"
-														class="md:h-5 md:w-5"
-														style="color: #ff0f22"
-													/>
-												</button>
+												{#if roleUser == 'superadmin'}
+													<button
+														type="button"
+														onclick={() => openDeleteModal(row)}
+														class="rounded-full p-1.5 transition hover:scale-110 hover:bg-red-50 md:p-2"
+													>
+														<Icon
+															icon="material-symbols-light:delete-rounded"
+															width="18"
+															height="18"
+															class="md:h-5 md:w-5"
+															style="color: #ff0f22"
+														/>
+													</button>
+												{/if}
 
 												<button
 													type="button"
@@ -694,9 +698,16 @@
 		</div>
 
 		<!-- PAGINATION -->
-		<div class="w-full flex justify-between items-center">
-			<Select.Root type="single" value={String(state.pageSize)} onValueChange={(v) => { state.pageSize = Number(v); handleGetPaged(state.currentPage); }}>
-				<Select.Trigger class="w-[80px] mt-4">{state.pageSize}</Select.Trigger>
+		<div class="flex w-full items-center justify-between">
+			<Select.Root
+				type="single"
+				value={String(state.pageSize)}
+				onValueChange={(v) => {
+					state.pageSize = Number(v);
+					handleGetPaged(state.currentPage);
+				}}
+			>
+				<Select.Trigger class="mt-4 w-[80px]">{state.pageSize}</Select.Trigger>
 				<Select.Content>
 					<Select.Item value="5">5</Select.Item>
 					<Select.Item value="10">10</Select.Item>

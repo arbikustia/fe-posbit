@@ -68,6 +68,13 @@ export function useStoDetailPage() {
 		}));
 	}
 
+	let failedAudio: HTMLAudioElement;
+
+	onMount(() => {
+		failedAudio = new Audio('/sounds/failed.wav');
+		failedAudio.load();
+	});
+
 	function getSudahScanCount(id: string) {
 		stoService
 			.getPagedById({
@@ -210,8 +217,7 @@ export function useStoDetailPage() {
 		const url = get(page).url;
 	});
 
-
-	const scanBarcode = async (value: string) => {
+	const scanBarcode = async (value: string, id:string) => {
 		if (state.isScanning) return;
 
 		state.isScanning = true;
@@ -220,6 +226,7 @@ export function useStoDetailPage() {
 
 		try {
 			const body = {
+				sto_id: id,
 				barcode_id: scannedCode,
 				created_by: getCookie('username') || 'superadmin'
 			};
@@ -231,15 +238,16 @@ export function useStoDetailPage() {
 				handleGetPaged(1, '');
 			} else {
 				state.isFailed = true;
+				failedAudio?.play();
 				toast.error(`Failed to scan: ${scannedCode}`, {
 					closeButton: true,
-					duration: Infinity,
 					onDismiss: () => (state.isFailed = false)
 				});
 			}
 		} catch (err) {
 			console.error(err);
 			toast.error('Scan error');
+			failedAudio?.play();
 		} finally {
 			resetScan();
 		}
@@ -251,7 +259,6 @@ export function useStoDetailPage() {
 		state.isScanning = false;
 	}
 
-	
 	return {
 		state,
 		generateTimestampCode,
@@ -259,6 +266,6 @@ export function useStoDetailPage() {
 		handleSubmit,
 		handleGetPaged,
 		handlePageChange,
-		scanBarcode,
+		scanBarcode
 	};
 }

@@ -1,0 +1,1 @@
+export {default as TotalBarangKeluar} from "./+page.svelte"

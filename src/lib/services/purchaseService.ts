@@ -5,7 +5,7 @@ import type { RestApiResponse } from '$lib/types/api/base/RestApi';
 export const purchaseService = {
     getPaged: (params: { PageNumber: number, PageSize: number, SearchTerm: string, EndDate?: string, StartDate?: string, PaymentStatus: string, StatusPo:string }) => {
         return apiClient.get<RestApiResponse<unknown>>(
-            `/purchase-order/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&StartDate=${params.StartDate}&EndDate=${params.EndDate}&payment_status=${params.PaymentStatus}&status_po=${params.StatusPo}`
+            `/purchase-order/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&StartDate=${params.StartDate}&EndDate=${params.EndDate}&PaymentStatus=${params.PaymentStatus}&StatusPo=${params.StatusPo}`
         );
     },
     getReportExcel: async (params: {

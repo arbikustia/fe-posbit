@@ -1,0 +1,1 @@
+export {default as StockGudang} from "./+page.svelte"

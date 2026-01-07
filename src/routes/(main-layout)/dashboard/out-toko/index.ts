@@ -1,0 +1,1 @@
+export {default as OutToko} from "./+page.svelte"

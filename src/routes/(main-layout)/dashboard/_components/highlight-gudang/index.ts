@@ -1,0 +1,1 @@
+export { default as HighlightGudang } from './highlight-gudang.svelte';

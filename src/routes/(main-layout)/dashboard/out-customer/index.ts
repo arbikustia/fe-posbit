@@ -1,0 +1,1 @@
+export {default as OutCustomer} from "./+page.svelte"

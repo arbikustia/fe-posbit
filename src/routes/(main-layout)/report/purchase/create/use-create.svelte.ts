@@ -286,6 +286,23 @@ export function usePurchasePage() {
 		})();
 	});
 
+	    let debounceTimer: NodeJS.Timeout;
+
+	$effect(() => {
+		// Hanya jalankan jika startDate dan endDate sudah terisi
+		if (state.startDate && state.endDate) {
+			console.log('Date range changed, refreshing data...', state.startDate, state.endDate);
+
+			if (debounceTimer) {
+				clearTimeout(debounceTimer);
+			}
+
+			debounceTimer = setTimeout(() => {
+				handleGetPaged(1, state.searchTerm);
+			}, 300);
+		}
+	});
+
 	onMount(() => {
 		handleGetPaged();
 		handleGetListItemGudang();

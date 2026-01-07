@@ -11,7 +11,9 @@
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { onMount } from 'svelte';
 	import { modalService } from '@/services/modalService';
+	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import { FormModalAwal } from './_components/form-modal-awal';
+	import { HighlightGudang } from './_components/highlight-gudang';
 
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
@@ -49,49 +51,96 @@
 			df.format(dayjs(pageState.endDate).toDate())
 		);
 	}
-
-
 </script>
 
 <svelte:head>
 	<title>Dashboard | Bantuit</title>
 </svelte:head>
 
-<div class="container flex flex-1 flex-col">
-	<div class="@container/main flex flex-1 flex-col gap-4">
-		<!-- 🔹 Kalender -->
-		<div class="grid max-w-65 gap-2">
-			<Popover.Root bind:open={popoverOpen}>
-				<Popover.Trigger class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}>
-					<CalendarIcon class="mr-2 size-4" />
-					{formatDateText()}
-				</Popover.Trigger>
-				<Popover.Content class="w-auto p-0" align="start">
-					<RangeCalendar
-						numberOfMonths={2}
-						onValueChange={handleDateChange}
-						value={{
-							start: new CalendarDate(
-								Number(dayjs(pageState.startDate).format('YYYY')),
-								Number(dayjs(pageState.startDate).format('M')),
-								Number(dayjs(pageState.startDate).format('D'))
-							),
-							end: new CalendarDate(
-								Number(dayjs(pageState.endDate).format('YYYY')),
-								Number(dayjs(pageState.endDate).format('M')),
-								Number(dayjs(pageState.endDate).format('D'))
-							)
-						}}
-					/>
-				</Popover.Content>
-			</Popover.Root>
-		</div>
+<Tabs.Root value="toko" class="container">
+	<Tabs.List>
+		<Tabs.Trigger value="toko">Toko</Tabs.Trigger>
+		<Tabs.Trigger value="gudang">Gudang</Tabs.Trigger>
+	</Tabs.List>
+	<Tabs.Content value="toko">
+		<div class="w-full flex flex-1 flex-col">
+			<div class="@container/main flex flex-1 flex-col gap-4">
+				<!-- 🔹 Kalender -->
+				<div class="grid max-w-65 gap-2">
+					<Popover.Root bind:open={popoverOpen}>
+						<Popover.Trigger
+							class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}
+						>
+							<CalendarIcon class="mr-2 size-4" />
+							{formatDateText()}
+						</Popover.Trigger>
+						<Popover.Content class="w-auto p-0" align="start">
+							<RangeCalendar
+								numberOfMonths={2}
+								onValueChange={handleDateChange}
+								value={{
+									start: new CalendarDate(
+										Number(dayjs(pageState.startDate).format('YYYY')),
+										Number(dayjs(pageState.startDate).format('M')),
+										Number(dayjs(pageState.startDate).format('D'))
+									),
+									end: new CalendarDate(
+										Number(dayjs(pageState.endDate).format('YYYY')),
+										Number(dayjs(pageState.endDate).format('M')),
+										Number(dayjs(pageState.endDate).format('D'))
+									)
+								}}
+							/>
+						</Popover.Content>
+					</Popover.Root>
+				</div>
 
-		<!-- 🔹 Konten utama -->
-		<div class="flex flex-col gap-4 md:gap-6">
-			<HighlightCard state={pageState} />
-			<ChartVisitors state={pageState} />
-	
+				<!-- 🔹 Konten utama -->
+				<div class="flex flex-col gap-4 md:gap-6">
+					<HighlightCard state={pageState} />
+					<ChartVisitors state={pageState} />
+				</div>
+			</div>
 		</div>
-	</div>
-</div>
+	</Tabs.Content>
+	<Tabs.Content value="gudang">
+		<div class="w-full flex flex-1 flex-col">
+			<div class="@container/main flex flex-1 flex-col gap-4">
+				<!-- 🔹 Kalender -->
+				<div class="grid max-w-65 gap-2">
+					<Popover.Root bind:open={popoverOpen}>
+						<Popover.Trigger
+							class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}
+						>
+							<CalendarIcon class="mr-2 size-4" />
+							{formatDateText()}
+						</Popover.Trigger>
+						<Popover.Content class="w-auto p-0" align="start">
+							<RangeCalendar
+								numberOfMonths={2}
+								onValueChange={handleDateChange}
+								value={{
+									start: new CalendarDate(
+										Number(dayjs(pageState.startDate).format('YYYY')),
+										Number(dayjs(pageState.startDate).format('M')),
+										Number(dayjs(pageState.startDate).format('D'))
+									),
+									end: new CalendarDate(
+										Number(dayjs(pageState.endDate).format('YYYY')),
+										Number(dayjs(pageState.endDate).format('M')),
+										Number(dayjs(pageState.endDate).format('D'))
+									)
+								}}
+							/>
+						</Popover.Content>
+					</Popover.Root>
+				</div>
+
+				<!-- 🔹 Konten utama -->
+				<div class="flex flex-col gap-4 md:gap-6">
+					<HighlightGudang state={pageState} />
+				</div>
+			</div>
+		</div>
+	</Tabs.Content>
+</Tabs.Root>

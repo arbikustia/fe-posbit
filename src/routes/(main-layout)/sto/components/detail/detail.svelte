@@ -98,12 +98,7 @@
 				<div class="flex flex-row items-center gap-3">
 					{#if state.isScanning}
 						<Input placeholder="Scanning..." readonly class="w-56" />
-					{:else if state.isFailed}
-						<Input
-							placeholder="Scan Failed"
-							readonly
-							class="w-56 border border-red-400 text-red-500 placeholder:text-red-500"
-						/>
+				
 					{:else}
 						<!-- svelte-ignore a11y_autofocus -->
 						<input
@@ -118,7 +113,7 @@
 									const value = state.barcode.trim();
 									if (!value) return;
 
-									scanBarcode(value);
+									scanBarcode(value,id);
 									state.barcode = '';
 								}
 							}}

@@ -1,0 +1,1 @@
+export {default as StockDelivery} from "./+page.svelte"
