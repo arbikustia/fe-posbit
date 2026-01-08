@@ -87,8 +87,8 @@ export function useSummaryShiftPage() {
                 SearchTerm: searchTerm,
                 Start: state.startDate,
                 End: state.endDate,
-                Location: 'GUDANG',
-                To: 'GUDANG'
+                Location: 'TOKO',
+                To: 'TOKO'
             });
 
             if (res?.data?.data) {

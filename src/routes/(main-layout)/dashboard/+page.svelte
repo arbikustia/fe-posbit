@@ -14,11 +14,14 @@
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import { FormModalAwal } from './_components/form-modal-awal';
 	import { HighlightGudang } from './_components/highlight-gudang';
+	import { useDashboardInventory } from './_components/highlight-gudang/use-highlight-gudang.svelte';
 
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 
 	// ✅ Ambil semua state & handler langsung dari useDashboardPage
 	const { state: pageState, handleGetSummary, handleGetChart } = useDashboardPage();
+		const {handleDateFilter} = useDashboardInventory()
+
 	let popoverOpen = false;
 
 	// ✅ Ubah tanggal → update di state & fetch ulang data

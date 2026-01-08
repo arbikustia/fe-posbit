@@ -4,14 +4,17 @@
 	import Icon from '@iconify/svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { goto } from '$app/navigation';
+	import { useDashboardInventory } from './use-highlight-gudang.svelte';
 
 	// Props diterima dari parent (Dashboard)
 	const { state } = $props();
+	const {state: dashboardState} = useDashboardInventory()
+	
 </script>
 
 <div class="highlight-card">
 	<!-- Total Penjualan Bulan Ini -->
-	<Card.Root onclick={() => goto('/dashboard/stock-gudang')} class="@container/card h-fit min-h-28 p-0">
+	<Card.Root onclick={() => goto('/dashboard/stock-gudang')} class="@container/card h-fit min-h-28 p-0 cursor-pointer">
 		<Card.Header class="flex flex-col items-center space-y-2 p-4">
 			<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 				<Icon icon="mdi:warehouse" class="text-2xl text-emerald-500 md:text-2xl" />
@@ -20,13 +23,13 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-2xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				Rp {state?.summary?.total_sale?.toLocaleString('id-ID') ?? 0}
+				{dashboardState.list.stock_all_gudang ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
 
 	<!-- Jumlah Transaksi -->
-	<Card.Root onclick={() => goto('/dashboard/total-barang-masuk')} class="@container/card h-fit min-h-28 p-0">
+	<Card.Root onclick={() => goto('/dashboard/total-barang-masuk')} class="@container/card h-fit min-h-28 p-0 cursor-pointer">
 		<Card.Header class="flex flex-col items-center space-y-2 p-4">
 			<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 				<Icon icon="mdi:package-down" class="text-2xl text-blue-500 md:text-3xl" />
@@ -35,13 +38,13 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{state?.summary?.total_tTransaction ?? 0}
+				{dashboardState.list.stock_in_gudang ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
 
 	<!-- Jumlah Pelanggan Baru -->
-	<Card.Root onclick={() => goto('/dashboard/total-barang-keluar')} class="@container/card h-fit min-h-28 p-0">
+	<Card.Root onclick={() => goto('/dashboard/total-barang-keluar')} class="@container/card h-fit min-h-28 p-0 cursor-pointer">
 		<Card.Header class="flex flex-col items-center space-y-2 p-4">
 			<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 				<Icon icon="mdi:package-up" class="text-2xl text-amber-500 md:text-3xl" />
@@ -50,11 +53,11 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{state?.summary?.new_customer ?? 0}
+				{dashboardState.list.stock_out_gudang ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
-	<Card.Root onclick={() => goto('/dashboard/out-toko')} class="@container/card h-fit min-h-28 p-0">
+	<Card.Root onclick={() => goto('/dashboard/out-toko')} class="@container/card h-fit min-h-28 p-0 cursor-pointer">
 		<Card.Header class="flex flex-col items-center space-y-2 p-4">
 			<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 				<Icon icon="mdi:store-off-outline" class="text-2xl text-blue-800 md:text-3xl" />
@@ -63,11 +66,11 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{state?.summary?.new_customer ?? 0}
+				{dashboardState.list.out_toko ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
-	<Card.Root onclick={() => goto('/dashboard/stock-jahit-label')} class="@container/card h-fit min-h-28 p-0">
+	<Card.Root onclick={() => goto('/dashboard/stock-jahit-label')} class="@container/card h-fit min-h-28 p-0 cursor-pointer">
 		<Card.Header class="flex flex-col items-center space-y-2 p-4">
 			<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 				<Icon icon="mdi:needle" class="text-2xl text-amber-800 md:text-3xl" />
@@ -76,11 +79,11 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{state?.summary?.new_customer ?? 0}
+				{dashboardState.list.stock_jahit_label ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
-	<Card.Root onclick={() => goto('/dashboard/stock-delivery')} class="@container/card h-fit min-h-28 p-0">
+	<Card.Root onclick={() => goto('/dashboard/stock-delivery')} class="@container/card h-fit min-h-28 p-0 cursor-pointer">
 		<Card.Header class="flex flex-col items-center space-y-2 p-4">
 			<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 				<Icon icon="mdi:truck-delivery" class="text-2xl text-pink-500 md:text-3xl" />
@@ -89,11 +92,11 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{state?.summary?.new_customer ?? 0}
+				{dashboardState.list.stock_delivery ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
-	<Card.Root onclick={() => goto('/dashboard/out-customer')} class="@container/card h-fit min-h-28 p-0">
+	<Card.Root onclick={() => goto('/dashboard/out-customer')} class="@container/card h-fit min-h-28 p-0 cursor-pointer">
 		<Card.Header class="flex flex-col items-center space-y-2 p-4">
 			<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 				<Icon icon="mdi:account-arrow-right-outline" class="text-2xl text-purple-500 md:text-3xl" />
@@ -102,11 +105,11 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{state?.summary?.new_customer ?? 0}
+				{dashboardState.list.out_customer ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
-	<Card.Root onclick={() => goto('/dashboard/barang-ng')} class="@container/card h-fit min-h-28 p-0">
+	<Card.Root onclick={() => goto('/dashboard/barang-ng')} class="@container/card h-fit min-h-28 p-0 cursor-pointer">
 		<Card.Header class="flex flex-col items-center space-y-2 p-4">
 			<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 				<Icon icon="streamline-flex:incorrect-password-remix" class="text-2xl text-red-500 md:text-3xl" />
@@ -115,7 +118,7 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{state?.summary?.new_customer ?? 0}
+				{dashboardState.list.barang_ng ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>

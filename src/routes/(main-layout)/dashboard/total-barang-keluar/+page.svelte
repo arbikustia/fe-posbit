@@ -51,7 +51,7 @@
 			<div class="flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">
 				<div class="flex items-center justify-between">
 					<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">
-						Total Stock Gudang
+						Total Barang Keluar
 					</h1>
 				</div>
 				<div class="flex gap-2">
@@ -235,31 +235,33 @@
 			<Pagination.Root count={state.totalCount} perPage={state.pageSize} page={state.currentPage}>
 				{#snippet children({ pages, currentPage })}
 					<div class="mt-4 flex w-full items-center justify-between">
-						<p class="text-sm text-gray-600">
-							Showing <strong>{(state.currentPage - 1) * state.pageSize + 1}</strong> to
-							<strong>{Math.min(state.currentPage * state.pageSize, state.totalCount)}</strong> of
-							<strong>{state.totalCount}</strong> results
-						</p>
-						<Select.Root
-							type="single"
-							value={String(state.pageSize)}
-							onValueChange={(v) => {
-								state.pageSize = Number(v);
-								handleGetPaged(state.currentPage);
-							}}
-						>
-							<Select.Trigger class="mt-4 w-[80px]">{state.pageSize}</Select.Trigger>
-							<Select.Content>
-								<Select.Item value="5">5</Select.Item>
-								<Select.Item value="10">10</Select.Item>
-								<Select.Item value="20">20</Select.Item>
-								<Select.Item value="30">30</Select.Item>
-								<Select.Item value="40">40</Select.Item>
-								<Select.Item value="50">50</Select.Item>
-								<Select.Item value="70">70</Select.Item>
-								<Select.Item value="100">100</Select.Item>
-							</Select.Content>
-						</Select.Root>
+						<div class="flex items-center justify-center gap-4">
+							<p class="text-sm text-gray-600">
+								Showing <strong>{(state.currentPage - 1) * state.pageSize + 1}</strong> to
+								<strong>{Math.min(state.currentPage * state.pageSize, state.totalCount)}</strong> of
+								<strong>{state.totalCount}</strong> results
+							</p>
+							<Select.Root
+								type="single"
+								value={String(state.pageSize)}
+								onValueChange={(v) => {
+									state.pageSize = Number(v);
+									handleGetPaged(state.currentPage);
+								}}
+							>
+								<Select.Trigger class="mt-4 w-[80px]">{state.pageSize}</Select.Trigger>
+								<Select.Content>
+									<Select.Item value="5">5</Select.Item>
+									<Select.Item value="10">10</Select.Item>
+									<Select.Item value="20">20</Select.Item>
+									<Select.Item value="30">30</Select.Item>
+									<Select.Item value="40">40</Select.Item>
+									<Select.Item value="50">50</Select.Item>
+									<Select.Item value="70">70</Select.Item>
+									<Select.Item value="100">100</Select.Item>
+								</Select.Content>
+							</Select.Root>
+						</div>
 						<Pagination.Content>
 							<Pagination.Item class="hidden md:block">
 								<Pagination.PrevButton onclick={() => handlePageChange(state.currentPage - 1)} />

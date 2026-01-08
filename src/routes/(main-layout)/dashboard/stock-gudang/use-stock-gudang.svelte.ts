@@ -81,7 +81,7 @@ export function useSummaryShiftPage() {
 		try {
 			state.isLoading = true;
 
-			const res: any = await dashboardGudangService.getPagedOut({
+			const res: any = await dashboardGudangService.getPagedIn({
 				PageNumber: pageNumber,
 				PageSize: state.pageSize,
 				SearchTerm: searchTerm,
