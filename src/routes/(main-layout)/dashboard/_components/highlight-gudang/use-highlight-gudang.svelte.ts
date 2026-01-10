@@ -26,17 +26,14 @@ export function useDashboardInventory() {
 				Start: state.startDate,
 				End: state.endDate
 			});
-            console.log('Dashboard Inventory data:', res.data.data);
-
+			
 			if (res.data.data) {
+				console.log('Dashboard Inventory data:', res.data.data);
 				state.list = res.data.data;
-			} else {
-				state.list = [];
 			}
 		} catch (err) {
 			console.error('Pagination fetch failed:', err);
 			toast.error('Failed to load Stock data');
-			state.list = [];
 		} finally {
 			state.isLoading = false;
 		}
@@ -49,7 +46,16 @@ export function useDashboardInventory() {
 
 		// Data akan otomatis ter-refresh oleh $effect di atas
 		console.log('Date filter applied:', startDate, endDate);
+		handleGetPaged();
 	}
+
+	$effect(() => {
+		(async () => {
+			if (state.startDate && state.endDate) {
+				handleGetPaged();
+			}
+		})();
+	});
 
 	onMount(() => {
 		handleGetPaged();

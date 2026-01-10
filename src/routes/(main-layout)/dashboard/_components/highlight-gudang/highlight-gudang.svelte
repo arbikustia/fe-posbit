@@ -8,7 +8,7 @@
 
 	// Props diterima dari parent (Dashboard)
 	const { state } = $props();
-	const {state: dashboardState} = useDashboardInventory()
+	// const {state: dashboardState} = useDashboardInventory()
 	
 </script>
 
@@ -23,7 +23,7 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-2xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{dashboardState.list.stock_all_gudang ?? 0}
+				{state.list.stock_all_gudang ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
@@ -38,7 +38,7 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{dashboardState.list.stock_in_gudang ?? 0}
+				{state.list.stock_in_gudang ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
@@ -53,7 +53,7 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{dashboardState.list.stock_out_gudang ?? 0}
+				{state.list.stock_out_gudang ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
@@ -66,7 +66,7 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{dashboardState.list.out_toko ?? 0}
+				{state.list.out_toko ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
@@ -79,7 +79,7 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{dashboardState.list.stock_jahit_label ?? 0}
+				{state.list.stock_jahit_label ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
@@ -92,7 +92,7 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{dashboardState.list.stock_delivery ?? 0}
+				{state.list.stock_delivery ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
@@ -105,7 +105,7 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{dashboardState.list.out_customer ?? 0}
+				{state.list.out_customer ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>
@@ -118,7 +118,7 @@
 				</Card.Description>
 			</div>
 			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{dashboardState.list.barang_ng ?? 0}
+				{state.list.barang_ng ?? 0}
 			</Card.Title>
 		</Card.Header>
 	</Card.Root>

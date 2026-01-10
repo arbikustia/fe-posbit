@@ -5,6 +5,7 @@ import { toast } from 'svelte-sonner';
 // import { PUBLIC_SHOW_API_REQUEST_ERROR, PUBLIC_BASE_API_URL } from '$env/static/public';
 
 const showApiRequestError = true;
+const tokenAccess = userStore.getToken();
 
 const apiClient = axios.create({
 	baseURL: 'https://pos.daalushijab.site/api/',
@@ -12,11 +13,12 @@ const apiClient = axios.create({
 	// baseURL: 'http://10.219.201.166:5000/api/',
 	timeout: 10000,
 	headers: {
-		'Content-Type': 'application/json'
+		'Content-Type': 'application/json',
+		Authorization: `Bearer ${tokenAccess}`
 	}
 });
 
-// Request Interceptor 
+// Request Interceptor
 apiClient.interceptors.request.use(
 	(config) => {
 		// Tambahkan token jika ada

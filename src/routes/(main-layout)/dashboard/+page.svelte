@@ -20,7 +20,7 @@
 
 	// ✅ Ambil semua state & handler langsung dari useDashboardPage
 	const { state: pageState, handleGetSummary, handleGetChart } = useDashboardPage();
-		const {handleDateFilter} = useDashboardInventory()
+		const {handleDateFilter,state:inventoryState} = useDashboardInventory()
 
 	let popoverOpen = false;
 
@@ -39,6 +39,25 @@
 			// Fetch ulang data
 			handleGetSummary(pageState.startDate, pageState.endDate);
 			handleGetChart(pageState.startDate, pageState.endDate, pageState.filter);
+
+			// Tutup Popover otomatis setelah end date dipilih
+			popoverOpen = false;
+		}
+	}
+	// ✅ Ubah tanggal → update di state & fetch ulang data
+	function handleDateChangeGudang(v: any) {
+		console.log('Date changed:', v);
+
+		// Cek apakah start dan end sudah terisi
+		if (v?.start && v?.end) {
+			// Update state dengan tanggal baru
+			inventoryState.startDate = dayjs(v.start.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
+			inventoryState.endDate = dayjs(v.end.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
+
+			console.log('Fetching data for:', inventoryState.startDate, inventoryState.endDate);
+
+			// Fetch ulang data
+			handleDateFilter(inventoryState.startDate, inventoryState.endDate);
 
 			// Tutup Popover otomatis setelah end date dipilih
 			popoverOpen = false;
@@ -121,17 +140,17 @@
 						<Popover.Content class="w-auto p-0" align="start">
 							<RangeCalendar
 								numberOfMonths={2}
-								onValueChange={handleDateChange}
+								onValueChange={handleDateChangeGudang}
 								value={{
 									start: new CalendarDate(
-										Number(dayjs(pageState.startDate).format('YYYY')),
-										Number(dayjs(pageState.startDate).format('M')),
-										Number(dayjs(pageState.startDate).format('D'))
+										Number(dayjs(inventoryState.startDate).format('YYYY')),
+										Number(dayjs(inventoryState.startDate).format('M')),
+										Number(dayjs(inventoryState.startDate).format('D'))
 									),
 									end: new CalendarDate(
-										Number(dayjs(pageState.endDate).format('YYYY')),
-										Number(dayjs(pageState.endDate).format('M')),
-										Number(dayjs(pageState.endDate).format('D'))
+										Number(dayjs(inventoryState.endDate).format('YYYY')),
+										Number(dayjs(inventoryState.endDate).format('M')),
+										Number(dayjs(inventoryState.endDate).format('D'))
 									)
 								}}
 							/>
@@ -141,7 +160,7 @@
 
 				<!-- 🔹 Konten utama -->
 				<div class="flex flex-col gap-4 md:gap-6">
-					<HighlightGudang state={pageState} />
+					<HighlightGudang state={inventoryState} />
 				</div>
 			</div>
 		</div>
