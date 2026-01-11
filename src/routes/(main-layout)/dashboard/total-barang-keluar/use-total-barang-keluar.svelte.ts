@@ -2,6 +2,8 @@ import { toast } from 'svelte-sonner';
 import { onMount } from 'svelte';
 import dayjs from 'dayjs';
 import { dashboardGudangService } from '@/services/dashboardGudangService';
+import { get } from 'svelte/store';
+import { page } from '$app/stores';
 
 export function useSummaryShiftPage() {
     type stateProps = {
@@ -143,6 +145,19 @@ export function useSummaryShiftPage() {
         state.currentPage = 1;
         state.showSearch = false;
     }
+        onMount(() => {
+            const pageStore = get(page); // ✅ OK
+            const params = pageStore.url.searchParams;
+    
+            const start = params.get('Start');
+            const end = params.get('End');
+    
+            if (start && end) {
+                state.startDate = start;
+                state.endDate = end;
+                state.currentPage = 1;
+            }
+        });
 
     return {
         state,

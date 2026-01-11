@@ -15,14 +15,20 @@
 	import { FormModalAwal } from './_components/form-modal-awal';
 	import { HighlightGudang } from './_components/highlight-gudang';
 	import { useDashboardInventory } from './_components/highlight-gudang/use-highlight-gudang.svelte';
+	import { getUserRole } from '@/rbacUtils';
+	import { page } from '$app/state';
 
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
+	const role = getUserRole()?.toLocaleLowerCase();
+	   $: tabs = page.url.searchParams.get('tabs');
+
 
 	// ✅ Ambil semua state & handler langsung dari useDashboardPage
 	const { state: pageState, handleGetSummary, handleGetChart } = useDashboardPage();
-		const {handleDateFilter,state:inventoryState} = useDashboardInventory()
+	const { handleDateFilter, state: inventoryState } = useDashboardInventory();
 
 	let popoverOpen = false;
+	let popoverOpenGudang = false;
 
 	// ✅ Ubah tanggal → update di state & fetch ulang data
 	function handleDateChange(v: any) {
@@ -60,7 +66,7 @@
 			handleDateFilter(inventoryState.startDate, inventoryState.endDate);
 
 			// Tutup Popover otomatis setelah end date dipilih
-			popoverOpen = false;
+			popoverOpenGudang = false;
 		}
 	}
 
@@ -79,13 +85,17 @@
 	<title>Dashboard | Bantuit</title>
 </svelte:head>
 
-<Tabs.Root value="toko" class="container">
+<Tabs.Root value={tabs ? tabs : role == 'admin' ? 'gudang' : 'toko'} class="container">
 	<Tabs.List>
-		<Tabs.Trigger value="toko">Toko</Tabs.Trigger>
-		<Tabs.Trigger value="gudang">Gudang</Tabs.Trigger>
+		{#if role == 'superadmin'}
+			<Tabs.Trigger value="toko">Toko</Tabs.Trigger>
+			<Tabs.Trigger value="gudang">Gudang</Tabs.Trigger>
+		{:else if role == 'admin'}
+			<Tabs.Trigger value="gudang">Gudang</Tabs.Trigger>
+		{/if}
 	</Tabs.List>
 	<Tabs.Content value="toko">
-		<div class="w-full flex flex-1 flex-col">
+		<div class="flex w-full flex-1 flex-col">
 			<div class="@container/main flex flex-1 flex-col gap-4">
 				<!-- 🔹 Kalender -->
 				<div class="grid max-w-65 gap-2">
@@ -126,11 +136,11 @@
 		</div>
 	</Tabs.Content>
 	<Tabs.Content value="gudang">
-		<div class="w-full flex flex-1 flex-col">
+		<div class="flex w-full flex-1 flex-col">
 			<div class="@container/main flex flex-1 flex-col gap-4">
 				<!-- 🔹 Kalender -->
 				<div class="grid max-w-65 gap-2">
-					<Popover.Root bind:open={popoverOpen}>
+					<Popover.Root bind:open={popoverOpenGudang}>
 						<Popover.Trigger
 							class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}
 						>

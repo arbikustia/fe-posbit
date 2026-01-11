@@ -1,0 +1,1 @@
+export {default as BarangNg} from "./+page.svelte"

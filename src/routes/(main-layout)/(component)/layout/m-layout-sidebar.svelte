@@ -42,7 +42,7 @@
 			icon: DashboardIcon,
 			label: 'Dashboard',
 			href: '/dashboard',
-			access: [ROLES.SUPERADMIN] // Semua role bisa akses
+			access: [ROLES.SUPERADMIN, ROLES.ADMIN] // Semua role bisa akses
 		},
 		{
 			icon: MasterIcon,

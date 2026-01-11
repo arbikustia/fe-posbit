@@ -118,10 +118,10 @@
 		);
 	}
 
-	async function handleEdit(row: TableRow) {
+	async function handleEdit(row: any) {
 		console.log('row Edit', row);
 		// Siapkan data untuk edit
-		const editData = {
+		const editData:any = {
 			id: row.id,
 			customer_id: row.person_id,
 			payment_method: row.payment_method,
@@ -433,7 +433,7 @@
 																<td class="py-2 text-right font-semibold text-gray-800">
 																	Rp {row.label
 																		.reduce(
-																			(sum, item) => sum + (item.price || 0) * (item.qty || 0),
+																			(sum:any, item:any) => sum + (item.price || 0) * (item.qty || 0),
 																			0
 																		)
 																		.toLocaleString('id-ID')}

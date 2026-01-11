@@ -12,6 +12,9 @@
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { useSummaryShiftPage } from './use-stock-gudang.svelte';
 	import * as Select from '$lib/components/ui/select/index.js';
+	import Button from '@/components/ui/button/button.svelte';
+	import { goto } from '$app/navigation';
+	import { dashboardGudangService } from '@/services/dashboardGudangService';
 
 	const { state, handlePageChange, handleGetPaged } = useSummaryShiftPage();
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
@@ -43,13 +46,34 @@
 			state.searchEl?.focus();
 		}
 	}
+	function downloadExcel() {
+		dashboardGudangService.getExcelPageIn({
+			PageNumber: 1,
+			PageSize: state.pageSize,
+			SearchTerm: state.searchTerm,
+			End: state.endDate,
+			Start: state.startDate,
+			Location: 'GUDANG',
+			To: 'GUDANG'
+		});
+	}
 </script>
 
 <div class="container w-full">
 	<div class="max-w-8xl mx-auto">
 		<header class="mb-4 sm:mb-6 md:mb-8">
 			<div class="flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<div class="flex items-center justify-between">
+				<div class="flex items-center justify-start gap-3">
+					<span>
+						<Button
+							variant="outline"
+							onclick={() => goto('/dashboard?tabs=gudang')}
+							class="flex items-center justify-center"
+						>
+							<Icon icon="solar:arrow-left-line-duotone" width="24" height="24" />
+							<span>Back</span>
+						</Button>
+					</span>
 					<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">
 						Total Stock Gudang
 					</h1>
@@ -107,6 +131,9 @@
 							</Popover.Content>
 						</Popover.Root>
 					</div>
+					<div>
+						<Button onclick={downloadExcel}>Export</Button>
+					</div>
 				</div>
 			</div>
 		</header>
@@ -137,6 +164,11 @@
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
 									QTY
+								</th>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Remarks
 								</th>
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
@@ -195,6 +227,11 @@
 											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
 											{row.qty}
+										</td>
+										<td
+											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+										>
+											{row.remarks}
 										</td>
 										<td
 											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
@@ -259,6 +296,11 @@
 									<Select.Item value="50">50</Select.Item>
 									<Select.Item value="70">70</Select.Item>
 									<Select.Item value="100">100</Select.Item>
+									<Select.Item value="200">200</Select.Item>
+									<Select.Item value="300">300</Select.Item>
+									<Select.Item value="400">400</Select.Item>
+									<Select.Item value="500">500</Select.Item>
+									<Select.Item value="10000">All Data</Select.Item>
 								</Select.Content>
 							</Select.Root>
 						</div>
