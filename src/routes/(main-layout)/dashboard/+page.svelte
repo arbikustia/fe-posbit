@@ -1,84 +1,17 @@
 <script lang="ts">
 	import { HighlightCard } from './_components/highlight-card';
 	import { ChartVisitors } from './_components/chart-visitors';
-	import CalendarIcon from '@lucide/svelte/icons/calendar';
-	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date';
-	import { cn } from '$lib/utils.js';
-	import { buttonVariants } from '$lib/components/ui/button/index.js';
-	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
-	import dayjs from 'dayjs';
 	import { useDashboardPage } from '../dashboard/_components/use-dashboard-page.svelte';
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { onMount } from 'svelte';
-	import { modalService } from '@/services/modalService';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
-	import { FormModalAwal } from './_components/form-modal-awal';
 	import { HighlightGudang } from './_components/highlight-gudang';
 	import { useDashboardInventory } from './_components/highlight-gudang/use-highlight-gudang.svelte';
 	import { getUserRole } from '@/rbacUtils';
 	import { page } from '$app/state';
 
-	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 	const role = getUserRole()?.toLocaleLowerCase();
-	   $: tabs = page.url.searchParams.get('tabs');
-
-
-	// ✅ Ambil semua state & handler langsung dari useDashboardPage
+	$: tabs = page.url.searchParams.get('tabs');
 	const { state: pageState, handleGetSummary, handleGetChart } = useDashboardPage();
-	const { handleDateFilter, state: inventoryState } = useDashboardInventory();
-
-	let popoverOpen = false;
-	let popoverOpenGudang = false;
-
-	// ✅ Ubah tanggal → update di state & fetch ulang data
-	function handleDateChange(v: any) {
-		console.log('Date changed:', v);
-
-		// Cek apakah start dan end sudah terisi
-		if (v?.start && v?.end) {
-			// Update state dengan tanggal baru
-			pageState.startDate = dayjs(v.start.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
-			pageState.endDate = dayjs(v.end.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
-
-			console.log('Fetching data for:', pageState.startDate, pageState.endDate);
-
-			// Fetch ulang data
-			handleGetSummary(pageState.startDate, pageState.endDate);
-			handleGetChart(pageState.startDate, pageState.endDate, pageState.filter);
-
-			// Tutup Popover otomatis setelah end date dipilih
-			popoverOpen = false;
-		}
-	}
-	// ✅ Ubah tanggal → update di state & fetch ulang data
-	function handleDateChangeGudang(v: any) {
-		console.log('Date changed:', v);
-
-		// Cek apakah start dan end sudah terisi
-		if (v?.start && v?.end) {
-			// Update state dengan tanggal baru
-			inventoryState.startDate = dayjs(v.start.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
-			inventoryState.endDate = dayjs(v.end.toDate(getLocalTimeZone())).format('YYYY-MM-DD');
-
-			console.log('Fetching data for:', inventoryState.startDate, inventoryState.endDate);
-
-			// Fetch ulang data
-			handleDateFilter(inventoryState.startDate, inventoryState.endDate);
-
-			// Tutup Popover otomatis setelah end date dipilih
-			popoverOpenGudang = false;
-		}
-	}
-
-	// ✅ Helper untuk tampilkan teks tanggal dengan aman
-	function formatDateText() {
-		if (!pageState.startDate || !pageState.endDate) return 'Pick a date';
-		return (
-			df.format(dayjs(pageState.startDate).toDate()) +
-			' - ' +
-			df.format(dayjs(pageState.endDate).toDate())
-		);
-	}
+	const { state: inventoryState } = useDashboardInventory();
 </script>
 
 <svelte:head>
@@ -97,39 +30,9 @@
 	<Tabs.Content value="toko">
 		<div class="flex w-full flex-1 flex-col">
 			<div class="@container/main flex flex-1 flex-col gap-4">
-				<!-- 🔹 Kalender -->
-				<div class="grid max-w-65 gap-2">
-					<Popover.Root bind:open={popoverOpen}>
-						<Popover.Trigger
-							class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}
-						>
-							<CalendarIcon class="mr-2 size-4" />
-							{formatDateText()}
-						</Popover.Trigger>
-						<Popover.Content class="w-auto p-0" align="start">
-							<RangeCalendar
-								numberOfMonths={2}
-								onValueChange={handleDateChange}
-								value={{
-									start: new CalendarDate(
-										Number(dayjs(pageState.startDate).format('YYYY')),
-										Number(dayjs(pageState.startDate).format('M')),
-										Number(dayjs(pageState.startDate).format('D'))
-									),
-									end: new CalendarDate(
-										Number(dayjs(pageState.endDate).format('YYYY')),
-										Number(dayjs(pageState.endDate).format('M')),
-										Number(dayjs(pageState.endDate).format('D'))
-									)
-								}}
-							/>
-						</Popover.Content>
-					</Popover.Root>
-				</div>
-
 				<!-- 🔹 Konten utama -->
 				<div class="flex flex-col gap-4 md:gap-6">
-					<HighlightCard state={pageState} />
+					<HighlightCard state={pageState} {handleGetSummary} {handleGetChart} />
 					<ChartVisitors state={pageState} />
 				</div>
 			</div>
@@ -138,36 +41,6 @@
 	<Tabs.Content value="gudang">
 		<div class="flex w-full flex-1 flex-col">
 			<div class="@container/main flex flex-1 flex-col gap-4">
-				<!-- 🔹 Kalender -->
-				<div class="grid max-w-65 gap-2">
-					<Popover.Root bind:open={popoverOpenGudang}>
-						<Popover.Trigger
-							class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}
-						>
-							<CalendarIcon class="mr-2 size-4" />
-							{formatDateText()}
-						</Popover.Trigger>
-						<Popover.Content class="w-auto p-0" align="start">
-							<RangeCalendar
-								numberOfMonths={2}
-								onValueChange={handleDateChangeGudang}
-								value={{
-									start: new CalendarDate(
-										Number(dayjs(inventoryState.startDate).format('YYYY')),
-										Number(dayjs(inventoryState.startDate).format('M')),
-										Number(dayjs(inventoryState.startDate).format('D'))
-									),
-									end: new CalendarDate(
-										Number(dayjs(inventoryState.endDate).format('YYYY')),
-										Number(dayjs(inventoryState.endDate).format('M')),
-										Number(dayjs(inventoryState.endDate).format('D'))
-									)
-								}}
-							/>
-						</Popover.Content>
-					</Popover.Root>
-				</div>
-
 				<!-- 🔹 Konten utama -->
 				<div class="flex flex-col gap-4 md:gap-6">
 					<HighlightGudang state={inventoryState} />

@@ -2,6 +2,8 @@ import { toast } from 'svelte-sonner';
 import { onMount } from 'svelte';
 import dayjs from 'dayjs';
 import { dashboardGudangService } from '@/services/dashboardGudangService';
+import { get } from 'svelte/store';
+import { page } from '$app/stores';
 
 export function useDashboardInventory() {
 	type stateProps = {
@@ -9,13 +11,15 @@ export function useDashboardInventory() {
 		isLoading: boolean;
 		startDate: string;
 		endDate: string;
+		popoverOpenGudang: boolean;
 	};
 
 	const state = $state<stateProps>({
 		list: {},
-		startDate: dayjs().subtract(1, 'month').startOf('month').format('YYYY-MM-DD'),
-		endDate: dayjs().subtract(1, 'month').endOf('month').format('YYYY-MM-DD'),
-		isLoading: false
+		startDate: dayjs().startOf('month').format('YYYY-MM-DD'),
+		endDate: dayjs().endOf('month').format('YYYY-MM-DD'),
+		isLoading: false,
+		popoverOpenGudang: false
 	});
 
 	async function handleGetPaged() {
@@ -26,7 +30,7 @@ export function useDashboardInventory() {
 				Start: state.startDate,
 				End: state.endDate
 			});
-			
+
 			if (res.data.data) {
 				console.log('Dashboard Inventory data:', res.data.data);
 				state.list = res.data.data;
@@ -59,6 +63,19 @@ export function useDashboardInventory() {
 
 	onMount(() => {
 		handleGetPaged();
+	});
+
+	onMount(() => {
+		const pageStore = get(page); // ✅ OK
+		const params = pageStore.url.searchParams;
+
+		const start = params.get('Start');
+		const end = params.get('End');
+
+		if (start && end) {
+			state.startDate = start;
+			state.endDate = end;
+		}
 	});
 
 	return {

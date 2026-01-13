@@ -23,6 +23,7 @@ export function useDashboardPage() {
 		startDate: string;
 		endDate: string;
 		filter: string;
+		popoverOpen:boolean
 	};
 
 	const state = $state<StateProps>({
@@ -31,7 +32,8 @@ export function useDashboardPage() {
 		isLoading: false,
 		startDate: dayjs().startOf('month').format('YYYY-MM-DD'),
 		endDate: dayjs().endOf('month').format('YYYY-MM-DD'),
-		filter: 'hari'
+		filter: 'hari',
+		popoverOpen:false
 	});
 
 	// 🔹 Get summary

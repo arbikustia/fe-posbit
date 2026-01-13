@@ -3,6 +3,13 @@ import apiClient from '$lib/api/apiClient';
 import type { RestApiResponse } from '$lib/types/api/base/RestApi';
 
 export const dashboardGudangService = {
+	getPagedDetail: (params: {
+		TransactionNumber: string;
+	}) => {
+		return apiClient.get<RestApiResponse<unknown>>(`/sp/get-by-transaction-number`, {
+			params
+		});
+	},
 	getPagedIn: (params: {
 		PageNumber: number;
 		PageSize: number;

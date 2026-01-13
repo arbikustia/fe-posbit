@@ -543,6 +543,27 @@
 		$formData.total_amount = Number(raw || 0);
 		target.value = formatIDR(raw);
 	}
+	let searchQuery = $state('');
+	const LIMIT = 50;
+	const filteredItems = $derived.by(() => {
+		if (!itemOptions?.length) return [];
+
+		const q = searchQuery?.toLowerCase().trim();
+
+		// belum search → tampilkan 50 pertama
+		if (!q) {
+			return itemOptions.slice(0, LIMIT);
+		}
+
+		return itemOptions
+			.filter((item: any) => {
+				const label = String(item.label ?? '').toLowerCase();
+				const value = String(item.value ?? '').toLowerCase();
+
+				return label.includes(q) || value.includes(q);
+			})
+			.slice(0, LIMIT); // tetap batasi render
+	});
 </script>
 
 <form
@@ -592,7 +613,7 @@
 								{...props}
 								role="combobox"
 							>
-								<div class="flex h-6 w-96 flex-1 gap-1.5 rounded-md overflow-hidden">
+								<div class="flex h-6 w-96 flex-1 gap-1.5 overflow-hidden rounded-md">
 									{#if selectedItems.length === 0}
 										<span class="text-muted-foreground">Select items...</span>
 									{:else}
@@ -622,27 +643,33 @@
 						{/snippet}
 					</Popover.Trigger>
 
-					<Popover.Content class="w-[500px] p-0" align="start">
-						<Command.Root>
-							<Command.Input placeholder="Search items..." class="h-9" />
-							<Command.List>
-								<Command.Empty>No items found.</Command.Empty>
-								<Command.Group>
-									{#each itemOptions as item}
-										<Command.Item
+					<Popover.Content class="w-[500px]  p-0" align="start">
+						<div>
+							<!-- <Command.Input placeholder="Search items..." class="h-9" /> -->
+							<Input placeholder="Search items..." class="h-9" bind:value={searchQuery} />
+							<div class=""> 
+								<!-- <Command.Empty>No items found.</Command.Empty> -->
+								{#if filteredItems.length === 0}
+									<div class="flex h-20 w-full items-center justify-center text-center">
+										No items found.
+									</div>
+								{/if}
+								<div class="space-y-2 max-h-[300px] overflow-auto">
+									{#each filteredItems as item}
+										<Button
+											variant="ghost"
 											value={item.value}
-											keywords={[item.label, item.value, item.deskripsi]}
-											onSelect={() => toggleItem(item.value, item.label)}
-											class="flex items-center justify-between"
+											onclick={() => toggleItem(item.value, item.label)}
+											class="flex w-full items-center justify-between"
 										>
-											<div class="flex items-center gap-2">
+											<div class="flex justify-start items-start gap-2">
 												<CheckIcon
 													class={cn(
 														'size-4',
 														!selectedItems.includes(item.value) && 'text-transparent'
 													)}
 												/>
-												<div class="flex flex-col">
+												<div class="flex items-start flex-col">
 													<span class="text-xs font-medium"
 														>{item.label} {item.deskripsi ? '-' : ''} {item.deskripsi}</span
 													>
@@ -652,10 +679,10 @@
 												</div>
 											</div>
 											<span class="text-muted-foreground text-xs">Stock: {item.stock}</span>
-										</Command.Item>
+										</Button>
 									{/each}
-								</Command.Group>
-							</Command.List>
+								</div>
+							</div>
 
 							{#if selectedItems.length > 0}
 								<div class="flex items-center justify-between border-t p-2">
@@ -672,7 +699,7 @@
 									</Button>
 								</div>
 							{/if}
-						</Command.Root>
+						</div>
 					</Popover.Content>
 				</Popover.Root>
 			</Form.Control>

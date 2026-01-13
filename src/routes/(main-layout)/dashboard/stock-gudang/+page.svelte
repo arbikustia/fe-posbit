@@ -67,7 +67,7 @@
 					<span>
 						<Button
 							variant="outline"
-							onclick={() => goto('/dashboard?tabs=gudang')}
+							onclick={() => goto(`/dashboard?tabs=gudang&Start=${state.startDate}&End=${state.endDate}`)}
 							class="flex items-center justify-center"
 						>
 							<Icon icon="solar:arrow-left-line-duotone" width="24" height="24" />

@@ -100,7 +100,7 @@ function clearAllStorage () {
 
 export async function login(event: RequestEvent, username: string, password: string) {
 
-	const res = await fetch('https://pos.daalushijab.site/api/authentication', {
+	const res = await fetch('https://unsoaked-roseann-fancily.ngrok-free.dev/api/authentication', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'

@@ -57,6 +57,30 @@
 			To: 'JAHITLABEL'
 		});
 	}
+	/* ================= TREE VIEW ================= */
+	async function toggleRow(row: any) {
+		row.open = !row.open;
+
+		if (!row.open) return;
+
+		// cache: jangan fetch ulang
+		if (row.details && row.details.length > 0) return;
+
+		row.loading = true;
+
+		try {
+			const res = await dashboardGudangService.getPagedDetail({
+				TransactionNumber: row.transaction_number
+			});
+
+			row.details = res?.data?.data ?? [];
+		} catch (err) {
+			console.error('Failed load detail:', err);
+			row.details = [];
+		} finally {
+			row.loading = false;
+		}
+	}
 </script>
 
 <div class="container w-full">
@@ -67,7 +91,8 @@
 					<span>
 						<Button
 							variant="outline"
-							onclick={() => goto('/dashboard?tabs=gudang')}
+							onclick={() =>
+								goto(`/dashboard?tabs=gudang&Start=${state.startDate}&End=${state.endDate}`)}
 							class="flex items-center justify-center"
 						>
 							<Icon icon="solar:arrow-left-line-duotone" width="24" height="24" />
@@ -148,6 +173,10 @@
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
+								</th>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
 									No
 								</th>
 								<th
@@ -208,6 +237,14 @@
 							{:else}
 								{#each state.table as row, index}
 									<tr class="transition hover:bg-gray-50">
+										<td class="px-3 py-2">
+											<button onclick={() => toggleRow(row)} class="rounded p-1 hover:bg-gray-200">
+												<Icon
+													icon={row.open ? 'mdi:chevron-down' : 'mdi:chevron-right'}
+													width="20"
+												/>
+											</button>
+										</td>
 										<td
 											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm"
 										>
@@ -259,6 +296,35 @@
 											{row.transaction_date}
 										</td>
 									</tr>
+									<!-- DETAIL ROW -->
+									{#if row.open}
+										<tr class="rounded-md bg-gray-50">
+											<td colspan="11" class="px-4 py-3">
+												{#if row.loading}
+													<p class="text-sm text-gray-500">Loading detail...</p>
+												{:else if row.details.length === 0}
+													<p class="text-sm text-gray-500">No detail found</p>
+												{:else}
+													<table class="min-w-full text-sm">
+														<thead class="rounded-md bg-gray-200">
+															<tr>
+																<th class="px-2 py-1 text-left">Barcode Id ID</th>
+																<th class="px-2 py-1 text-left">Created Date</th>
+															</tr>
+														</thead>
+														<tbody>
+															{#each row.details as d}
+																<tr>
+																	<td class="px-2 py-1">{d.barcode_id}</td>
+																	<td class="px-2 py-1">{d.created_date}</td>
+																</tr>
+															{/each}
+														</tbody>
+													</table>
+												{/if}
+											</td>
+										</tr>
+									{/if}
 								{/each}
 							{/if}
 						</tbody>
