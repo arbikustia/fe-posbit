@@ -8,14 +8,14 @@ const showApiRequestError = true;
 const tokenAccess = userStore.getToken();
 
 const apiClient = axios.create({
-	baseURL: 'https://pos.daalushijab.site/api/',
+	baseURL: 'https://bantupos.daalushijab.site/api/',
 	// baseURL: 'https://unsoaked-roseann-fancily.ngrok-free.dev/api/',
 	// baseURL: 'http://10.219.201.166:5000/api/',
 	timeout: 10000,
 	headers: {
 		'Content-Type': 'application/json',
-		Authorization: `Bearer ${tokenAccess}`,
-		'ngrok-skip-browser-warning': 'true'
+		Authorization: `Bearer ${tokenAccess}`
+		// 'ngrok-skip-browser-warning': 'true'
 	}
 });
 

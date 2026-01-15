@@ -309,7 +309,7 @@
 													<table class="min-w-full text-sm">
 														<thead class="rounded-md bg-gray-200">
 															<tr>
-																<th class="px-2 py-1 text-left">Barcode Id ID</th>
+																<th class="px-2 py-1 text-left">Barcode ID</th>
 																<th class="px-2 py-1 text-left">Created Date</th>
 															</tr>
 														</thead>

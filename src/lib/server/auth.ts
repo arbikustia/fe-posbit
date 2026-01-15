@@ -18,7 +18,7 @@ export function decodeJwt(token: string): { [key: string]: unknown } | null {
 
 export function setAuthCookie(event: RequestEvent, response: any): void {
 	const { accessToken, refreshToken, role, fullName, email, username } = response;
-	console.log(role, 'niini')
+	console.log(role, 'niini');
 	if (!accessToken) {
 		throw new Error('Auth Failed, please contact Administrator');
 	}
@@ -27,7 +27,7 @@ export function setAuthCookie(event: RequestEvent, response: any): void {
 		httpOnly: false,
 		path: '/',
 		secure: true,
-		sameSite: 'lax',
+		sameSite: 'lax'
 		// expires: new Date(tokenExpirationInstant)
 	});
 
@@ -52,7 +52,7 @@ export function setAuthCookie(event: RequestEvent, response: any): void {
 		httpOnly: false, // Bisa diakses dari client-side
 		secure: true,
 		path: '/',
-		sameSite: 'lax',
+		sameSite: 'lax'
 		// expires: new Date(tokenExpirationInstant)
 	});
 }
@@ -63,7 +63,7 @@ export function deleteAuthCookie(event: RequestEvent): void {
 	event.cookies.delete(userInfoCookieKey, { path: '/' });
 }
 
-function deleteClientCookies () {
+function deleteClientCookies() {
 	// Hapus cookies yang tidak httpOnly
 	document.cookie.split(';').forEach((cookie) => {
 		const name = cookie.split('=')[0].trim();
@@ -78,10 +78,10 @@ function deleteClientCookies () {
 	cookiesToDelete.forEach((name) => {
 		document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
 	});
-};
+}
 
 // Fungsi untuk menghapus semua storage
-function clearAllStorage () {
+function clearAllStorage() {
 	// Local Storage
 	localStorage.clear();
 
@@ -96,18 +96,17 @@ function clearAllStorage () {
 			});
 		});
 	}
-};
+}
 
 export async function login(event: RequestEvent, username: string, password: string) {
-
-	const res = await fetch('https://pos.daalushijab.site/api/authentication', {
+	const res = await fetch('https://bantupos.daalushijab.site/api/authentication', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify({
 			username: username,
-			password: password,
+			password: password
 		})
 	});
 
@@ -117,14 +116,14 @@ export async function login(event: RequestEvent, username: string, password: str
 
 	const data = await res.json();
 	setAuthCookie(event, data.data);
-	console.log(data, 'ini response')
+	console.log(data, 'ini response');
 	event.cookies.set('username', username, {
 		httpOnly: false,
 		path: '/',
 		secure: true,
 		sameSite: 'lax'
 	});
-	return data
+	return data;
 }
 
 export function logout(event: RequestEvent) {
