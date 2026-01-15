@@ -75,6 +75,7 @@ export function useDashboardInventory() {
 		if (start && end) {
 			state.startDate = start;
 			state.endDate = end;
+			handleGetPaged();
 		}
 	});
 
