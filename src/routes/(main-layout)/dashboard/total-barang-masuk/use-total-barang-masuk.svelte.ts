@@ -57,26 +57,20 @@ export function useSummaryShiftPage() {
 
 	let debounceTimer: any;
 
-	// 🔹 Efek: pencarian otomatis
 	$effect(() => {
-		(async () => {
-			await handleGetPaged(1, state.searchTerm);
-		})();
-	});
+		// dependency eksplisit
+		state.searchTerm;
+		state.startDate;
+		state.endDate;
+		state.pageSize;
 
-	$effect(() => {
-		// Hanya jalankan jika startDate dan endDate sudah terisi
-		if (state.startDate && state.endDate) {
-			console.log('Date range changed, refreshing data...', state.startDate, state.endDate);
+		if (!state.startDate || !state.endDate) return;
 
-			if (debounceTimer) {
-				clearTimeout(debounceTimer);
-			}
+		if (debounceTimer) clearTimeout(debounceTimer);
 
-			debounceTimer = setTimeout(() => {
-				handleGetPaged(1, state.searchTerm);
-			}, 300);
-		}
+		debounceTimer = setTimeout(() => {
+			handleGetPaged(1, state.searchTerm);
+		}, 300);
 	});
 
 	async function handleGetPaged(pageNumber = state.currentPage, searchTerm = state.searchTerm) {

@@ -20,6 +20,7 @@ export function useSummaryShiftPage() {
 		searchTerm: string;
 		startDate: string;
 		endDate: string;
+		initialized: boolean;
 	};
 
 	const state = $state<stateProps>({
@@ -35,10 +36,11 @@ export function useSummaryShiftPage() {
 		startDate: dayjs().subtract(1, 'month').startOf('month').format('YYYY-MM-DD'),
 		endDate: dayjs().subtract(1, 'month').endOf('month').format('YYYY-MM-DD'),
 		isLoading: false,
-		searchTerm: ''
+		searchTerm: '',
+		initialized: false
 	});
 
-	// 🔹 Transform data dari API ke bentuk table dengan struktur baru
+	// 🔹 Transform API → table
 	function transformItemData(apiData: any[]) {
 		return apiData.map((item, index) => ({
 			id: item.id || index + 1,
@@ -51,34 +53,13 @@ export function useSummaryShiftPage() {
 			item_id: item.item_id,
 			qty: item.qty,
 			remarks: item.remarks,
-			scan_by: item.scan_by,
+			scan_by: item.scan_by
 		}));
 	}
 
-	let debounceTimer: any;
-
-	// 🔹 Efek: pencarian otomatis
-	$effect(() => {
-		(async () => {
-			await handleGetPaged(1, state.searchTerm);
-		})();
-	});
-
-	$effect(() => {
-		// Hanya jalankan jika startDate dan endDate sudah terisi
-		if (state.startDate && state.endDate) {
-			console.log('Date range changed, refreshing data...', state.startDate, state.endDate);
-
-			if (debounceTimer) {
-				clearTimeout(debounceTimer);
-			}
-
-			debounceTimer = setTimeout(() => {
-				handleGetPaged(1, state.searchTerm);
-			}, 300);
-		}
-	});
-
+	/* =====================================================
+	   FETCH HANDLER
+	===================================================== */
 	async function handleGetPaged(pageNumber = state.currentPage, searchTerm = state.searchTerm) {
 		try {
 			state.isLoading = true;
@@ -112,39 +93,27 @@ export function useSummaryShiftPage() {
 		}
 	}
 
-	// 🔹 Ganti halaman
-	async function handlePageChange(pageNum: number) {
-		if (pageNum < 1 || pageNum > state.totalPages) return;
-		state.currentPage = pageNum;
-		await handleGetPaged(pageNum);
-	}
+	/* =====================================================
+	   SINGLE FETCH CONTROLLER (ANTI BLINK)
+	===================================================== */
+	let debounceTimer: any;
 
-	// 🔹 Handle search input
-	function handleSearch(term: string) {
-		state.searchTerm = term;
-		// Reset ke halaman 1 saat search
-		state.currentPage = 1;
-		// Data akan otomatis ter-refresh oleh $effect di atas
-	}
+	$effect(() => {
+		if (!state.initialized) return;
+		if (!state.startDate || !state.endDate) return;
 
-	// 🔹 ✅ FUNGSI BARU: Handle date filter change
-	async function handleDateFilter(startDate: string, endDate: string) {
-		state.startDate = startDate;
-		state.endDate = endDate;
-		state.currentPage = 1; // Reset ke halaman 1 saat filter tanggal berubah
+		if (debounceTimer) clearTimeout(debounceTimer);
 
-		// Data akan otomatis ter-refresh oleh $effect di atas
-		console.log('Date filter applied:', startDate, endDate);
-	}
+		debounceTimer = setTimeout(() => {
+			handleGetPaged(state.currentPage, state.searchTerm);
+		}, 300);
+	});
 
-	// 🔹 ✅ FUNGSI BARU: Clear search
-	function handleClearSearch() {
-		state.searchTerm = '';
-		state.currentPage = 1;
-		state.showSearch = false;
-	}
+	/* =====================================================
+	   LIFECYCLE
+	===================================================== */
 	onMount(() => {
-		const pageStore = get(page); // ✅ OK
+		const pageStore = get(page);
 		const params = pageStore.url.searchParams;
 
 		const start = params.get('Start');
@@ -155,11 +124,37 @@ export function useSummaryShiftPage() {
 			state.endDate = end;
 			state.currentPage = 1;
 		}
+
+		state.initialized = true; // 🔑 unlock fetch
 	});
+
+	/* =====================================================
+	   ACTION HANDLERS (STATE ONLY)
+	===================================================== */
+	function handlePageChange(pageNum: number) {
+		if (pageNum < 1 || pageNum > state.totalPages) return;
+		state.currentPage = pageNum;
+	}
+
+	function handleSearch(term: string) {
+		state.searchTerm = term;
+		state.currentPage = 1;
+	}
+
+	function handleDateFilter(startDate: string, endDate: string) {
+		state.startDate = startDate;
+		state.endDate = endDate;
+		state.currentPage = 1;
+	}
+
+	function handleClearSearch() {
+		state.searchTerm = '';
+		state.currentPage = 1;
+		state.showSearch = false;
+	}
 
 	return {
 		state,
-		handleGetPaged,
 		handlePageChange,
 		handleSearch,
 		handleDateFilter,

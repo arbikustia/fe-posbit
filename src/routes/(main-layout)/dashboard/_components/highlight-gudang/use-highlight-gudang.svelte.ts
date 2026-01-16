@@ -12,6 +12,7 @@ export function useDashboardInventory() {
 		startDate: string;
 		endDate: string;
 		popoverOpenGudang: boolean;
+		initialized: boolean;
 	};
 
 	const state = $state<stateProps>({
@@ -19,7 +20,8 @@ export function useDashboardInventory() {
 		startDate: dayjs().startOf('month').format('YYYY-MM-DD'),
 		endDate: dayjs().endOf('month').format('YYYY-MM-DD'),
 		isLoading: false,
-		popoverOpenGudang: false
+		popoverOpenGudang: false,
+		initialized: false
 	});
 
 	async function handleGetPaged() {
@@ -47,22 +49,30 @@ export function useDashboardInventory() {
 	async function handleDateFilter(startDate: string, endDate: string) {
 		state.startDate = startDate;
 		state.endDate = endDate;
-
-		// Data akan otomatis ter-refresh oleh $effect di atas
-		console.log('Date filter applied:', startDate, endDate);
-		handleGetPaged();
 	}
 
-	$effect(() => {
-		(async () => {
-			if (state.startDate && state.endDate) {
-				handleGetPaged();
-			}
-		})();
+	onMount(() => {
+		const pageStore = get(page);
+		const params = pageStore.url.searchParams;
+
+		const start = params.get('Start');
+		const end = params.get('End');
+
+		if (start && end) {
+			state.startDate = start;
+			state.endDate = end;
+		}
+
+		// tandai sudah siap
+		state.initialized = true;
 	});
 
-	onMount(() => {
-		handleGetPaged();
+	$effect(() => {
+		if (!state.initialized) return;
+
+		if (state.startDate && state.endDate) {
+			handleGetPaged();
+		}
 	});
 
 	onMount(() => {
@@ -75,6 +85,8 @@ export function useDashboardInventory() {
 		if (start && end) {
 			state.startDate = start;
 			state.endDate = end;
+			handleGetPaged();
+		} else {
 			handleGetPaged();
 		}
 	});
