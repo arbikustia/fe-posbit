@@ -16,8 +16,7 @@ export const dashboardGudangService = {
 		SearchTerm: string;
 		Start: string;
 		End: string;
-		Location: string;
-		To: string;
+		Status: string;
 	}) => {
 		return apiClient.get<RestApiResponse<unknown>>(`/sp/export-paged-barcode`, {
 			params
