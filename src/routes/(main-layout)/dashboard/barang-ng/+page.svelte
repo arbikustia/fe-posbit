@@ -82,7 +82,7 @@
 	}
 </script>
 
-<div class="container w-full">
+<div class="p-2 m-2	 w-full">
 	<div class="max-w-8xl mx-auto">
 		<header class="mb-4 sm:mb-6 md:mb-8">
 			<div class="flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -170,15 +170,17 @@
 						<thead class="bg-gray-100">
 							<tr>
 								<th class="w-8 px-3 py-2"></th>
-								<th class="px-3 py-2 text-xs">No</th>
-								<th class="px-3 py-2 text-xs">Transaction Number</th>
-								<th class="px-3 py-2 text-xs">Item ID</th>
-								<th class="px-3 py-2 text-xs">Qty</th>
-								<th class="px-3 py-2 text-xs">Remarks</th>
-								<th class="px-3 py-2 text-xs">Location</th>
-								<th class="px-3 py-2 text-xs">From</th>
-								<th class="px-3 py-2 text-xs">To</th>
-								<th class="px-3 py-2 text-xs">Scan By</th>
+								<th class="px-3 py-2 text-left text-xs">No</th>
+								<th class="px-3 py-2 text-left text-xs">Transaction Number</th>
+								<th class="px-3 py-2 text-left text-xs">Item ID</th>
+								<th class="px-3 py-2 text-left text-xs">Name</th>
+								<th class="px-3 py-2 text-left text-xs">Desc</th>
+								<th class="px-3 py-2 text-left text-xs">Qty</th>
+								<th class="px-3 py-2 text-left text-xs">Remarks</th>
+								<th class="px-3 py-2 text-left text-xs">Location</th>
+								<th class="px-3 py-2 text-left text-xs">From</th>
+								<th class="px-3 py-2 text-left text-xs">To</th>
+								<th class="px-3 py-2 text-left text-xs">Scan By</th>
 								<th class="px-3 py-2 text-right text-xs">Date</th>
 							</tr>
 						</thead>
@@ -196,14 +198,16 @@
 									<td class="px-3 py-2 text-xs">
 										{(state.currentPage - 1) * state.pageSize + index + 1}
 									</td>
-									<td class="px-3 py-2 text-xs">{row.transaction_number}</td>
-									<td class="px-3 py-2 text-xs">{row.item_id}</td>
-									<td class="px-3 py-2 text-xs">{row.qty}</td>
-									<td class="px-3 py-2 text-xs">{row.remarks}</td>
-									<td class="px-3 py-2 text-xs">{row.location}</td>
-									<td class="px-3 py-2 text-xs">{row.from}</td>
-									<td class="px-3 py-2 text-xs">{row.to}</td>
-									<td class="px-3 py-2 text-xs">{row.scan_by}</td>
+									<td class="px-3 py-2 text-left text-xs">{row.transaction_number}</td>
+									<td class="px-3 py-2 text-left text-xs">{row.item_id}</td>
+									<td class="px-3 py-2 text-left text-xs">{row.name}</td>
+									<td class="px-3 py-2 text-left text-xs">{row.description}</td>
+									<td class="px-3 py-2 text-left text-xs">{row.qty}</td>
+									<td class="px-3 py-2 text-left text-xs">{row.remarks}</td>
+									<td class="px-3 py-2 text-left text-xs">{row.location}</td>
+									<td class="px-3 py-2 text-left text-xs">{row.from}</td>
+									<td class="px-3 py-2 text-left text-xs">{row.to}</td>
+									<td class="px-3 py-2 text-left text-xs">{row.scan_by}</td>
 									<td class="px-3 py-2 text-right text-xs">{row.transaction_date}</td>
 								</tr>
 

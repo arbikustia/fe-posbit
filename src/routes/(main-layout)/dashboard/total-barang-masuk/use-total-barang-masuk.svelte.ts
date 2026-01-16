@@ -42,16 +42,13 @@ export function useSummaryShiftPage() {
 	function transformItemData(apiData: any[]) {
 		return apiData.map((item, index) => ({
 			id: item.id || index + 1,
-			stock_out_id: item.stock_out_id,
-			transaction_number: item.transaction_number,
-			transaction_date: item.transaction_date,
-			location: item.location,
-			from: item.from,
-			to: item.to,
+			barcode_id:item.barcode_id,
+			lokasi: item.lokasi,
 			item_id: item.item_id,
-			qty: item.qty,
-			remarks: item.remarks,
-			scan_by: item.scan_by
+			name:item.name,
+			description: item.description,
+			scan_by: item.scan_by,
+			scan_date: item.scan_date
 		}));
 	}
 

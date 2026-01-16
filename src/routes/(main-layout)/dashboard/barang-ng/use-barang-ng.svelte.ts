@@ -53,7 +53,9 @@ export function useSummaryShiftPage() {
 			item_id: item.item_id,
 			qty: item.qty,
 			remarks: item.remarks,
-			scan_by: item.scan_by
+			scan_by: item.scan_by,
+			name: item.name,
+			description: item.description
 		}));
 	}
 

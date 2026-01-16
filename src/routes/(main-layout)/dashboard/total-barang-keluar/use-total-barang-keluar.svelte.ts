@@ -49,6 +49,8 @@ export function useSummaryShiftPage() {
 			from: item.from,
 			to: item.to,
 			item_id: item.item_id,
+			name:item.name,
+			description:item.description,
 			qty: item.qty,
 			remarks: item.remarks,
 			scan_by: item.scan_by

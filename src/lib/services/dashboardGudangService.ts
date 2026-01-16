@@ -18,7 +18,7 @@ export const dashboardGudangService = {
 		End: string;
 		Status: string;
 	}) => {
-		return apiClient.get<RestApiResponse<unknown>>(`/sp/export-paged-barcode`, {
+		return apiClient.get<RestApiResponse<unknown>>(`/sp/paged-barcode`, {
 			params
 		});
 	},
@@ -108,6 +108,60 @@ export const dashboardGudangService = {
             // Extract filename from response headers or use default
             const contentDisposition = response.headers['content-disposition'];
             let filename = `Page-In-${new Date().getTime()}.xlsx`;
+
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+                if (filenameMatch && filenameMatch[1]) {
+                    filename = filenameMatch[1];
+                    // Ensure .xlsx extension
+                    if (!filename.endsWith('.xlsx')) {
+                        filename += '.xlsx';
+                    }
+                }
+            }
+
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+
+            // Cleanup
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error('Error downloading Excel:', error);
+            throw new Error('Failed to download Excel file');
+        }
+    },
+    getExcelPageBarcode: async (params: {
+        PageNumber: number,
+        PageSize: number,
+        SearchTerm: string,
+        Start: string,
+        End: string,
+        Status: string,
+    }): Promise<void> => {
+        try {
+            const response:any = await apiClient.get(
+                `sp/export-paged-barcode?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&Start=${params.Start}&End=${params.End}&Status=${params.Status}`,
+                {
+                    responseType: 'blob' // Important for file download
+                }
+            );
+
+            // Create blob from response
+            const blob:any = new Blob([response.data], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            });
+
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+
+            // Extract filename from response headers or use default
+            const contentDisposition = response.headers['content-disposition'];
+            let filename = `Data-Barcode-${new Date().getTime()}.xlsx`;
 
             if (contentDisposition) {
                 const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);

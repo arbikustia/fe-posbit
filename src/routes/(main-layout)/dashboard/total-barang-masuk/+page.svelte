@@ -47,14 +47,13 @@
 		}
 	}
 	function downloadExcel() {
-		dashboardGudangService.getExcelPageIn({
+		dashboardGudangService.getExcelPageBarcode({
 			PageNumber: 1,
 			PageSize: state.pageSize,
 			SearchTerm: state.searchTerm,
 			End: state.endDate,
 			Start: state.startDate,
-			Location: 'GUDANG',
-			To: 'GUDANG'
+			Status: 'GUDANG',
 		});
 	}
 </script>
@@ -153,7 +152,7 @@
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
-									Transaction Number
+									Barcode Id
 								</th>
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
@@ -163,27 +162,18 @@
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
-									QTY
+									Name
 								</th>
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
-									Remarks
+									Description
 								</th>
+								
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
 									Location
-								</th>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>
-									From
-								</th>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>
-									To
 								</th>
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
@@ -216,7 +206,7 @@
 										<td
 											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
-											{row.transaction_number}
+											{row.barcode_id}
 										</td>
 										<td
 											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
@@ -226,28 +216,19 @@
 										<td
 											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
-											{row.qty}
+											{row.name}
 										</td>
 										<td
-											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
-											{row.remarks}
+											{row.description}
 										</td>
 										<td
-											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
-											{row.location}
+											{row.lokasi}
 										</td>
-										<td
-											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-										>
-											{row.from}
-										</td>
-										<td
-											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-										>
-											{row.to}
-										</td>
+										
 										<td
 											class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
@@ -256,7 +237,7 @@
 										<td
 											class="px-3 py-2.5 text-right text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
-											{row.transaction_date}
+											{row.scan_date}
 										</td>
 									</tr>
 								{/each}

@@ -83,7 +83,7 @@
 	}
 </script>
 
-<div class="container w-full">
+<div class="p-2 m-2 w-full">
 	<div class="max-w-8xl mx-auto">
 		<header class="mb-4 sm:mb-6 md:mb-8">
 			<div class="flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -193,6 +193,15 @@
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
+									Name
+								</th><th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Description
+								</th>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
 									QTY
 								</th>
 								<th
@@ -261,6 +270,17 @@
 										>
 											{row.item_id}
 										</td>
+										<td
+											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+										>
+											{row.name}
+										</td>
+										<td
+											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+										>
+											{row.description}
+										</td>
+										
 										<td
 											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
