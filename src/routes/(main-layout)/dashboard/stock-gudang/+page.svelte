@@ -178,6 +178,11 @@
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
+									Status
+								</th>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
 									Scan By
 								</th>
 								<th
@@ -226,8 +231,14 @@
 										<td
 											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
-											{row.lokasi}
+											{row.location}
 										</td>
+										<td
+											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+										>
+											{row.status}
+										</td>
+										
 										
 										<td
 											class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"

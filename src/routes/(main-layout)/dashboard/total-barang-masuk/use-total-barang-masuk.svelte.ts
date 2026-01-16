@@ -43,7 +43,8 @@ export function useSummaryShiftPage() {
 		return apiData.map((item, index) => ({
 			id: item.id || index + 1,
 			barcode_id:item.barcode_id,
-			lokasi: item.lokasi,
+			location: item.location,
+			status: item.status,
 			item_id: item.item_id,
 			name:item.name,
 			description: item.description,
