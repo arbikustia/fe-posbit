@@ -19,7 +19,7 @@ export const dashboardGudangService = {
 		Location: string;
 		To: string;
 	}) => {
-		return apiClient.get<RestApiResponse<unknown>>(`/api/sp/export-paged-barcode`, {
+		return apiClient.get<RestApiResponse<unknown>>(`/sp/export-paged-barcode`, {
 			params
 		});
 	},
