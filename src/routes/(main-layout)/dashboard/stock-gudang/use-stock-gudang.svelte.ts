@@ -66,7 +66,7 @@ export function useSummaryShiftPage() {
 		try {
 			state.isLoading = true;
 
-			const res: any = await dashboardGudangService.getPagedIn({
+			const res: any = await dashboardGudangService.getPagedDetailBarcode({
 				PageNumber: pageNumber,
 				PageSize: state.pageSize,
 				SearchTerm: searchTerm,
@@ -162,6 +162,7 @@ export function useSummaryShiftPage() {
 		handlePageChange,
 		handleSearch,
 		handleDateFilter,
-		handleClearSearch
+		handleClearSearch,
+		handleGetPaged
 	};
 }

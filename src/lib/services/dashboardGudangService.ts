@@ -10,6 +10,19 @@ export const dashboardGudangService = {
 			params
 		});
 	},
+	getPagedDetailBarcode: (params: {
+		PageNumber: number;
+		PageSize: number;
+		SearchTerm: string;
+		Start: string;
+		End: string;
+		Location: string;
+		To: string;
+	}) => {
+		return apiClient.get<RestApiResponse<unknown>>(`/api/sp/export-paged-barcode`, {
+			params
+		});
+	},
 	getPagedIn: (params: {
 		PageNumber: number;
 		PageSize: number;
