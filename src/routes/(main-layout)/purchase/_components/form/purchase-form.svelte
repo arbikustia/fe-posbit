@@ -224,6 +224,21 @@
 
 	// === CUSTOMER SELECTION ===
 	function selectCustomer(customerId: string) {
+		console.log(customerId,'ok')
+		purchaseService.getPurchaseOrder(Number(customerId))
+		.then((res:any) => {
+			console.log(res.data.data,'test')
+			if(res.data.status){
+				if(res?.data.data?.status_po == 'OPEN'){
+					pageState.isStatusOpen = true
+					toast.error('This customer has an open status.')
+				}else{
+					pageState.isStatusOpen = false
+				}
+			}else{
+				toast.error('Something went wrong')
+			}
+		})
 		formData.update((f) => ({ ...f, customer_id: customerId }));
 		customerOpen = false;
 		tick().then(() => customerTriggerRef?.focus());
@@ -605,7 +620,7 @@
 			<Form.Control>
 				<Form.Label>Items <span class="text-red-500">*</span></Form.Label>
 				<Popover.Root bind:open>
-					<Popover.Trigger bind:ref={triggerRef} class="h-fit w-full">
+					<Popover.Trigger disabled={pageState.isStatusOpen} bind:ref={triggerRef} class="h-fit w-full">
 						{#snippet child({ props })}
 							<Button
 								variant="outline"

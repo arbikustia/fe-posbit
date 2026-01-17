@@ -86,6 +86,7 @@ export function usePurchasePage() {
 		detailFromParams: any[];
 		allData: any[];
 		originalData: any[]; // Data asli dari API sebelum difilter
+		isStatusOpen:boolean
 	};
 
 	const state = $state<stateProps>({
@@ -114,7 +115,8 @@ export function usePurchasePage() {
 		poLogDecreaseQty: [],
 		detailFromParams: [],
 		allData: [],
-		originalData: [] // Data asli dari API
+		originalData: [], // Data asli dari API
+		isStatusOpen:false
 	});
 
 	// Fetch items from gudang
