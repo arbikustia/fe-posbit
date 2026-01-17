@@ -224,21 +224,20 @@
 
 	// === CUSTOMER SELECTION ===
 	function selectCustomer(customerId: string) {
-		console.log(customerId,'ok')
-		purchaseService.getPurchaseOrder(Number(customerId))
-		.then((res:any) => {
-			console.log(res.data.data,'test')
-			if(res.data.status){
-				if(res?.data.data?.status_po == 'OPEN'){
-					pageState.isStatusOpen = true
-					toast.error('This customer has an open status.')
-				}else{
-					pageState.isStatusOpen = false
+		console.log(customerId, 'ok');
+		purchaseService.getPurchaseOrder(Number(customerId)).then((res: any) => {
+			console.log(res.data.data, 'test');
+			if (res.data.status) {
+				if (res?.data.data?.status_po == 'OPEN') {
+					pageState.isStatusOpen = true;
+					toast.error('This customer has an open status.');
+				} else {
+					pageState.isStatusOpen = false;
 				}
-			}else{
-				toast.error('Something went wrong')
+			} else {
+				toast.error('Something went wrong');
 			}
-		})
+		});
 		formData.update((f) => ({ ...f, customer_id: customerId }));
 		customerOpen = false;
 		tick().then(() => customerTriggerRef?.focus());
@@ -559,7 +558,7 @@
 		target.value = formatIDR(raw);
 	}
 	let searchQuery = $state('');
-	const LIMIT = 50;
+	const LIMIT = 100;
 	const filteredItems = $derived.by(() => {
 		if (!itemOptions?.length) return [];
 
@@ -574,8 +573,10 @@
 			.filter((item: any) => {
 				const label = String(item.label ?? '').toLowerCase();
 				const value = String(item.value ?? '').toLowerCase();
+				const description = String(item.deskripsi ?? '').toLowerCase();
+				const combined = `${item.label ?? ''} ${item.deskripsi ?? ''}`.toLowerCase();
 
-				return label.includes(q) || value.includes(q);
+				return label.includes(q) || value.includes(q) || description.includes(q) || combined.includes(q);
 			})
 			.slice(0, LIMIT); // tetap batasi render
 	});
@@ -620,7 +621,11 @@
 			<Form.Control>
 				<Form.Label>Items <span class="text-red-500">*</span></Form.Label>
 				<Popover.Root bind:open>
-					<Popover.Trigger disabled={pageState.isStatusOpen} bind:ref={triggerRef} class="h-fit w-full">
+					<Popover.Trigger
+						disabled={pageState.isStatusOpen}
+						bind:ref={triggerRef}
+						class="h-fit w-full"
+					>
 						{#snippet child({ props })}
 							<Button
 								variant="outline"
@@ -661,15 +666,15 @@
 					<Popover.Content class="w-[500px]  p-0" align="start">
 						<div>
 							<!-- <Command.Input placeholder="Search items..." class="h-9" /> -->
-							<Input placeholder="Search items..." class="h-9" bind:value={searchQuery} />
-							<div class=""> 
+							<Input placeholder="Search items..." class="mb-3 h-9" bind:value={searchQuery} />
+							<div class="">
 								<!-- <Command.Empty>No items found.</Command.Empty> -->
 								{#if filteredItems.length === 0}
 									<div class="flex h-20 w-full items-center justify-center text-center">
 										No items found.
 									</div>
 								{/if}
-								<div class="space-y-2 max-h-[300px] overflow-auto">
+								<div class="max-h-[300px] space-y-2 overflow-auto">
 									{#each filteredItems as item}
 										<Button
 											variant="ghost"
@@ -677,14 +682,14 @@
 											onclick={() => toggleItem(item.value, item.label)}
 											class="flex w-full items-center justify-between"
 										>
-											<div class="flex justify-start items-start gap-2">
+											<div class="flex items-start justify-start gap-2">
 												<CheckIcon
 													class={cn(
 														'size-4',
 														!selectedItems.includes(item.value) && 'text-transparent'
 													)}
 												/>
-												<div class="flex items-start flex-col">
+												<div class="flex flex-col items-start">
 													<span class="text-xs font-medium"
 														>{item.label} {item.deskripsi ? '-' : ''} {item.deskripsi}</span
 													>

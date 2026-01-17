@@ -54,8 +54,8 @@ export function useSummaryShiftPage() {
 			qty: item.qty,
 			remarks: item.remarks,
 			scan_by: item.scan_by,
-			name:item.name,
-			description:item.description
+			name: item.name,
+			description: item.description
 		}));
 	}
 
@@ -64,11 +64,12 @@ export function useSummaryShiftPage() {
 	$effect(() => {
 		if (!state.initialized) return;
 		if (!state.startDate || !state.endDate) return;
+		const search = state.searchTerm;
 
 		if (debounceTimer) clearTimeout(debounceTimer);
 
 		debounceTimer = setTimeout(() => {
-			handleGetPaged(state.currentPage, state.searchTerm);
+			handleGetPaged(state.currentPage, search);
 		}, 300);
 	});
 

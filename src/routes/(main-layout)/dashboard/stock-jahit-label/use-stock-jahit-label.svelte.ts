@@ -67,11 +67,12 @@ export function useSummaryShiftPage() {
 		state.pageSize;
 
 		if (!state.startDate || !state.endDate) return;
+		const search = state.searchTerm;
 
 		if (debounceTimer) clearTimeout(debounceTimer);
 
 		debounceTimer = setTimeout(() => {
-			handleGetPaged(1, state.searchTerm);
+			handleGetPaged(1, search);
 		}, 300);
 	});
 

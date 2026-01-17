@@ -42,11 +42,11 @@ export function useSummaryShiftPage() {
 	function transformItemData(apiData: any[]) {
 		return apiData.map((item, index) => ({
 			id: item.id || index + 1,
-			barcode_id:item.barcode_id,
+			barcode_id: item.barcode_id,
 			location: item.location,
 			status: item.status,
 			item_id: item.item_id,
-			name:item.name,
+			name: item.name,
 			description: item.description,
 			scan_by: item.scan_by,
 			scan_date: item.scan_date
@@ -63,11 +63,12 @@ export function useSummaryShiftPage() {
 		state.pageSize;
 
 		if (!state.startDate || !state.endDate) return;
+		const search = state.searchTerm;
 
 		if (debounceTimer) clearTimeout(debounceTimer);
 
 		debounceTimer = setTimeout(() => {
-			handleGetPaged(1, state.searchTerm);
+			handleGetPaged(1, search);
 		}, 300);
 	});
 
@@ -81,7 +82,7 @@ export function useSummaryShiftPage() {
 				SearchTerm: searchTerm,
 				Start: state.startDate,
 				End: state.endDate,
-				Status: 'GUDANG',
+				Status: 'GUDANG'
 			});
 
 			if (res?.data?.data) {

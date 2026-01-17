@@ -271,12 +271,12 @@
 											{row.item_id}
 										</td>
 										<td
-											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
 											{row.name}
 										</td>
 										<td
-											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
 											{row.description}
 										</td>
@@ -292,17 +292,17 @@
 											{row.remarks}
 										</td>
 										<td
-											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
 											{row.location}
 										</td>
 										<td
-											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
 											{row.from}
 										</td>
 										<td
-											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
 											{row.to}
 										</td>

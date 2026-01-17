@@ -230,7 +230,7 @@ export function usePurchasePage() {
 			const res: any = await purchaseService.getPaged({
 				PageNumber: pageNumber, // Ambil semua data
 				PageSize: state.pageSize, // Ambil data dalam jumlah besar
-				SearchTerm: '', // Tidak pakai search di backend
+				SearchTerm: searchTerm, // Tidak pakai search di backend
 				PaymentStatus: state.paymentStatus,
 				StatusPo: state.statusPo,
 				StartDate: startDate,

@@ -272,7 +272,6 @@
 	const LIMIT = 50;
 	const filteredItems = $derived.by(() => {
 		if (!itemOptions?.length) return [];
-
 		const q = searchQuery?.toLowerCase().trim();
 
 		// belum search → tampilkan 50 pertama

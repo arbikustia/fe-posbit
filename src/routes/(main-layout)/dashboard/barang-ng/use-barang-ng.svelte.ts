@@ -103,11 +103,12 @@ export function useSummaryShiftPage() {
 	$effect(() => {
 		if (!state.initialized) return;
 		if (!state.startDate || !state.endDate) return;
+		const search = state.searchTerm;
 
 		if (debounceTimer) clearTimeout(debounceTimer);
 
 		debounceTimer = setTimeout(() => {
-			handleGetPaged(state.currentPage, state.searchTerm);
+			handleGetPaged(state.currentPage, search);
 		}, 300);
 	});
 
