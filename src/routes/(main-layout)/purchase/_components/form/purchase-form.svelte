@@ -544,7 +544,7 @@
 		target.value = formatIDR(raw);
 	}
 	let searchQuery = $state('');
-	const LIMIT = 50;
+	const LIMIT = 100;
 	const filteredItems = $derived.by(() => {
 		if (!itemOptions?.length) return [];
 
@@ -646,7 +646,7 @@
 					<Popover.Content class="w-[500px]  p-0" align="start">
 						<div>
 							<!-- <Command.Input placeholder="Search items..." class="h-9" /> -->
-							<Input placeholder="Search items..." class="h-9" bind:value={searchQuery} />
+							<Input placeholder="Search items..." class="h-9 mb-3" bind:value={searchQuery} />
 							<div class=""> 
 								<!-- <Command.Empty>No items found.</Command.Empty> -->
 								{#if filteredItems.length === 0}
