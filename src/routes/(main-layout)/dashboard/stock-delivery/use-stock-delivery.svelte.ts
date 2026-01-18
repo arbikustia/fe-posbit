@@ -21,6 +21,7 @@ export function useSummaryShiftPage() {
 		startDate: string;
 		endDate: string;
 		initialized: boolean;
+		type: string; // 🔑
 	};
 
 	const state = $state<stateProps>({
@@ -37,7 +38,8 @@ export function useSummaryShiftPage() {
 		endDate: dayjs().subtract(1, 'month').endOf('month').format('YYYY-MM-DD'),
 		isLoading: false,
 		searchTerm: '',
-		initialized: false
+		initialized: false,
+		type: '' // default
 	});
 
 	// 🔹 Transform data dari API ke bentuk table dengan struktur baru
@@ -77,12 +79,14 @@ export function useSummaryShiftPage() {
 		try {
 			state.isLoading = true;
 
+			const isAll = state.type === 'all';
+
 			const res: any = await dashboardGudangService.getPagedIn({
 				PageNumber: pageNumber,
 				PageSize: state.pageSize,
 				SearchTerm: searchTerm,
-				Start: state.startDate,
-				End: state.endDate,
+				Start: isAll ? 'NULL' : state.startDate, // 🔥
+				End: isAll ? 'NULL' : state.endDate, // 🔥
 				Location: 'DELIVERY',
 				To: 'DELIVERY'
 			});
@@ -138,6 +142,11 @@ export function useSummaryShiftPage() {
 
 		const start = params.get('Start');
 		const end = params.get('End');
+		const type = params.get('Type');
+
+		if (type) {
+			state.type = type;
+		}
 
 		if (start && end) {
 			state.startDate = start;
@@ -145,7 +154,7 @@ export function useSummaryShiftPage() {
 			state.currentPage = 1;
 		}
 
-		state.initialized = true; // 🔑
+		state.initialized = true;
 	});
 
 	return {

@@ -21,6 +21,7 @@ export function useSummaryShiftPage() {
 		startDate: string;
 		endDate: string;
 		initialized: boolean;
+		isFirstFetch: boolean; // 🔑
 	};
 
 	const state = $state<stateProps>({
@@ -37,7 +38,8 @@ export function useSummaryShiftPage() {
 		endDate: dayjs().subtract(1, 'month').endOf('month').format('YYYY-MM-DD'),
 		isLoading: false,
 		searchTerm: '',
-		initialized: false
+		initialized: false,
+		isFirstFetch: true // 🔑
 	});
 
 	/* =====================================================
@@ -60,7 +62,11 @@ export function useSummaryShiftPage() {
 	/* =====================================================
 	   FETCH HANDLER (CALLED BY EFFECT ONLY)
 	===================================================== */
-	async function handleGetPaged(pageNumber = state.currentPage, searchTerm = state.searchTerm) {
+	async function handleGetPaged(
+		pageNumber = state.currentPage,
+		searchTerm = state.searchTerm,
+		overrideNullDate = false
+	) {
 		try {
 			state.isLoading = true;
 
@@ -68,8 +74,8 @@ export function useSummaryShiftPage() {
 				PageNumber: pageNumber,
 				PageSize: state.pageSize,
 				SearchTerm: searchTerm,
-				Start: state.startDate,
-				End: state.endDate,
+				Start: overrideNullDate ? 'NULL' : state.startDate,
+				End: overrideNullDate ? 'NULL' : state.endDate,
 				Status: 'GUDANG'
 			});
 
@@ -84,11 +90,9 @@ export function useSummaryShiftPage() {
 				state.totalCount = 0;
 			}
 		} catch (err) {
-			console.error('Pagination fetch failed:', err);
+			console.error(err);
 			toast.error('Failed to load Stock data');
 			state.table = [];
-			state.totalPages = 0;
-			state.totalCount = 0;
 		} finally {
 			state.isLoading = false;
 		}
@@ -98,37 +102,41 @@ export function useSummaryShiftPage() {
 	   SINGLE FETCH CONTROLLER (ANTI BLINK)
 	===================================================== */
 	let debounceTimer: any;
-
 	$effect(() => {
 		if (!state.initialized) return;
 		if (!state.startDate || !state.endDate) return;
 
-		const search = state.searchTerm;
 		if (debounceTimer) clearTimeout(debounceTimer);
 
 		debounceTimer = setTimeout(() => {
-			handleGetPaged(state.currentPage, search);
+			if (state.isFirstFetch) {
+				handleGetPaged(state.currentPage, state.searchTerm, true); // 🔥 NULL
+				state.isFirstFetch = false;
+			} else {
+				handleGetPaged(state.currentPage, state.searchTerm);
+			}
 		}, 300);
 	});
 
 	/* =====================================================
 	   LIFECYCLE: READ PARAMS FIRST
 	===================================================== */
-	onMount(() => {
-		const pageStore = get(page);
-		const params = pageStore.url.searchParams;
+onMount(() => {
+	const pageStore = get(page);
+	const params = pageStore.url.searchParams;
 
-		const start = params.get('Start');
-		const end = params.get('End');
+	const start = params.get('Start');
+	const end = params.get('End');
 
-		if (start && end) {
-			state.startDate = start;
-			state.endDate = end;
-			state.currentPage = 1;
-		}
+	if (start && end) {
+		state.startDate = start;
+		state.endDate = end;
+		state.currentPage = 1;
+	}
 
-		state.initialized = true; // 🔑 allow first fetch
-	});
+	state.initialized = true;
+});
+
 
 	/* =====================================================
 	   ACTION HANDLERS (STATE ONLY)

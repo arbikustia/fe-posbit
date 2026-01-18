@@ -20,6 +20,7 @@ export function useSummaryShiftPage() {
 		searchTerm: string;
 		startDate: string;
 		endDate: string;
+		type: string; // 🔑
 	};
 
 	const state = $state<stateProps>({
@@ -35,7 +36,8 @@ export function useSummaryShiftPage() {
 		startDate: dayjs().subtract(1, 'month').startOf('month').format('YYYY-MM-DD'),
 		endDate: dayjs().subtract(1, 'month').endOf('month').format('YYYY-MM-DD'),
 		isLoading: false,
-		searchTerm: ''
+		searchTerm: '',
+		type: '' // default
 	});
 
 	// 🔹 Transform data dari API ke bentuk table dengan struktur baru
@@ -80,12 +82,14 @@ export function useSummaryShiftPage() {
 		try {
 			state.isLoading = true;
 
+			const isAll = state.type === 'all';
+
 			const res: any = await dashboardGudangService.getPagedIn({
 				PageNumber: pageNumber,
 				PageSize: state.pageSize,
 				SearchTerm: searchTerm,
-				Start: state.startDate,
-				End: state.endDate,
+				Start: isAll ? 'NULL' : state.startDate, // 🔥
+				End: isAll ? 'NULL' : state.endDate, // 🔥
 				Location: 'JAHITLABEL',
 				To: 'JAHITLABEL'
 			});
@@ -101,7 +105,7 @@ export function useSummaryShiftPage() {
 				state.totalCount = 0;
 			}
 		} catch (err) {
-			console.error('Pagination fetch failed:', err);
+			console.error(err);
 			toast.error('Failed to load Stock data');
 			state.table = [];
 			state.totalPages = 0;
@@ -144,11 +148,16 @@ export function useSummaryShiftPage() {
 	}
 
 	onMount(() => {
-		const pageStore = get(page); // ✅ OK
+		const pageStore = get(page);
 		const params = pageStore.url.searchParams;
 
 		const start = params.get('Start');
 		const end = params.get('End');
+		const type = params.get('Type');
+
+		if (type) {
+			state.type = type;
+		}
 
 		if (start && end) {
 			state.startDate = start;

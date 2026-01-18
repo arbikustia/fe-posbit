@@ -84,14 +84,9 @@
 						Total Stock Gudang
 					</Card.Description>
 				</div>
-				<div class="flex justify-between w-full gap-4 h-12">
-					<Card.Title class="text-2xl shadow-sm text-center rounded-md h-full flex items-center justify-center bg-green-500/10  w-full font-semibold tabular-nums md:text-2xl lg:text-2xl">
-						{state.list.stock_all_gudang ?? 0}
-					</Card.Title>
-					<Card.Title class="text-2xl shadow-sm text-center rounded-md h-full flex items-center justify-center bg-green-500/10  w-full font-semibold tabular-nums md:text-2xl lg:text-2xl">
-						{state.list.stock_all_gudang ?? 0}
-					</Card.Title>
-				</div>
+				<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
+					{state.list.stock_all_gudang ?? 0}
+				</Card.Title>
 			</Card.Header>
 		</Card.Root>
 
@@ -148,11 +143,7 @@
 				</Card.Title>
 			</Card.Header>
 		</Card.Root>
-		<Card.Root
-			onclick={() =>
-				goto(`/dashboard/stock-jahit-label?Start=${state.startDate}&End=${state.endDate}`)}
-			class="@container/card h-fit min-h-28 cursor-pointer p-0"
-		>
+		<Card.Root class="@container/card h-fit min-h-28 p-0">
 			<Card.Header class="flex flex-col items-center space-y-2 p-4">
 				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 					<Icon icon="mdi:needle" class="text-2xl text-amber-800 md:text-3xl" />
@@ -160,16 +151,29 @@
 						Stock Jahit label
 					</Card.Description>
 				</div>
-				<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-					{state.list.stock_jahit_label ?? 0}
-				</Card.Title>
+				<div class="flex h-12 w-full justify-between gap-4">
+					<Card.Title
+						onclick={() =>
+							goto(
+								`/dashboard/stock-jahit-label?Start=${state.startDate}&End=${state.endDate}&Type=all`
+							)}
+						class="flex h-full w-full cursor-pointer  items-center justify-center rounded-md bg-amber-800/10 text-center text-2xl  font-semibold tabular-nums shadow-sm md:text-2xl lg:text-2xl"
+					>
+						{state.list.stock_all_jahit_label ?? 0}
+					</Card.Title>
+					<Card.Title
+						onclick={() =>
+							goto(
+								`/dashboard/stock-jahit-label?Start=${state.startDate}&End=${state.endDate}&Type=basic`
+							)}
+						class="flex h-full w-full cursor-pointer items-center justify-center rounded-md bg-amber-800/10 text-center text-2xl  font-semibold tabular-nums shadow-sm md:text-2xl lg:text-2xl"
+					>
+						{state.list.stock_jahit_label ?? 0}
+					</Card.Title>
+				</div>
 			</Card.Header>
 		</Card.Root>
-		<Card.Root
-			onclick={() =>
-				goto(`/dashboard/stock-delivery?Start=${state.startDate}&End=${state.endDate}`)}
-			class="@container/card h-fit min-h-28 cursor-pointer p-0"
-		>
+		<Card.Root class="@container/card h-fit min-h-28  p-0">
 			<Card.Header class="flex flex-col items-center space-y-2 p-4">
 				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 					<Icon icon="mdi:truck-delivery" class="text-2xl text-pink-500 md:text-3xl" />
@@ -177,9 +181,22 @@
 						Stock Delivery
 					</Card.Description>
 				</div>
-				<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-					{state.list.stock_delivery ?? 0}
-				</Card.Title>
+				<div class="flex h-12 w-full justify-between gap-4">
+					<Card.Title
+						onclick={() =>
+							goto(`/dashboard/stock-delivery?Start=${state.startDate}&End=${state.endDate}&Type=all`)}
+						class="flex h-full w-full cursor-pointer items-center justify-center rounded-md bg-pink-500/10 text-center text-2xl  font-semibold tabular-nums shadow-sm md:text-2xl lg:text-2xl"
+					>
+						{state.list.stock_all_delivery ?? 0}
+					</Card.Title>
+					<Card.Title
+						onclick={() =>
+							goto(`/dashboard/stock-delivery?Start=${state.startDate}&End=${state.endDate}&Type=basic`)}
+						class="flex h-full w-full cursor-pointer items-center justify-center rounded-md bg-pink-500/10 text-center text-2xl  font-semibold tabular-nums shadow-sm md:text-2xl lg:text-2xl"
+					>
+						{state.list.stock_delivery ?? 0}
+					</Card.Title>
+				</div>
 			</Card.Header>
 		</Card.Root>
 		<Card.Root

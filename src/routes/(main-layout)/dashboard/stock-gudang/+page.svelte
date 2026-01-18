@@ -152,11 +152,6 @@
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
-									Barcode Id
-								</th>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>
 									Item ID
 								</th>
 								<th
@@ -178,7 +173,7 @@
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
-									Status
+									Qty
 								</th>
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
@@ -188,7 +183,7 @@
 								<th
 									class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
-									Date
+									Scan Date
 								</th>
 							</tr>
 						</thead>
@@ -207,11 +202,6 @@
 											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-500 sm:px-4 sm:py-3 md:text-sm"
 										>
 											{(state.currentPage - 1) * state.pageSize + index + 1}
-										</td>
-										<td
-											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-										>
-											{row.barcode_id}
 										</td>
 										<td
 											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
@@ -236,10 +226,8 @@
 										<td
 											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
-											{row.status}
+											{row.qty}
 										</td>
-										
-										
 										<td
 											class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
