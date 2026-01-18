@@ -83,7 +83,7 @@
 	}
 </script>
 
-<div class="p-2 m-2 w-full">
+<div class="p-2 w-full">
 	<div class="max-w-8xl mx-auto">
 		<header class="mb-4 sm:mb-6 md:mb-8">
 			<div class="flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">

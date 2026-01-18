@@ -164,12 +164,6 @@
 								>
 									Description
 								</th>
-								
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>
-									Location
-								</th>
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
@@ -179,11 +173,6 @@
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
 									Scan By
-								</th>
-								<th
-									class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>
-									Scan Date
 								</th>
 							</tr>
 						</thead>
@@ -221,11 +210,6 @@
 										<td
 											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
-											{row.location}
-										</td>
-										<td
-											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-										>
 											{row.qty}
 										</td>
 										
@@ -233,11 +217,6 @@
 											class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
 											{row.scan_by}
-										</td>
-										<td
-											class="px-3 py-2.5 text-right text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-										>
-											{row.scan_date}
 										</td>
 									</tr>
 								{/each}

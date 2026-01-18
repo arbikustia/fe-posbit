@@ -58,7 +58,8 @@ export function useSummaryShiftPage() {
 			scan_by: item.scan_by,
 			name: item.name,
 			description: item.description,
-			no_invoice: item.no_invoice
+			no_invoice: item.no_invoice,
+			cust_name: item.cust_name
 		}));
 	}
 
