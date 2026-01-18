@@ -42,7 +42,6 @@
 			state.popoverOpenGudang = false;
 		}
 	}
-
 </script>
 
 <div class="space-y-3">
@@ -78,16 +77,21 @@
 			onclick={() => goto(`/dashboard/stock-gudang?Start=${state.startDate}&End=${state.endDate}`)}
 			class="@container/card h-fit min-h-28 cursor-pointer p-0"
 		>
-			<Card.Header class="flex flex-col items-center space-y-2 p-4">
+			<Card.Header class="flex flex-col items-center space-y-2 px-4 pt-4">
 				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 					<Icon icon="mdi:warehouse" class="text-2xl text-emerald-500 md:text-2xl" />
 					<Card.Description class="text-center text-lg md:text-left md:text-sm">
 						Total Stock Gudang
 					</Card.Description>
 				</div>
-				<Card.Title class="text-2xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-					{state.list.stock_all_gudang ?? 0}
-				</Card.Title>
+				<div class="flex justify-between w-full gap-4 h-12">
+					<Card.Title class="text-2xl shadow-sm text-center rounded-md h-full flex items-center justify-center bg-green-500/10  w-full font-semibold tabular-nums md:text-2xl lg:text-2xl">
+						{state.list.stock_all_gudang ?? 0}
+					</Card.Title>
+					<Card.Title class="text-2xl shadow-sm text-center rounded-md h-full flex items-center justify-center bg-green-500/10  w-full font-semibold tabular-nums md:text-2xl lg:text-2xl">
+						{state.list.stock_all_gudang ?? 0}
+					</Card.Title>
+				</div>
 			</Card.Header>
 		</Card.Root>
 
