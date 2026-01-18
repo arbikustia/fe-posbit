@@ -10,11 +10,11 @@
 	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
 	import dayjs from 'dayjs';
 	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { useSummaryShiftPage } from './use-stock-gudang.svelte';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import Button from '@/components/ui/button/button.svelte';
 	import { goto } from '$app/navigation';
 	import { dashboardGudangService } from '@/services/dashboardGudangService';
+	import { useSummaryShiftPage } from './use-stock-gudang.svelte';
 
 	const { state, handlePageChange, handleGetPaged } = useSummaryShiftPage();
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
@@ -51,8 +51,8 @@
 			PageNumber: 1,
 			PageSize: state.pageSize,
 			SearchTerm: state.searchTerm,
-			End: state.endDate,
-			Start: state.startDate,
+			End: 'NULL',
+			Start: 'NULL',
 			Status: 'GUDANG',
 		});
 	}
@@ -101,34 +101,6 @@
 								class="text-gray-600 md:h-[22px] md:w-[22px]"
 							/>
 						</button>
-					</div>
-					<div class="grid max-w-65 gap-2">
-						<Popover.Root bind:open={popoverOpen}>
-							<Popover.Trigger
-								class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}
-							>
-								<CalendarIcon class="mr-2 size-4" />
-								{formatDateText()}
-							</Popover.Trigger>
-							<Popover.Content class="w-auto p-0" align="start">
-								<RangeCalendar
-									numberOfMonths={3}
-									onValueChange={handleDateChange}
-									value={{
-										start: new CalendarDate(
-											Number(dayjs(state.startDate).format('YYYY')),
-											Number(dayjs(state.startDate).format('M')),
-											Number(dayjs(state.startDate).format('D'))
-										),
-										end: new CalendarDate(
-											Number(dayjs(state.endDate).format('YYYY')),
-											Number(dayjs(state.endDate).format('M')),
-											Number(dayjs(state.endDate).format('D'))
-										)
-									}}
-								/>
-							</Popover.Content>
-						</Popover.Root>
 					</div>
 					<div>
 						<Button onclick={downloadExcel}>Export</Button>
@@ -212,6 +184,7 @@
 										>
 											{row.qty}
 										</td>
+										
 										<td
 											class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
