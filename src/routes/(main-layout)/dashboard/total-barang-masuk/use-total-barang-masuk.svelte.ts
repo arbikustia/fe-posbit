@@ -42,15 +42,18 @@ export function useSummaryShiftPage() {
 	function transformItemData(apiData: any[]) {
 		return apiData.map((item, index) => ({
 			id: item.id || index + 1,
-			barcode_id: item.barcode_id,
+			stock_out_id: item.stock_out_id,
+			transaction_number: item.transaction_number,
+			transaction_date: item.transaction_date,
 			location: item.location,
-			status: item.status,
+			from: item.from,
+			to: item.to,
 			item_id: item.item_id,
 			name: item.name,
 			description: item.description,
-			scan_by: item.scan_by,
-			scan_date: item.scan_date,
-			qty: item.qty
+			qty: item.qty,
+			remarks: item.remarks,
+			scan_by: item.scan_by
 		}));
 	}
 
@@ -77,13 +80,14 @@ export function useSummaryShiftPage() {
 		try {
 			state.isLoading = true;
 
-			const res: any = await dashboardGudangService.getPagedDetailBarcode({
+			const res: any = await dashboardGudangService.getPagedIn({
 				PageNumber: pageNumber,
 				PageSize: state.pageSize,
 				SearchTerm: searchTerm,
 				Start: state.startDate,
 				End: state.endDate,
-				Status: 'GUDANG'
+				Location: 'GUDANG',
+				To: 'GUDANG'
 			});
 
 			if (res?.data?.data) {

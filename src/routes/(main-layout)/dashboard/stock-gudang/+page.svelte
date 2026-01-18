@@ -53,7 +53,7 @@
 			SearchTerm: state.searchTerm,
 			End: 'NULL',
 			Start: 'NULL',
-			Status: 'GUDANG',
+			Status: state.statusPage,
 		});
 	}
 </script>
@@ -74,7 +74,7 @@
 						</Button>
 					</span>
 					<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">
-						Total Stock Gudang
+						{state.statusPage == 'GUDANG' ?'Total Stock Gudang' : state.statusPage == 'JAHITLABEL' ? 'Stock Jahit Label' : 'Stock Delivery'}
 					</h1>
 				</div>
 				<div class="flex gap-2">
@@ -141,11 +141,6 @@
 								>
 									Qty
 								</th>
-								<th
-									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>
-									Scan By
-								</th>
 							</tr>
 						</thead>
 
@@ -183,12 +178,6 @@
 											class="px-3 py-2.5 text-left text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
 											{row.qty}
-										</td>
-										
-										<td
-											class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-										>
-											{row.scan_by}
 										</td>
 									</tr>
 								{/each}

@@ -83,7 +83,7 @@
 	}
 </script>
 
-<div class="p-2  w-full">
+<div class="p-5  w-full">
 	<div class="max-w-8xl mx-auto">
 		<header class="mb-4 sm:mb-6 md:mb-8">
 			<div class="flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -138,7 +138,7 @@
 							</Popover.Trigger>
 							<Popover.Content class="w-auto p-0" align="start">
 								<RangeCalendar
-									numberOfMonths={3}
+									numberOfMonths={2}
 									onValueChange={handleDateChange}
 									value={{
 										start: new CalendarDate(
@@ -311,7 +311,7 @@
 											{row.scan_by}
 										</td>
 										<td
-											class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+											class="px-3 py-2.5 text-right text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
 											{row.transaction_date}
 										</td>

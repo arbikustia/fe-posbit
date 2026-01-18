@@ -223,11 +223,6 @@
 								>
 									Scan By
 								</th>
-								<th
-									class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>
-									Date
-								</th>
 							</tr>
 						</thead>
 

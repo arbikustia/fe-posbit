@@ -20,6 +20,7 @@ export function useSummaryShiftPage() {
 		searchTerm: string;
 		startDate: string;
 		endDate: string;
+		statusPage: string;
 	};
 
 	const state = $state<stateProps>({
@@ -35,7 +36,8 @@ export function useSummaryShiftPage() {
 		startDate: dayjs().subtract(1, 'month').startOf('month').format('YYYY-MM-DD'),
 		endDate: dayjs().subtract(1, 'month').endOf('month').format('YYYY-MM-DD'),
 		isLoading: false,
-		searchTerm: ''
+		searchTerm: '',
+		statusPage: ''
 	});
 
 	// 🔹 Transform data dari API ke bentuk table dengan struktur baru
@@ -69,11 +71,15 @@ export function useSummaryShiftPage() {
 		if (debounceTimer) clearTimeout(debounceTimer);
 
 		debounceTimer = setTimeout(() => {
-			handleGetPaged(1, search);
+			handleGetPaged(1, search, state.statusPage);
 		}, 300);
 	});
 
-	async function handleGetPaged(pageNumber = state.currentPage, searchTerm = state.searchTerm) {
+	async function handleGetPaged(
+		pageNumber = state.currentPage,
+		searchTerm = state.searchTerm,
+		status = state.statusPage
+	) {
 		try {
 			state.isLoading = true;
 
@@ -81,9 +87,9 @@ export function useSummaryShiftPage() {
 				PageNumber: pageNumber,
 				PageSize: state.pageSize,
 				SearchTerm: searchTerm,
-				Start: state.startDate,
-				End: state.endDate,
-				Status: 'GUDANG'
+				Start: 'NULL',
+				End: 'NULL',
+				Status: status
 			});
 
 			if (res?.data?.data) {
@@ -111,7 +117,7 @@ export function useSummaryShiftPage() {
 	async function handlePageChange(pageNum: number) {
 		if (pageNum < 1 || pageNum > state.totalPages) return;
 		state.currentPage = pageNum;
-		await handleGetPaged(pageNum);
+		await handleGetPaged(pageNum, '',state.statusPage);
 	}
 
 	// 🔹 Handle search input
@@ -145,10 +151,12 @@ export function useSummaryShiftPage() {
 
 		const start = params.get('Start');
 		const end = params.get('End');
+		const status = params.get('Status');
 
-		if (start && end) {
+		if (start && end && status) {
 			state.startDate = start;
 			state.endDate = end;
+			state.statusPage = status;
 			state.currentPage = 1;
 		}
 	});

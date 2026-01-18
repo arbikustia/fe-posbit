@@ -6,39 +6,37 @@ import { get } from 'svelte/store';
 import { page } from '$app/stores';
 
 export function useSummaryShiftPage() {
-	type stateProps = {
-		table: any[];
-		showSearch: boolean;
-		searchEl: HTMLInputElement | null;
-		showDeleteModal: boolean;
-		selectedItem: null | any;
-		currentPage: number;
-		pageSize: number;
-		totalPages: number;
-		totalCount: number;
-		isLoading: boolean;
-		searchTerm: string;
-		startDate: string;
-		endDate: string;
-		initialized: boolean;
-	};
-
-	const state = $state<stateProps>({
-		table: [],
-		showSearch: false,
-		searchEl: null,
-		showDeleteModal: false,
-		selectedItem: null,
-		currentPage: 1,
-		pageSize: 10,
-		totalPages: 0,
-		totalCount: 0,
-		startDate: dayjs().subtract(1, 'month').startOf('month').format('YYYY-MM-DD'),
-		endDate: dayjs().subtract(1, 'month').endOf('month').format('YYYY-MM-DD'),
-		isLoading: false,
-		searchTerm: '',
-		initialized: false
-	});
+		type stateProps = {
+			table: any[];
+			showSearch: boolean;
+			searchEl: HTMLInputElement | null;
+			showDeleteModal: boolean;
+			selectedItem: null | any;
+			currentPage: number;
+			pageSize: number;
+			totalPages: number;
+			totalCount: number;
+			isLoading: boolean;
+			searchTerm: string;
+			startDate: string;
+			endDate: string;
+		};
+	
+		const state = $state<stateProps>({
+			table: [],
+			showSearch: false,
+			searchEl: null,
+			showDeleteModal: false,
+			selectedItem: null,
+			currentPage: 1,
+			pageSize: 10,
+			totalPages: 0,
+			totalCount: 0,
+			startDate: dayjs().subtract(1, 'month').startOf('month').format('YYYY-MM-DD'),
+			endDate: dayjs().subtract(1, 'month').endOf('month').format('YYYY-MM-DD'),
+			isLoading: false,
+			searchTerm: ''
+		});
 
 	// 🔹 Transform API → table
 	function transformItemData(apiData: any[]) {
@@ -58,6 +56,26 @@ export function useSummaryShiftPage() {
 			description: item.description
 		}));
 	}
+
+		let debounceTimer: any;
+
+	$effect(() => {
+		// dependency eksplisit
+		state.searchTerm;
+		state.startDate;
+		state.endDate;
+		state.pageSize;
+
+		if (!state.startDate || !state.endDate) return;
+		const search = state.searchTerm;
+
+		if (debounceTimer) clearTimeout(debounceTimer);
+
+		debounceTimer = setTimeout(() => {
+			handleGetPaged(1, search);
+		}, 300);
+	});
+
 
 	/* =====================================================
 	   FETCH HANDLER
@@ -95,28 +113,41 @@ export function useSummaryShiftPage() {
 		}
 	}
 
-	/* =====================================================
-	   SINGLE FETCH CONTROLLER (ANTI BLINK)
-	===================================================== */
-	let debounceTimer: any;
+	// 🔹 Ganti halaman
+	async function handlePageChange(pageNum: number) {
+		if (pageNum < 1 || pageNum > state.totalPages) return;
+		state.currentPage = pageNum;
+		await handleGetPaged(pageNum);
+	}
 
-	$effect(() => {
-		if (!state.initialized) return;
-		if (!state.startDate || !state.endDate) return;
-		const search = state.searchTerm;
+	// 🔹 Handle search input
+	function handleSearch(term: string) {
+		state.searchTerm = term;
+		// Reset ke halaman 1 saat search
+		state.currentPage = 1;
+		// Data akan otomatis ter-refresh oleh $effect di atas
+	}
 
-		if (debounceTimer) clearTimeout(debounceTimer);
+	// 🔹 ✅ FUNGSI BARU: Handle date filter change
+	async function handleDateFilter(startDate: string, endDate: string) {
+		state.startDate = startDate;
+		state.endDate = endDate;
+		state.currentPage = 1; // Reset ke halaman 1 saat filter tanggal berubah
 
-		debounceTimer = setTimeout(() => {
-			handleGetPaged(state.currentPage, search);
-		}, 300);
-	});
+		// Data akan otomatis ter-refresh oleh $effect di atas
+		console.log('Date filter applied:', startDate, endDate);
+	}
 
-	/* =====================================================
-	   LIFECYCLE
-	===================================================== */
+	// 🔹 ✅ FUNGSI BARU: Clear search
+	function handleClearSearch() {
+		state.searchTerm = '';
+		state.currentPage = 1;
+		state.showSearch = false;
+	}
+
+		
 	onMount(() => {
-		const pageStore = get(page);
+		const pageStore = get(page); // ✅ OK
 		const params = pageStore.url.searchParams;
 
 		const start = params.get('Start');
@@ -127,34 +158,7 @@ export function useSummaryShiftPage() {
 			state.endDate = end;
 			state.currentPage = 1;
 		}
-
-		state.initialized = true; // 🔑 unlock fetch
 	});
-
-	/* =====================================================
-	   ACTION HANDLERS (STATE ONLY)
-	===================================================== */
-	function handlePageChange(pageNum: number) {
-		if (pageNum < 1 || pageNum > state.totalPages) return;
-		state.currentPage = pageNum;
-	}
-
-	function handleSearch(term: string) {
-		state.searchTerm = term;
-		state.currentPage = 1;
-	}
-
-	function handleDateFilter(startDate: string, endDate: string) {
-		state.startDate = startDate;
-		state.endDate = endDate;
-		state.currentPage = 1;
-	}
-
-	function handleClearSearch() {
-		state.searchTerm = '';
-		state.currentPage = 1;
-		state.showSearch = false;
-	}
 
 	return {
 		state,

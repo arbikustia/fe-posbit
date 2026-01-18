@@ -74,7 +74,7 @@
 	<div class="highlight-card">
 		<!-- Total Penjualan Bulan Ini -->
 		<Card.Root
-			onclick={() => goto(`/dashboard/stock-gudang?Start=${state.startDate}&End=${state.endDate}`)}
+			onclick={() => goto(`/dashboard/stock-gudang?Start=${state.startDate}&End=${state.endDate}&Status=GUDANG`)}
 			class="@container/card h-fit min-h-28 cursor-pointer p-0"
 		>
 			<Card.Header class="flex flex-col items-center space-y-2 px-4 pt-4">
@@ -155,7 +155,7 @@
 					<Card.Title
 						onclick={() =>
 							goto(
-								`/dashboard/stock-jahit-label?Start=${state.startDate}&End=${state.endDate}&Type=all`
+								`/dashboard/stock-gudang?Start=${state.startDate}&End=${state.endDate}&Status=JAHITLABEL`
 							)}
 						class="flex h-full w-full cursor-pointer  items-center justify-center rounded-md bg-amber-800/10 text-center text-2xl  font-semibold tabular-nums shadow-sm md:text-2xl lg:text-2xl"
 					>
@@ -184,7 +184,7 @@
 				<div class="flex h-12 w-full justify-between gap-4">
 					<Card.Title
 						onclick={() =>
-							goto(`/dashboard/stock-delivery?Start=${state.startDate}&End=${state.endDate}&Type=all`)}
+							goto(`/dashboard/stock-gudang?Start=${state.startDate}&End=${state.endDate}&Status=DELIVERY`)}
 						class="flex h-full w-full cursor-pointer items-center justify-center rounded-md bg-pink-500/10 text-center text-2xl  font-semibold tabular-nums shadow-sm md:text-2xl lg:text-2xl"
 					>
 						{state.list.stock_all_delivery ?? 0}
