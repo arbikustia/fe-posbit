@@ -143,6 +143,24 @@
 				</Card.Title>
 			</Card.Header>
 		</Card.Root>
+		<Card.Root
+			class="@container/card h-fit min-h-28 p-0"
+		>
+			<Card.Header class="flex flex-col items-center space-y-2 p-4">
+				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
+					<Icon
+						icon="mynaui:store"
+						class="text-2xl text-blue-800 md:text-3xl"
+					/>
+					<Card.Description class="text-center text-lg md:text-left md:text-sm">
+						Stock All Toko
+					</Card.Description>
+				</div>
+				<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
+					{state.list.stock_all_toko ?? 0}
+				</Card.Title>
+			</Card.Header>
+		</Card.Root>
 		<Card.Root class="@container/card h-fit min-h-28 p-0">
 			<Card.Header class="flex flex-col items-center space-y-2 p-4">
 				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
@@ -251,7 +269,7 @@
 					</Card.Description>
 				</div>
 				<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-					{state.list.total_po ?? 0}
+					Rp {Number(state.list.total_po).toLocaleString('id-ID') ?? 0}
 				</Card.Title>
 			</Card.Header>
 		</Card.Root>
@@ -269,28 +287,11 @@
 					</Card.Description>
 				</div>
 				<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-					{state.list.total_ongkir_po ?? 0}
+					Rp {Number(state.list.total_ongkir_po).toLocaleString('id-ID') ?? 0}
 				</Card.Title>
 			</Card.Header>
 		</Card.Root>
-		<Card.Root
-			class="@container/card h-fit min-h-28 p-0"
-		>
-			<Card.Header class="flex flex-col items-center space-y-2 p-4">
-				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
-					<Icon
-						icon="mynaui:store"
-						class="text-2xl text-blue-800 md:text-3xl"
-					/>
-					<Card.Description class="text-center text-lg md:text-left md:text-sm">
-						Stock All Toko
-					</Card.Description>
-				</div>
-				<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-					{state.list.stock_all_toko ?? 0}
-				</Card.Title>
-			</Card.Header>
-		</Card.Root>
+		
 		<!-- <Card.Root onclick={() => goto('/dashboard/stock-sample')} class="@container/card h-fit min-h-28 p-0 cursor-pointer">
 		<Card.Header class="flex flex-col items-center space-y-2 p-4">
 			<div class="flex w-full items-center justify-center gap-2 md:justify-start">
