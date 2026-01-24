@@ -12,7 +12,7 @@
 	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 	// Props diterima dari parent (Dashboard)
-	const { state, handleGetSummary, handleGetChart } = $props();
+	const { state, handleGetSummary, handleGetChart, inventoryState } = $props();
 	function formatDateText() {
 		if (!state.startDate || !state.endDate) return 'Pick a date';
 		return (
@@ -41,7 +41,7 @@
 	}
 </script>
 
-<div class='space-y-4'>
+<div class="space-y-4">
 	<div>
 		<Popover.Root bind:open={state.popoverOpen}>
 			<Popover.Trigger class={cn(buttonVariants({ variant: 'outline' }), 'flex items-center')}>
@@ -113,6 +113,34 @@
 				</Card.Title>
 			</Card.Header>
 		</Card.Root>
+		<div class="col-span-3 grid grid-cols-2 gap-5">
+			<Card.Root class="@container/card col-span-1 h-fit  min-h-28 p-0">
+				<Card.Header class="flex flex-col items-center space-y-2 p-4">
+					<div class="flex w-full items-center justify-center gap-2 md:justify-start">
+						<Icon icon="ant-design:product-outlined" class="text-2xl text-purple-800 md:text-3xl" />
+						<Card.Description class="text-center text-lg md:text-left md:text-sm">
+							Total PO
+						</Card.Description>
+					</div>
+					<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
+						Rp {Number(inventoryState.list.total_po).toLocaleString('id-ID') ?? 0}
+					</Card.Title>
+				</Card.Header>
+			</Card.Root>
+			<Card.Root class="@container/card  h-fit min-h-28 p-0">
+				<Card.Header class="flex flex-col items-center space-y-2 p-4">
+					<div class="flex w-full items-center justify-center gap-2 md:justify-start">
+						<Icon icon="iconamoon:delivery-light" class="text-2xl text-green-800 md:text-3xl" />
+						<Card.Description class="text-center text-lg md:text-left md:text-sm">
+							Total Ongkir PO
+						</Card.Description>
+					</div>
+					<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
+						Rp {Number(inventoryState.list.total_ongkir_po).toLocaleString('id-ID') ?? 0}
+					</Card.Title>
+				</Card.Header>
+			</Card.Root>
+		</div>
 
 		<!-- Penjualan Item Terbanyak -->
 		<Card.Root class="@container/card col-span-full p-0">

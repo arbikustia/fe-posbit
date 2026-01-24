@@ -32,7 +32,7 @@
 			<div class="@container/main flex flex-1 flex-col gap-4">
 				<!-- 🔹 Konten utama -->
 				<div class="flex flex-col gap-4 md:gap-6">
-					<HighlightCard state={pageState} {handleGetSummary} {handleGetChart} />
+					<HighlightCard state={pageState} inventoryState={inventoryState} {handleGetSummary} {handleGetChart} />
 					<ChartVisitors state={pageState} />
 				</div>
 			</div>

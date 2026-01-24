@@ -74,7 +74,8 @@
 	<div class="highlight-card">
 		<!-- Total Penjualan Bulan Ini -->
 		<Card.Root
-			onclick={() => goto(`/dashboard/stock-gudang?Start=${state.startDate}&End=${state.endDate}&Status=GUDANG`)}
+			onclick={() =>
+				goto(`/dashboard/stock-gudang?Start=${state.startDate}&End=${state.endDate}&Status=GUDANG`)}
 			class="@container/card h-fit min-h-28 cursor-pointer p-0"
 		>
 			<Card.Header class="flex flex-col items-center space-y-2 px-4 pt-4">
@@ -143,26 +144,9 @@
 				</Card.Title>
 			</Card.Header>
 		</Card.Root>
-		<Card.Root
-			class="@container/card h-fit min-h-28 p-0"
-		>
-			<Card.Header class="flex flex-col items-center space-y-2 p-4">
-				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
-					<Icon
-						icon="mynaui:store"
-						class="text-2xl text-blue-800 md:text-3xl"
-					/>
-					<Card.Description class="text-center text-lg md:text-left md:text-sm">
-						Stock All Toko
-					</Card.Description>
-				</div>
-				<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-					{state.list.stock_all_toko ?? 0}
-				</Card.Title>
-			</Card.Header>
-		</Card.Root>
+
 		<Card.Root class="@container/card h-fit min-h-28 p-0">
-			<Card.Header class="flex flex-col items-center space-y-2 p-4">
+			<Card.Header class="flex flex-col items-center space-y-2 p-2">
 				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 					<Icon icon="mdi:needle" class="text-2xl text-amber-800 md:text-3xl" />
 					<Card.Description class="text-center text-lg md:text-left md:text-sm">
@@ -192,7 +176,7 @@
 			</Card.Header>
 		</Card.Root>
 		<Card.Root class="@container/card h-fit min-h-28  p-0">
-			<Card.Header class="flex flex-col items-center space-y-2 p-4">
+			<Card.Header class="flex flex-col items-center space-y-2 p-2">
 				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 					<Icon icon="mdi:truck-delivery" class="text-2xl text-pink-500 md:text-3xl" />
 					<Card.Description class="text-center text-lg md:text-left md:text-sm">
@@ -202,14 +186,18 @@
 				<div class="flex h-12 w-full justify-between gap-4">
 					<Card.Title
 						onclick={() =>
-							goto(`/dashboard/stock-gudang?Start=${state.startDate}&End=${state.endDate}&Status=DELIVERY`)}
+							goto(
+								`/dashboard/stock-gudang?Start=${state.startDate}&End=${state.endDate}&Status=DELIVERY`
+							)}
 						class="flex h-full w-full cursor-pointer items-center justify-center rounded-md bg-pink-500/10 text-center text-2xl  font-semibold tabular-nums shadow-sm md:text-2xl lg:text-2xl"
 					>
 						{state.list.stock_all_delivery ?? 0}
 					</Card.Title>
 					<Card.Title
 						onclick={() =>
-							goto(`/dashboard/stock-delivery?Start=${state.startDate}&End=${state.endDate}&Type=basic`)}
+							goto(
+								`/dashboard/stock-delivery?Start=${state.startDate}&End=${state.endDate}&Type=basic`
+							)}
 						class="flex h-full w-full cursor-pointer items-center justify-center rounded-md bg-pink-500/10 text-center text-2xl  font-semibold tabular-nums shadow-sm md:text-2xl lg:text-2xl"
 					>
 						{state.list.stock_delivery ?? 0}
@@ -217,94 +205,76 @@
 				</div>
 			</Card.Header>
 		</Card.Root>
-		<Card.Root
-			onclick={() => goto(`/dashboard/out-customer?Start=${state.startDate}&End=${state.endDate}`)}
-			class="@container/card h-fit min-h-28 cursor-pointer p-0"
-		>
-			<Card.Header class="flex flex-col items-center space-y-2 p-4">
-				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
-					<Icon
-						icon="mdi:account-arrow-right-outline"
-						class="text-2xl text-purple-500 md:text-3xl"
-					/>
-					<Card.Description class="text-center text-lg md:text-left md:text-sm">
-						Out Customer
-					</Card.Description>
-				</div>
-				<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-					{state.list.out_customer ?? 0}
-				</Card.Title>
-			</Card.Header>
-		</Card.Root>
-		<Card.Root
-			onclick={() => goto(`/dashboard/barang-ng?Start=${state.startDate}&End=${state.endDate}`)}
-			class="@container/card h-fit min-h-28 cursor-pointer p-0"
-		>
-			<Card.Header class="flex flex-col items-center space-y-2 p-4">
-				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
-					<Icon
-						icon="streamline-flex:incorrect-password-remix"
-						class="text-2xl text-red-500 md:text-3xl"
-					/>
-					<Card.Description class="text-center text-lg md:text-left md:text-sm">
-						Barang NG
-					</Card.Description>
-				</div>
-				<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-					{state.list.total_ng ?? 0}
-				</Card.Title>
-			</Card.Header>
-		</Card.Root>
-		<Card.Root
-			class="@container/card h-fit min-h-28  p-0"
-		>
-			<Card.Header class="flex flex-col items-center space-y-2 p-4">
-				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
-					<Icon
-						icon="ant-design:product-outlined"
-						class="text-2xl text-purple-800 md:text-3xl"
-					/>
-					<Card.Description class="text-center text-lg md:text-left md:text-sm">
-						Total PO
-					</Card.Description>
-				</div>
-				<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-					Rp {Number(state.list.total_po).toLocaleString('id-ID') ?? 0}
-				</Card.Title>
-			</Card.Header>
-		</Card.Root>
-		<Card.Root
-			class="@container/card h-fit min-h-28 p-0"
-		>
-			<Card.Header class="flex flex-col items-center space-y-2 p-4">
-				<div class="flex w-full items-center justify-center gap-2 md:justify-start">
-					<Icon
-						icon="iconamoon:delivery-light"
-						class="text-2xl text-green-800 md:text-3xl"
-					/>
-					<Card.Description class="text-center text-lg md:text-left md:text-sm">
-						Total Ongkir PO
-					</Card.Description>
-				</div>
-				<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-					Rp {Number(state.list.total_ongkir_po).toLocaleString('id-ID') ?? 0}
-				</Card.Title>
-			</Card.Header>
-		</Card.Root>
-		
-		<!-- <Card.Root onclick={() => goto('/dashboard/stock-sample')} class="@container/card h-fit min-h-28 p-0 cursor-pointer">
-		<Card.Header class="flex flex-col items-center space-y-2 p-4">
-			<div class="flex w-full items-center justify-center gap-2 md:justify-start">
-				<Icon icon="streamline-flex:incorrect-password-remix" class="text-2xl text-red-500 md:text-3xl" />
-				<Card.Description class="text-center text-lg md:text-left md:text-sm">
-					Stock Sample
-				</Card.Description>
-			</div>
-			<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-				{state.list.stock_sample ?? 0}
-			</Card.Title>
-		</Card.Header>
-	</Card.Root> -->
+		<div class="col-span-3 grid grid-cols-2 gap-5">
+			<Card.Root
+				onclick={() =>
+					goto(`/dashboard/out-customer?Start=${state.startDate}&End=${state.endDate}`)}
+				class="@container/card col-span-1 h-fit min-h-28  cursor-pointer p-0"
+			>
+				<Card.Header class="flex flex-col items-center space-y-2 p-4">
+					<div class="flex w-full items-center justify-center gap-2 md:justify-start">
+						<Icon
+							icon="mdi:account-arrow-right-outline"
+							class="text-2xl text-purple-500 md:text-3xl"
+						/>
+						<Card.Description class="text-center text-lg md:text-left md:text-sm">
+							Out Customer
+						</Card.Description>
+					</div>
+					<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
+						{state.list.out_customer ?? 0}
+					</Card.Title>
+				</Card.Header>
+			</Card.Root>
+			<Card.Root
+				onclick={() => goto(`/dashboard/barang-ng?Start=${state.startDate}&End=${state.endDate}`)}
+				class="@container/card  h-fit min-h-28 cursor-pointer p-0"
+			>
+				<Card.Header class="flex flex-col items-center space-y-2 p-4">
+					<div class="flex w-full items-center justify-center gap-2 md:justify-start">
+						<Icon
+							icon="streamline-flex:incorrect-password-remix"
+							class="text-2xl text-red-500 md:text-3xl"
+						/>
+						<Card.Description class="text-center text-lg md:text-left md:text-sm">
+							Barang NG
+						</Card.Description>
+					</div>
+					<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
+						{state.list.total_ng ?? 0}
+					</Card.Title>
+				</Card.Header>
+			</Card.Root>
+		</div>
+
+		<div class="col-span-3 grid grid-cols-2 gap-5">
+			<Card.Root class="@container/card col-span-1 h-fit min-h-28 cursor-pointer p-0">
+				<Card.Header class="flex flex-col items-center space-y-2 p-4">
+					<div class="flex w-full items-center justify-center gap-2 md:justify-start">
+						<Icon icon="ant-design:product-outlined" class="text-2xl text-purple-800 md:text-3xl" />
+						<Card.Description class="text-center text-lg md:text-left md:text-sm">
+							Stock All Toko
+						</Card.Description>
+					</div>
+					<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
+						{state.list.stock_all_toko ?? 0}
+					</Card.Title>
+				</Card.Header>
+			</Card.Root>
+			<Card.Root class="@container/card  h-fit min-h-28 cursor-pointer p-0">
+				<Card.Header class="flex flex-col items-center space-y-2 p-4">
+					<div class="flex w-full items-center justify-center gap-2 md:justify-start">
+						<Icon icon="ant-design:product-outlined" class="text-2xl text-purple-800 md:text-3xl" />
+						<Card.Description class="text-center text-lg md:text-left md:text-sm">
+							Stock Toko
+						</Card.Description>
+					</div>
+					<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
+						{state.list.stock_toko ?? 0}
+					</Card.Title>
+				</Card.Header>
+			</Card.Root>
+		</div>
 	</div>
 </div>
 
