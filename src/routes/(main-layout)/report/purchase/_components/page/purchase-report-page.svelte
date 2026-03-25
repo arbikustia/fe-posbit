@@ -240,6 +240,7 @@
 									>Order Details</th
 								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Diskon</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Sisa</th>
 								<th class="px-3 py-2.5 text-center text-xs font-medium text-gray-700"
 									>Description</th
@@ -457,7 +458,10 @@
 										>Rp {role == 'gudang' ? '*****' : row.total_amount.toLocaleString()}</td
 									>
 									<td class="px-3 py-2.5 text-xs"
-										>Rp {role == 'gudang' ? '*****' : (row.total_amount - row.down_payment).toLocaleString('id-ID')}</td
+										>Rp {role == 'gudang' ? '*****' : row.discount_amount?.toLocaleString('id-ID') || 0}</td
+									>
+									<td class="px-3 py-2.5 text-xs"
+										>Rp {role == 'gudang' ? '*****' : (row.total_amount - row.down_payment - row.discount_amount).toLocaleString('id-ID')}</td
 									>
 
 									<td class="px-3 py-2.5 text-xs">

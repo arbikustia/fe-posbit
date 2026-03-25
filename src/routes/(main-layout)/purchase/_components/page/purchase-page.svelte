@@ -294,6 +294,7 @@
 									>Order Details</th
 								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Dikon</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Sisa</th>
 								<th class="px-3 py-2.5 text-center text-xs font-medium text-gray-700"
 									>Description</th
@@ -508,8 +509,9 @@
 										{/if}
 									</td>
 									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
+									<td class="px-3 py-2.5 text-xs">Rp {row.discount_amount.toLocaleString()}</td>
 									<td class="px-3 py-2.5 text-xs"
-										>Rp {(row.total_amount - row.down_payment).toLocaleString()}</td
+										>Rp {(row.total_amount - row.discount_amount - row.down_payment).toLocaleString()}</td
 									>
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.keterangan && row.keterangan.trim().length > 0}

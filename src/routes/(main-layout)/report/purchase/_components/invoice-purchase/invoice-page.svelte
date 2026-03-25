@@ -196,7 +196,8 @@
 				}
 			}
 			const downPayment = Number(row.down_payment) || 0;
-			const sisaBayar = totalBayar - downPayment;
+			const discount = Number(row.discount_amount) || 0;
+			const sisaBayar = totalBayar - downPayment - discount;
 
 			// === TOTALS (right side) ===
 			doc.setFont('helvetica', 'normal');
@@ -259,6 +260,15 @@
 			doc.setFont('helvetica', 'normal');
 			doc.text('ONGKIR :', 320, y);
 			doc.text(`RP ${totalOngkir.toLocaleString('id-ID')}`, pageWidth - margin, y, {
+				align: 'right'
+			});
+			y += 15;
+
+			// DISKON	
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(11);
+			doc.text('DISKON :', 320, y);
+			doc.text(`RP ${row.discount_amount?.toLocaleString('id-ID') || 0}`, pageWidth - margin, y, {
 				align: 'right'
 			});
 			y += 15;

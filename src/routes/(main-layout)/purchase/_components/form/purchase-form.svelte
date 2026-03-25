@@ -550,6 +550,12 @@
 		$formData.biaya_label = Number(raw || 0);
 		target.value = formatIDR(raw);
 	}
+	function handleDiscountInput(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const raw = target.value.replace(/[^\d]/g, '');
+		$formData.discount_amount = Number(raw || 0);
+		target.value = formatIDR(raw);
+	}
 
 	function handleTotalAmountInput(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -1116,6 +1122,20 @@
 					placeholder="Input Biaya Label"
 					value={formatIDR($formData.biaya_label)}
 					oninput={handleLableInput}
+					class="text-left"
+				/>
+			</Form.Control>
+			<Form.FieldErrors class="text-sm text-red-600" />
+		</Form.Field>
+		<Form.Field {form} name="discount_amount">
+			<Form.Control>
+				<Form.Label>Discount Amount</Form.Label>
+				<Input
+					type="text"
+					inputmode="numeric"
+					placeholder="Input Discount Amount"
+					value={formatIDR($formData.discount_amount)}
+					oninput={handleDiscountInput}
 					class="text-left"
 				/>
 			</Form.Control>
