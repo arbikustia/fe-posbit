@@ -3,7 +3,6 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Area, AreaChart } from 'layerchart';
 	import { curveCardinal } from 'd3-shape';
-	import dayjs from 'dayjs';
 	const { state } = $props();
 
 	// Data pemasukan per hari
@@ -24,25 +23,19 @@
 	} satisfies Chart.ChartConfig;
 
 	const formatCurrencyID = (value: number) => {
-    const actualValue = value;
-
-    // Pembulatan untuk nilai 900.000 ke atas menjadi 1Jt
-    if (actualValue >= 900000) {
-        return `1Jt`;
-    } else if (actualValue >= 1000000) {
-        return `${(actualValue / 1000000).toFixed(0)}Jt`;
-    } else if (actualValue >= 1000) {
-        return `${(actualValue / 1000).toFixed(0)}rb`;
-    } else {
-        return `Rp ${actualValue.toLocaleString('id-ID')}`;
-    }
-};
-
+		if (value >= 1000000) {
+			return `${(value / 1000000).toFixed(1).replace(/\.0$/, '')}Jt`;
+		} else if (value >= 1000) {
+			return `${(value / 1000).toFixed(0)}rb`;
+		} else {
+			return `Rp ${value.toLocaleString('id-ID')}`;
+		}
+	};
 	// Format untuk tooltip (tampilkan nilai penuh)
-// Format untuk tooltip (tampilkan nilai penuh)
-const formatTooltip = (value: number) => {
-    return `Rp ${value.toLocaleString('id-ID')}`;
-};
+	// Format untuk tooltip (tampilkan nilai penuh)
+	const formatTooltip = (value: number) => {
+		return `Rp ${value.toLocaleString('id-ID')}`;
+	};
 </script>
 
 <div class="w-full space-y-6">
@@ -104,7 +97,7 @@ const formatTooltip = (value: number) => {
 							{#snippet formatter({ value })}
 								<div class="">
 									<div class="text-gray-500">Total Penjualan</div>
-									<div class="text-md">{formatTooltip(value as any)}</div>
+									<div class="text-md">{formatTooltip(value as number)}</div>
 								</div>
 							{/snippet}
 						</Chart.Tooltip>
