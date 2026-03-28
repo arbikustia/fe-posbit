@@ -1,1 +1,1 @@
-export {default as TotalBarangMasuk} from "./+page.svelte"
+export { default as TotalBarangMasuk } from './+page.svelte';

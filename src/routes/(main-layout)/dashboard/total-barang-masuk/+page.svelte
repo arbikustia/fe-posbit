@@ -70,7 +70,8 @@
 
 		try {
 			const res = await dashboardGudangService.getPagedDetail({
-				TransactionNumber: row.transaction_number
+				TransactionNumber: row.transaction_number,
+				ItemId: row.item_id
 			});
 
 			row.details = res?.data?.data ?? [];
