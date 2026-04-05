@@ -109,6 +109,11 @@
 					label: 'Summary Shift',
 					href: '/report/shift',
 					childAccess: [ROLES.SUPERADMIN, ROLES.ADMIN]
+				},
+				{
+					label: 'Monitoring Stock',
+					href: '/report/monitoring-stock',
+					childAccess: [ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.GUDANG]
 				}
 			],
 			access: [ROLES.SUPERADMIN, ROLES.CASHIER, ROLES.GUDANG, ROLES.ADMIN]

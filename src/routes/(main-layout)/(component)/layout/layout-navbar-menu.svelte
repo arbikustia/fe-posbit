@@ -419,6 +419,31 @@
 						</svg>
 					</LayoutNavBarMenuItem>
 				{/if}
+				{#if isSuperadmin || isAdmin || isGudang}
+					<LayoutNavBarMenuItem
+						href="/report/monitoring-stock"
+						label="Monitoring Stock"
+						extendClass="text-xs w-full text-start h-10 flex justify-start"
+					>
+						<svg
+							slot="icon"
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							class="size-5"
+						>
+							<path
+								fill="none"
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M3 11V7a2 2 0 0 1 2-2h4m6 0h4a2 2 0 0 1 2 2v4m0 4v4a2 2 0 0 1-2 2h-4m-6 0H5a2 2 0 0 1-2-2v-4m6-4a3 3 0 1 0 6 0a3 3 0 0 0-6 0m3-9v2m0 16v2m-9-9h2m16 0h2"
+							/>
+						</svg>
+					</LayoutNavBarMenuItem>
+				{/if}
 			</Popover.Content>
 		</Popover.Root>
 	{/if}

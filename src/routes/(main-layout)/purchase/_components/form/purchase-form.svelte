@@ -734,9 +734,21 @@
 	</div>
 	<!-- ITEM DETAILS -->
 	{#if selectedItems.length > 0}
-		<div class="mt-4 flex items-center justify-between">
-			<div>
-				Total Qty = {itemDetails.reduce((total: number, item: any) => total + (item.qty || 0), 0)}
+		<div class="mt-4 flex items-center justify-between text-sm font-medium">
+			<div class="flex items-center gap-4">
+				<span>
+					Total Qty = {itemDetails.reduce((total: number, item: any) => total + (item.qty || 0), 0)}
+				</span>
+				<span>
+					Total Price = {isShopeePackage
+						? 'Rp 0'
+						: formatIDR(
+								itemDetails.reduce(
+									(total: number, item: any) => total + (item.qty || 0) * (item.price || 0),
+									0
+								)
+						  )}
+				</span>
 			</div>
 			<!-- {#if selectedItems.length > 3}
 				<Button

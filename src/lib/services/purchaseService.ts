@@ -121,5 +121,20 @@ export const purchaseService = {
 	},
 	getPurchaseOrder: (id: number) => {
 		return apiClient.get<RestApiResponse<unknown>>(`/purchase-order/${id}`);
+	},
+	getPagedSumPo: (params: { PageNumber: number; PageSize: number; SearchTerm: string }) => {
+		return apiClient.get<RestApiResponse<unknown>>(
+			`/view/paged-sum-po?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
+		);
+	},
+	getPagedSumPoDetail: (params: {
+		PageNumber: number;
+		PageSize: number;
+		SearchTerm: string;
+		ItemId: string;
+	}) => {
+		return apiClient.get<RestApiResponse<unknown>>(
+			`/view/paged-sum-po-detail?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&ItemId=${params.ItemId}`
+		);
 	}
 };
