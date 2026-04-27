@@ -41,7 +41,7 @@ export const load: LayoutServerLoad = async (event) => {
 			'/report/monitoring-stock'
 		],
 		[ROLES.CASHIER]: ['/transaction', '/master/customer', '/report/sales'],
-		[ROLES.GUDANG]: ['/report/purchase']
+		[ROLES.GUDANG]: ['/report/purchase', '/report/monitoring-stock']
 	};
 
 	// Cek role user dan dapatkan allowed routes

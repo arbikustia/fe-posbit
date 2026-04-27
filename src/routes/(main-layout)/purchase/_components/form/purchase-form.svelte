@@ -359,6 +359,7 @@
 					item_id: d.item_id,
 					qty: d.qty || 1,
 					qty_keluar: d.qty_keluar || 0,
+					qty_delivery: d.qty_delivery || 0,
 					price: d.price, // Langsung gunakan price dari data
 					priceKey: d.priceKey || packageLabel,
 					name: d.name || item?.label || ''
@@ -502,6 +503,7 @@
 						item_id: d.item_id,
 						qty: d.qty,
 						qty_keluar: d.qty_keluar,
+						qty_delivery: d.qty_delivery || 0,
 						price: d.price, // Gunakan price yang sudah ada
 						priceKey: d.priceKey || packageLabel,
 						name: d.name
@@ -788,7 +790,7 @@
 								<span class="text-red-500">Rp 0 (Marketplace)</span>
 							{:else}
 								Rp {detail.price?.toLocaleString('id-ID')}
-							{/if} • Qty Keluar : {detailFromParam.qty_keluar ?? 0}
+							{/if} • Qty Keluar : {detailFromParam.qty_keluar ?? 0} • Qty Delivery : {detailFromParam.qty_delivery ?? 0}
 						</div>
 					</div>
 

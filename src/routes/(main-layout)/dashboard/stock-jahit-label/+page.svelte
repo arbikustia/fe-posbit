@@ -54,7 +54,8 @@
 			End: state.endDate,
 			Start: state.startDate,
 			Location: 'JAHITLABEL',
-			To: 'JAHITLABEL'
+			To: 'JAHITLABEL',
+			filename: `Stock Jahit Label-${dayjs().format('YYYY-MM-DD-HHmm')}.xlsx`
 		});
 	}
 	/* ================= TREE VIEW ================= */

@@ -54,7 +54,8 @@
 			End: state.endDate,
 			Start: state.startDate,
 			Location: 'TOKO',
-			To: 'TOKO'
+			To: 'TOKO',
+			filename: `Out Toko-${dayjs().format('YYYY-MM-DD-HHmm')}.xlsx`
 		});
 	}
 	/* ================= TREE VIEW ================= */

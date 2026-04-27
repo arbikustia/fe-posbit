@@ -54,7 +54,8 @@
 			PageSize: state.pageSize,
 			SearchTerm: state.searchTerm,
 			Start: state.startDate,
-			End: state.endDate
+			End: state.endDate,
+			filename: `Barang NG-${dayjs().format('YYYY-MM-DD-HHmm')}.xlsx`
 		});
 	}
 

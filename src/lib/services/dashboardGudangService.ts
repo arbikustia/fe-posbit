@@ -81,6 +81,7 @@ export const dashboardGudangService = {
 		End: string;
 		Location: string;
 		To: string;
+		filename?: string;
 	}): Promise<void> => {
 		try {
 			const response: any = await apiClient.get(
@@ -102,7 +103,7 @@ export const dashboardGudangService = {
 
 			// Extract filename from response headers or use default
 			const contentDisposition = response.headers['content-disposition'];
-			let filename = `Page-In-${new Date().getTime()}.xlsx`;
+			let filename = params.filename || `Total Barang Masuk-${new Date().getTime()}.xlsx`;
 
 			if (contentDisposition) {
 				const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
@@ -134,6 +135,7 @@ export const dashboardGudangService = {
 		Start: string;
 		End: string;
 		Status: string;
+		filename?: string;
 	}): Promise<void> => {
 		try {
 			const response: any = await apiClient.get(
@@ -155,7 +157,7 @@ export const dashboardGudangService = {
 
 			// Extract filename from response headers or use default
 			const contentDisposition = response.headers['content-disposition'];
-			let filename = `Data-Barcode-${new Date().getTime()}.xlsx`;
+			let filename = params.filename || `Data-Barcode-${new Date().getTime()}.xlsx`;
 
 			if (contentDisposition) {
 				const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
@@ -188,6 +190,7 @@ export const dashboardGudangService = {
 		End: string;
 		Location: string;
 		To: string;
+		filename?: string;
 	}): Promise<void> => {
 		try {
 			const response: any = await apiClient.get(
@@ -209,7 +212,7 @@ export const dashboardGudangService = {
 
 			// Extract filename from response headers or use default
 			const contentDisposition = response.headers['content-disposition'];
-			let filename = `Page-In-${new Date().getTime()}.xlsx`;
+			let filename = params.filename || `Total Barang Keluar-${new Date().getTime()}.xlsx`;
 
 			if (contentDisposition) {
 				const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
@@ -240,6 +243,7 @@ export const dashboardGudangService = {
 		SearchTerm: string;
 		Start: string;
 		End: string;
+		filename?: string;
 	}): Promise<void> => {
 		try {
 			const response: any = await apiClient.get(
@@ -261,7 +265,7 @@ export const dashboardGudangService = {
 
 			// Extract filename from response headers or use default
 			const contentDisposition = response.headers['content-disposition'];
-			let filename = `Out-Customer-${new Date().getTime()}.xlsx`;
+			let filename = params.filename || `Out-Customer-${new Date().getTime()}.xlsx`;
 
 			if (contentDisposition) {
 				const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
@@ -292,6 +296,7 @@ export const dashboardGudangService = {
 		SearchTerm: string;
 		Start: string;
 		End: string;
+		filename?: string;
 	}): Promise<void> => {
 		try {
 			const response: any = await apiClient.get(
@@ -313,7 +318,7 @@ export const dashboardGudangService = {
 
 			// Extract filename from response headers or use default
 			const contentDisposition = response.headers['content-disposition'];
-			let filename = `Ng-${new Date().getTime()}.xlsx`;
+			let filename = params.filename || `Barang-NG-${new Date().getTime()}.xlsx`;
 
 			if (contentDisposition) {
 				const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);

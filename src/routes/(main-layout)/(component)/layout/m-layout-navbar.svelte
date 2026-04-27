@@ -45,7 +45,7 @@
 	const current = $derived(currentPage(page.url.pathname));
 </script>
 
-{#if role == 'Admin'}
+{#if role == 'Admin' || role == 'Superadmin'}
 	<div class="fixed bottom-0 hidden w-full overflow-hidden rounded-t-lg bg-white pb-1 shadow-inner">
 		<ul class="flex justify-around">
 			{#each navbarItems as { icon, label, href }, i}

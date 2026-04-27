@@ -47,6 +47,12 @@
 		}
 	}
 	function downloadExcel() {
+		const filename = state.statusPage === 'GUDANG' 
+			? 'Total Stock Gudang' 
+			: state.statusPage === 'JAHITLABEL' 
+				? 'Stock Jahit Label' 
+				: 'Stock Delivery';
+
 		dashboardGudangService.getExcelPageBarcode({
 			PageNumber: 1,
 			PageSize: state.pageSize,
@@ -54,6 +60,7 @@
 			End: 'NULL',
 			Start: 'NULL',
 			Status: state.statusPage,
+			filename: `${filename}-${dayjs().format('YYYY-MM-DD-HHmm')}.xlsx`
 		});
 	}
 </script>

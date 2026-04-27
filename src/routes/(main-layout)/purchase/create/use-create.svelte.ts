@@ -418,6 +418,7 @@ export function usePurchasePage() {
 					item_id: detail.item_id,
 					qty: detail.qty || 1,
 					qty_keluar: detail.qty_keluar || 0,
+					qty_delivery: detail.qty_delivery || 0,
 					price: detail.price || 0,
 					priceKey: detail.priceKey || 'Harga Normal',
 					name: detail.name || ''
@@ -487,6 +488,7 @@ export function usePurchasePage() {
 				item_id: item.item_id,
 				qty: item.qty,
 				qty_keluar: matching.qty_keluar || 0,
+				qty_delivery: matching.qty_delivery || 0,
 				price: item.price
 			};
 		});

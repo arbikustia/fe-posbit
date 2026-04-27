@@ -1,34 +1,21 @@
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table/index.js';
 	import Icon from '@iconify/svelte';
 	import * as Pagination from '$lib/components/ui/pagination/index.js';
-	import Button from '$lib/components/ui/button/button.svelte';
 	import { tick } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { useMonitoringPage } from './use-monitoring.svelte';
 	import { cn } from '$lib/utils.js';
 
-	const { state, handlePageChange, handleSearch, toggleRow } = useMonitoringPage();
-
-	let showSearch = false;
-	let searchEl: HTMLInputElement | null = null;
-	let searchTerm = '';
+	const { state, handlePageChange, toggleRow } = useMonitoringPage();
 
 	async function toggleSearch() {
-		showSearch = !showSearch;
-		if (showSearch) {
+		state.showSearch = !state.showSearch;
+		if (state.showSearch) {
 			await tick();
-			searchEl?.focus();
+			state.searchEl?.focus();
 		} else {
-			searchTerm = '';
-			handleSearch('');
+			state.searchTerm = '';
 		}
-	}
-
-	function onSearchInput(e: Event) {
-		const target = e.target as HTMLInputElement;
-		searchTerm = target.value;
-		handleSearch(searchTerm);
 	}
 </script>
 
@@ -45,11 +32,10 @@
 			<!-- Search Container -->
 			<div class="relative flex w-full items-center justify-end sm:w-auto">
 				<div class="overflow-hidden">
-					{#if showSearch}
+					{#if state.showSearch}
 						<input
-							bind:this={searchEl}
-							bind:value={searchTerm}
-							oninput={onSearchInput}
+							bind:this={state.searchEl}
+							bind:value={state.searchTerm}
 							transition:fly={{ x: 120, duration: 250 }}
 							placeholder="Search item or supplier..."
 							class="bg-primary/10 w-full rounded-full border-none px-3 py-2 pr-10 text-sm shadow-sm transition outline-none sm:w-48 md:w-56"
@@ -90,7 +76,8 @@
 				<table class="min-w-full divide-y divide-gray-200">
 					<thead class="bg-gray-100">
 						<tr>
-							<th class="w-8 px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3"
+							<th
+								class="w-8 px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3"
 							></th>
 							<th
 								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
@@ -98,31 +85,27 @@
 							>
 							<th
 								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>Inv Number</th
+								>Code Barang</th
 							>
 							<th
 								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>Supplier</th
+								>Nama Barang</th
 							>
 							<th
 								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>Item ID</th
+								>Kebutuhan</th
 							>
 							<th
 								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>Item Name</th
+								>Selisih</th
+							>
+							<th
+								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>Stock</th
 							>
 							<th
 								class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>Description</th
-							>
-							<th
-								class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>Qty</th
-							>
-							<th
-								class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>Sisa</th
 							>
 						</tr>
 					</thead>
@@ -141,7 +124,7 @@
 									<td class="px-3 py-2.5 sm:px-4 sm:py-3">
 										<button
 											type="button"
-											onclick={() => toggleRow(row.rowKey, row.item_id)}
+											onclick={() => toggleRow(row.rowKey, row.kode_barang)}
 											class="rounded p-1 transition hover:bg-gray-200"
 										>
 											<Icon
@@ -156,29 +139,46 @@
 									<td class="px-3 py-2.5 text-xs text-gray-500 sm:px-4 sm:py-3 md:text-sm">
 										{row.no}
 									</td>
-									<td class="px-3 py-2.5 text-xs font-medium text-gray-900 sm:px-4 sm:py-3 md:text-sm">
-										{row.inv_number}
-									</td>
-									<td class="px-3 py-2.5 text-xs text-gray-900 sm:px-4 sm:py-3 md:text-sm">
-										{row.supplier}
-									</td>
-									<td class="px-3 py-2.5 text-xs text-gray-900 sm:px-4 sm:py-3 md:text-sm">
-										{row.item_id}
+									<td
+										class="px-3 py-2.5 text-xs font-medium text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
+										{row.kode_barang}
 									</td>
 									<td class="px-3 py-2.5 text-xs text-gray-900 sm:px-4 sm:py-3 md:text-sm">
 										{row.nama_barang}
 									</td>
 									<td class="px-3 py-2.5 text-xs text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+										{row.kebutuhan}
+									</td>
+									<td
+										class="px-3 py-2.5 text-xs font-bold sm:px-4 sm:py-3 md:text-sm {row.selisih < 0
+											? 'text-red-600'
+											: 'text-green-600'}"
+									>
+										{row.selisih}
+									</td>
+									<td class="px-3 py-2.5 text-xs text-gray-900 sm:px-4 sm:py-3 md:text-sm">
+										{row.stock}
+									</td>
+									<td
+										class="px-3 py-2.5 text-left text-xs font-semibold text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
 										{row.deskripsi}
 									</td>
-									<td class="px-3 py-2.5 text-right text-xs font-semibold text-gray-900 sm:px-4 sm:py-3 md:text-sm">
-										{row.qty}
-									</td>
-									<td class="px-3 py-2.5 text-right text-xs font-semibold text-gray-900 sm:px-4 sm:py-3 md:text-sm">
-										<span class={cn('rounded px-1.5 py-0.5', row.sisa > 0 ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700')}>
+									<!-- <td
+										class="px-3 py-2.5 text-right text-xs font-semibold text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+									>
+										<span
+											class={cn(
+												'rounded px-1.5 py-0.5',
+												row.sisa > 0
+													? 'bg-orange-100 text-orange-700'
+													: 'bg-green-100 text-green-700'
+											)}
+										>
 											{row.sisa}
 										</span>
-									</td>
+									</td> -->
 								</tr>
 
 								<!-- Details Row (Expandable) -->
@@ -187,12 +187,19 @@
 										<td colspan="9" class="px-3 py-4 sm:px-4">
 											<div class="space-y-3">
 												<div class="flex items-center justify-between">
-													<h4 class="text-sm font-semibold text-gray-700">Stock Details for {row.nama_barang}</h4>
+													<h4 class="text-sm font-semibold text-gray-700">
+														Stock Details for {row.nama_barang}
+													</h4>
 												</div>
 
 												{#if row.isLoadingDetails}
 													<div class="flex items-center gap-2 py-4 text-xs text-gray-500">
-														<Icon icon="eos-icons:loading" width="16" height="16" class="text-primary" />
+														<Icon
+															icon="eos-icons:loading"
+															width="16"
+															height="16"
+															class="text-primary"
+														/>
 														<span>Loading details...</span>
 													</div>
 												{:else if row.details.length === 0}
@@ -202,25 +209,45 @@
 														<table class="min-w-full text-sm">
 															<thead class="bg-gray-100">
 																<tr>
-																	<th class="px-3 py-2 text-left text-xs font-medium text-gray-600">Item Code</th>
-																	<th class="px-3 py-2 text-left text-xs font-medium text-gray-600">Item Name</th>
-																	<th class="px-3 py-2 text-left text-xs font-medium text-gray-600">Description</th>
-																	<th class="px-3 py-2 text-right text-xs font-medium text-gray-600">Stock</th>
-																	<th class="px-3 py-2 text-right text-xs font-medium text-gray-600">Kebutuhan</th>
-																	<th class="px-3 py-2 text-right text-xs font-medium text-gray-600">Selisih</th>
+																	<th class="px-3 py-2 text-left text-xs font-medium text-gray-600"
+																		>Inv Number</th
+																	>
+																	<th class="px-3 py-2 text-left text-xs font-medium text-gray-600"
+																		>Supplier</th
+																	>
+																	<th class="px-3 py-2 text-left text-xs font-medium text-gray-600"
+																		>Item ID</th
+																	>
+																	<th class="px-3 py-2 text-left text-xs font-medium text-gray-600"
+																		>Item Name</th
+																	>
+																	<th class="px-3 py-2 text-right text-xs font-medium text-gray-600"
+																		>Qty</th
+																	>
+																	<th class="px-3 py-2 text-right text-xs font-medium text-gray-600"
+																		>Sisa</th
+																	>
+																	<th class="px-3 py-2 text-left text-xs font-medium text-gray-600"
+																		>Description</th
+																	>
 																</tr>
 															</thead>
 															<tbody class="divide-y divide-gray-200 bg-white">
 																{#each row.details as detail}
 																	<tr>
-																		<td class="px-3 py-2 text-gray-900">{detail.kode_barang}</td>
-																		<td class="px-3 py-2 text-gray-900">{detail.nama_barang}</td>
-																		<td class="px-3 py-2 text-gray-900">{detail.deskripsi}</td>
-																		<td class="px-3 py-2 text-right text-gray-900 font-medium">{detail.stock}</td>
-																		<td class="px-3 py-2 text-right text-gray-900 font-medium">{detail.kebutuhan}</td>
-																		<td class="px-3 py-2 text-right font-bold {detail.selisih < 0 ? 'text-red-600' : 'text-green-600'}">
-																			{detail.selisih}
-																		</td>
+																		<td class="px-3 py-2 text-xs text-gray-900">{detail.inv_number}</td>
+																		<td class="px-3 py-2 text-xs text-gray-900">{detail.supplier}</td>
+																		<td class="px-3 py-2 text-xs text-gray-900">{detail.item_id}</td>
+																		<td class="px-3 py-2 text-xs text-gray-900">{detail.nama_barang}</td>
+																		<td class="px-3 py-2 text-right text-xs font-medium text-gray-900"
+																			>{detail.qty}</td
+																		>
+																		<td class="px-3 py-2 text-right text-xs font-medium text-gray-900"
+																			>{detail.sisa}</td
+																		>
+																		<td class="px-3 py-2 text-left text-xs text-gray-900"
+																			>{detail.deskripsi}</td
+																		>
 																	</tr>
 																{/each}
 															</tbody>

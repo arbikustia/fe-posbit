@@ -32,7 +32,7 @@
 
 <nav class="flex items-center justify-center gap-2">
 	<!-- Dashboard -->
-	{#if isSuperadmin || isAdmin}
+	{#if isSuperadmin || isAdmin || isGudang}
 		<LayoutNavBarMenuItem href="/dashboard" label="Dashboard">
 			<svg
 				class="size-5!"

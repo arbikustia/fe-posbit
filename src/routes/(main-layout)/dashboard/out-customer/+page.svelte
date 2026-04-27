@@ -52,7 +52,8 @@
 			PageSize: state.pageSize,
 			SearchTerm: state.searchTerm,
 			End: state.endDate,
-			Start: state.startDate
+			Start: state.startDate,
+			filename: `Out Customer-${dayjs().format('YYYY-MM-DD-HHmm')}.xlsx`
 		});
 	}
 	/* ================= TREE VIEW ================= */

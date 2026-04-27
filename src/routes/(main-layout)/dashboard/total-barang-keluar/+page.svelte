@@ -54,7 +54,8 @@
 			End: state.endDate,
 			Start: state.startDate,
 			Location: 'GUDANG',
-			To: 'GUDANG'
+			To: 'GUDANG',
+			filename: `Total Barang Keluar-${dayjs().format('YYYY-MM-DD-HHmm')}.xlsx`
 		});
 	}
 	/* ================= TREE VIEW ================= */

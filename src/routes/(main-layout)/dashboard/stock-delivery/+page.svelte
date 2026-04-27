@@ -54,7 +54,8 @@
 			End: state.endDate,
 			Start: state.startDate,
 			Location: 'DELIVERY',
-			To: 'DELIVERY'
+			To: 'DELIVERY',
+			filename: `Stock Delivery-${dayjs().format('YYYY-MM-DD-HHmm')}.xlsx`
 		});
 	}
 	/* ================= TREE VIEW ================= */

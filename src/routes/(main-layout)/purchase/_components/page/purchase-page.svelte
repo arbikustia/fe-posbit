@@ -483,6 +483,7 @@
 																<th class="py-1 text-left">Price</th>
 																<th class="py-1 text-left">Qty</th>
 																<th class="py-1 text-left">Qty Keluar</th>
+																<th class="py-1 text-left">Qty Delivery</th>
 															</tr>
 														</thead>
 														<tbody>
@@ -495,8 +496,11 @@
 																		>Rp{detail.price.toLocaleString()}</td
 																	>
 																	<td class="py-1 text-gray-700">{detail.qty}</td>
-																	<td class="py-1 text-center text-gray-700"
+																	<td class="py-1 text-left text-gray-700"
 																		>{detail.qty_keluar || 0}</td
+																	>
+																	<td class="py-1 text-left text-gray-700"
+																		>{detail.qty_delivery || 0}</td
 																	>
 																</tr>
 															{/each}
