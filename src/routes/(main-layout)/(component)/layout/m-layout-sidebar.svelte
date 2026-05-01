@@ -114,6 +114,11 @@
 					label: 'Monitoring Stock',
 					href: '/report/monitoring-stock',
 					childAccess: [ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.GUDANG]
+				},
+				{
+					label: 'Monitoring Stock 2',
+					href: '/report/monitoring-stock-2',
+					childAccess: [ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.GUDANG]
 				}
 			],
 			access: [ROLES.SUPERADMIN, ROLES.CASHIER, ROLES.GUDANG, ROLES.ADMIN]

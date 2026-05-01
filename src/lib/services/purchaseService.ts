@@ -136,5 +136,21 @@ export const purchaseService = {
 		return apiClient.get<RestApiResponse<unknown>>(
 			`/view/paged-sum-po-detail?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&ItemId=${params.ItemId}`
 		);
+	},
+	getPagedMonitoring: (params: { PageNumber: number; PageSize: number; SearchTerm: string }) => {
+		return apiClient.get<RestApiResponse<unknown>>(
+			`/view/paged-monitoring?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
+		);
+	},
+	getPagedMonitoringDetail: (params: {
+		PageNumber: number;
+		PageSize: number;
+		SearchTerm: string;
+		ItemId: string;
+	}) => {
+		return apiClient.get<RestApiResponse<unknown>>(
+			`/view/paged-sum-po-detail?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&ItemId=${params.ItemId}`
+		);
 	}
 };
+

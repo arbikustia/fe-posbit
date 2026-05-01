@@ -266,11 +266,11 @@
 					<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 						<Icon icon="ant-design:product-outlined" class="text-2xl text-purple-800 md:text-3xl" />
 						<Card.Description class="text-center text-lg md:text-left md:text-sm">
-							Stock All Toko
+							Stock Toko
 						</Card.Description>
 					</div>
 					<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
-						{state.list.stock_all_toko ?? 0}
+						{state.list.stock_toko ?? 0}
 					</Card.Title>
 				</Card.Header>
 			</Card.Root>

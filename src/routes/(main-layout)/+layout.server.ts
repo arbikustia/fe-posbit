@@ -19,6 +19,7 @@ export const load: LayoutServerLoad = async (event) => {
 	const rolePermissions = {
 		[ROLES.SUPERADMIN]: [
 			'/dashboard',
+			'/dashboard/total-barang-masuk',
 			'/master/user',
 			'/master/point',
 			'/master/customer',
@@ -29,19 +30,27 @@ export const load: LayoutServerLoad = async (event) => {
 			'/report/sales',
 			'/report/purchase',
 			'/report/shift',
-			'/report/monitoring-stock'
+			'/report/monitoring-stock',
+			'/report/monitoring-stock-2'
 		],
 		[ROLES.ADMIN]: [
 			'/dashboard',
+			'/dashboard/total-barang-masuk',
 			'/purchase',
 			'/report/sales',
 			'/report/purchase',
 			'/report/shift',
 			'/sto',
-			'/report/monitoring-stock'
+			'/report/monitoring-stock',
+			'/report/monitoring-stock-2'
 		],
 		[ROLES.CASHIER]: ['/transaction', '/master/customer', '/report/sales'],
-		[ROLES.GUDANG]: ['/report/purchase', '/report/monitoring-stock']
+		[ROLES.GUDANG]: [
+			'/dashboard/total-barang-masuk',
+			'/report/purchase',
+			'/report/monitoring-stock',
+			'/report/monitoring-stock-2'
+		]
 	};
 
 	// Cek role user dan dapatkan allowed routes
