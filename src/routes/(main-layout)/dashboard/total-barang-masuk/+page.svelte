@@ -331,6 +331,7 @@
 														<thead class="rounded-md bg-gray-200">
 															<tr>
 																<th class="px-2 py-1 text-left">Barcode ID</th>
+																<th class="px-2 py-1 text-left">Pemasukan</th>
 																<th class="px-2 py-1 text-left">Created Date</th>
 															</tr>
 														</thead>
@@ -338,6 +339,7 @@
 															{#each row.details as d}
 																<tr>
 																	<td class="px-2 py-1">{d.barcode_id}</td>
+																	<td class="px-2 py-1">{d.pemasukan ?? '-'}</td>
 																	<td class="px-2 py-1">{d.created_date}</td>
 																</tr>
 															{/each}
