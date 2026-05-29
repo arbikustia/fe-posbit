@@ -12,6 +12,21 @@ import { page } from '$app/stores';
 import { browser } from '$app/environment';
 import dayjs from 'dayjs';
 
+function getInitialFilters() {
+	if (!browser) return {};
+	const url = new URL(window.location.href);
+	if (url.pathname !== '/purchase') return {};
+	return {
+		page: Number(url.searchParams.get('page')) || 1,
+		size: Number(url.searchParams.get('size')) || 10,
+		search: url.searchParams.get('search') || '',
+		payment: url.searchParams.get('payment') || '',
+		status: url.searchParams.get('status') || '',
+		start: url.searchParams.get('start') || dayjs().startOf('month').format('YYYY-MM-DD'),
+		end: url.searchParams.get('end') || dayjs().endOf('month').format('YYYY-MM-DD')
+	};
+}
+
 export function usePurchasePage() {
 	const form = superForm(defaults(zod(invoiceSchema)), {
 		SPA: true,
@@ -89,22 +104,24 @@ export function usePurchasePage() {
 		isStatusOpen:boolean
 	};
 
+	const initialFilters = getInitialFilters();
+
 	const state = $state<stateProps>({
 		table: [],
 		showSearch: false,
 		searchEl: null,
 		showDeleteModal: false,
 		selectedPurchase: null,
-		currentPage: 1,
-		pageSize: 10,
+		currentPage: initialFilters.page || 1,
+		pageSize: initialFilters.size || 10,
 		totalPages: 0,
 		totalCount: 0,
 		isLoading: false,
-		searchTerm: '',
-		paymentStatus: '',
-		statusPo: '',
-		startDate: dayjs().startOf('month').format('YYYY-MM-DD'),
-		endDate: dayjs().endOf('month').format('YYYY-MM-DD'),
+		searchTerm: initialFilters.search || '',
+		paymentStatus: initialFilters.payment || '',
+		statusPo: initialFilters.status || '',
+		startDate: initialFilters.start || dayjs().startOf('month').format('YYYY-MM-DD'),
+		endDate: initialFilters.end || dayjs().endOf('month').format('YYYY-MM-DD'),
 		filter: {},
 		popoverOpen: false,
 		isEditing: false,
@@ -242,11 +259,25 @@ export function usePurchasePage() {
 	}
 
 	async function handleGetPaged(
-		pageNumber = 1,
+		pageNumber = state.currentPage,
 		searchTerm = state.searchTerm,
 		startDate = state.startDate,
 		endDate = state.endDate
 	) {
+		if (browser) {
+			const url = new URL(window.location.href);
+			if (url.pathname === '/purchase') {
+				url.searchParams.set('page', String(pageNumber));
+				url.searchParams.set('size', String(state.pageSize));
+				if (state.searchTerm) url.searchParams.set('search', state.searchTerm); else url.searchParams.delete('search');
+				if (state.paymentStatus) url.searchParams.set('payment', state.paymentStatus); else url.searchParams.delete('payment');
+				if (state.statusPo) url.searchParams.set('status', state.statusPo); else url.searchParams.delete('status');
+				if (startDate) url.searchParams.set('start', startDate);
+				if (endDate) url.searchParams.set('end', endDate);
+				goto(url.toString(), { replaceState: true, keepFocus: true });
+			}
+		}
+
 		try {
 			state.isLoading = true;
 			const res: any = await purchaseService.getPaged({

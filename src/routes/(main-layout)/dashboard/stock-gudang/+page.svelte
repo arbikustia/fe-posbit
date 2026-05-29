@@ -51,7 +51,7 @@
 			? 'Total Stock Gudang' 
 			: state.statusPage === 'JAHITLABEL' 
 				? 'Stock Jahit Label' 
-				: 'Stock Delivery';
+				: state.statusPage === 'sample' ? 'sample' :'Stock Delivery';
 
 		dashboardGudangService.getExcelPageBarcode({
 			PageNumber: 1,
@@ -81,7 +81,7 @@
 						</Button>
 					</span>
 					<h1 class="text-lg font-bold text-gray-900 sm:text-xl md:text-2xl lg:text-2xl">
-						{state.statusPage == 'GUDANG' ?'Total Stock Gudang' : state.statusPage == 'JAHITLABEL' ? 'Stock Jahit Label' : 'Stock Delivery'}
+						{state.statusPage == 'GUDANG' ?'Total Stock Gudang' : state.statusPage == 'JAHITLABEL' ? 'Stock Jahit Label' :  state.statusPage === 'sample' ? 'Stock Sample' : 'Stock Delivery'}
 					</h1>
 				</div>
 				<div class="flex gap-2">

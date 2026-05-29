@@ -6,7 +6,7 @@
 	import { useMonitoringPage } from './use-monitoring.svelte';
 	import { cn } from '$lib/utils.js';
 
-	const { state, handlePageChange } = useMonitoringPage();
+	const { state, handlePageChange, handleExport } = useMonitoringPage();
 
 	async function toggleSearch() {
 		state.showSearch = !state.showSearch;
@@ -56,6 +56,15 @@
 					/>
 				</button>
 			</div>
+
+			<button
+				type="button"
+				class="flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white transition hover:bg-primary/90"
+				onclick={handleExport}
+			>
+				<Icon icon="lucide:download" width="16" height="16" />
+				<span class="hidden sm:inline">Export</span>
+			</button>
 		</div>
 	</div>
 </header>

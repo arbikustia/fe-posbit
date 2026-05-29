@@ -8,7 +8,7 @@ const showApiRequestError = true;
 const tokenAccess = userStore.getToken();
 
 const apiClient = axios.create({
-	baseURL: 'https://svr.bantuit.my.id/api/',
+	baseURL: 'https://bantupos.daalushijab.site/api/',
 	// baseURL: 'https://unsoaked-roseann-fancily.ngrok-free.dev/api/',
 	// baseURL: 'http://10.219.201.166:5000/api/',
 	timeout: 10000,

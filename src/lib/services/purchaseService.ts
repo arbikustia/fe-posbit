@@ -142,6 +142,57 @@ export const purchaseService = {
 			`/view/paged-monitoring?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
 		);
 	},
+	getExportMonitoringStock: async (params: {
+		PageNumber: number;
+		PageSize: number;
+		SearchTerm: string;
+		IsExport: boolean;
+	}): Promise<void> => {
+		try {
+			const response: any = await apiClient.get(
+				`/view/export-monitoring-stock?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}&IsExport=${params.IsExport}`,
+				{
+					responseType: 'blob' // Important for file download
+				}
+			);
+
+			// Create blob from response
+			const blob = new Blob([response.data], {
+				type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			});
+
+			// Create download link
+			const url = window.URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+
+			// Extract filename from response headers or use default
+			const contentDisposition = response.headers['content-disposition'];
+			let filename = `export-monitoring-stock-${new Date().getTime()}.xlsx`;
+
+			if (contentDisposition) {
+				const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+				if (filenameMatch && filenameMatch[1]) {
+					filename = filenameMatch[1];
+					// Ensure .xlsx extension
+					if (!filename.endsWith('.xlsx')) {
+						filename += '.xlsx';
+					}
+				}
+			}
+
+			link.setAttribute('download', filename);
+			document.body.appendChild(link);
+			link.click();
+
+			// Cleanup
+			document.body.removeChild(link);
+			window.URL.revokeObjectURL(url);
+		} catch (error) {
+			console.error('Error downloading Excel:', error);
+			throw new Error('Failed to download Excel file');
+		}
+	},
 	getPagedMonitoringDetail: (params: {
 		PageNumber: number;
 		PageSize: number;

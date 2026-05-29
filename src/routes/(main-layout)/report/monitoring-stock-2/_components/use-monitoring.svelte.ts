@@ -84,6 +84,22 @@ export function useMonitoringPage() {
 		await handleGetPaged(pageNum);
 	}
 
+	async function handleExport() {
+		try {
+			toast.info('Downloading file...');
+			await purchaseService.getExportMonitoringStock({
+				PageNumber: 1, 
+				PageSize: state.pageSize,
+				SearchTerm: state.searchTerm,
+				IsExport: true
+			});
+			toast.success('Download completed successfully');
+		} catch (err) {
+			console.error('Failed to export data:', err);
+			toast.error('Failed to export data');
+		}
+	}
+
 	onMount(() => {
 		handleGetPaged();
 	});
@@ -91,6 +107,7 @@ export function useMonitoringPage() {
 	return {
 		state,
 		handlePageChange,
-		handleGetPaged
+		handleGetPaged,
+		handleExport
 	};
 }

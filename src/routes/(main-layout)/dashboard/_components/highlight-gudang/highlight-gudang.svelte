@@ -266,7 +266,7 @@
 					<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 						<Icon icon="ant-design:product-outlined" class="text-2xl text-purple-800 md:text-3xl" />
 						<Card.Description class="text-center text-lg md:text-left md:text-sm">
-							Stock Toko
+							Transak Toko
 						</Card.Description>
 					</div>
 					<Card.Title class="text-4xl font-semibold tabular-nums md:text-2xl lg:text-3xl">
@@ -274,7 +274,11 @@
 					</Card.Title>
 				</Card.Header>
 			</Card.Root>
-			<Card.Root class="@container/card col-span-1  h-fit min-h-28 cursor-pointer p-0">
+			<Card.Root 
+			onclick={() =>
+							goto(
+								`/dashboard/stock-gudang?Start=${state.startDate}&End=${state.endDate}&Status=sample`
+							)} class="@container/card col-span-1  h-fit min-h-28 cursor-pointer p-0">
 				<Card.Header class="flex flex-col items-center space-y-2 p-4">
 					<div class="flex w-full items-center justify-center gap-2 md:justify-start">
 						<Icon icon="ant-design:product-outlined" class="text-2xl text-purple-800 md:text-3xl" />
