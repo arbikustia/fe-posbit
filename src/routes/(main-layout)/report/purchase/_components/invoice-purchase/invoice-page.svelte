@@ -197,7 +197,8 @@
 			}
 			const downPayment = Number(row.down_payment) || 0;
 			const discount = Number(row.discount_amount) || 0;
-			const sisaBayar = totalBayar - downPayment - discount;
+			totalBayar = totalBayar - discount;
+			const sisaBayar = totalBayar - downPayment;
 
 			// === TOTALS (right side) ===
 			doc.setFont('helvetica', 'normal');
@@ -282,22 +283,24 @@
 			});
 			y += 15;
 
-			// DP
-			doc.setFont('helvetica', 'normal');
-			doc.setFontSize(10);
-			doc.text('DP :', 320, y);
-			doc.text(`RP ${downPayment.toLocaleString('id-ID')}`, pageWidth - margin, y, {
-				align: 'right'
-			});
-			y += 15;
+			if (downPayment > 0) {
+				// DP
+				doc.setFont('helvetica', 'normal');
+				doc.setFontSize(10);
+				doc.text('DP :', 320, y);
+				doc.text(`RP ${downPayment.toLocaleString('id-ID')}`, pageWidth - margin, y, {
+					align: 'right'
+				});
+				y += 15;
 
-			// SISA
-			doc.setFont('helvetica', 'bold');
-			doc.text('SISA :', 320, y);
-			doc.text(`RP ${sisaBayar.toLocaleString('id-ID')}`, pageWidth - margin, y, {
-				align: 'right'
-			});
-			y += 40;
+				// SISA
+				doc.setFont('helvetica', 'bold');
+				doc.text('SISA :', 320, y);
+				doc.text(`RP ${sisaBayar.toLocaleString('id-ID')}`, pageWidth - margin, y, {
+					align: 'right'
+				});
+				y += 40;
+			}
 
 			// === FOOTER SIGNATURE ===
 			const footerY = 650;

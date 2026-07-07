@@ -11,7 +11,7 @@ export default defineConfig({
 		// 	cert: fs.readFileSync('localhost.pem')
 		// },
 		host: 'localhost',
-		port: 99 // Bisa ubah ke port lain jika diperlukan
+		port: 5173 // Bisa ubah ke port lain jika diperlukan (default vite: 5173)
 	},
 	plugins: [
 		paraglideVitePlugin({
