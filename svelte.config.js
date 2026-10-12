@@ -1,7 +1,7 @@
 //import adapter from '@sveltejs/adapter-auto';
 // import adapter from '@sveltejs/adapter-netlify';
-// import adapter from '@sveltejs/adapter-vercel';
-import adapter from '@sveltejs/adapter-node';
+import adapter from '@sveltejs/adapter-vercel';
+// import adapter from '@sveltejs/adapter-node';
 // import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 // import adapter from '@sveltejs/adapter-static';
@@ -24,11 +24,11 @@ const config = {
 			strict: true
 		}),
 		paths: {
-			base: '',
+			base: ''
 		},
 		alias: {
 			'@/*': './src/lib/*',
-			$appCss: 'src/app.css',
+			$appCss: 'src/app.css'
 		}
 	}
 };
