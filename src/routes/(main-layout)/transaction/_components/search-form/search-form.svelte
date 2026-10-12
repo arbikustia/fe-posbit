@@ -215,7 +215,9 @@
 					details: pageState.itemTable.map((item: any) => ({
 						barcode_id: item.barcode_id,
 						item_id: item.item_id,
-						qty: item.qty || 1
+						qty: item.qty || 1,
+						price: item.harga_jual,
+						discount: item.discount || 0
 					}))
 				})
 				.then(async (res) => {
@@ -362,9 +364,11 @@
 									<Input placeholder="Search items..." class="h-9" bind:value={searchQuery} />
 									<div>
 										{#if filteredItems.length === 0}
-											<div class="w-full text-center h-20 flex justify-center items-center">No items found.</div>
+											<div class="flex h-20 w-full items-center justify-center text-center">
+												No items found.
+											</div>
 										{/if}
-										<div class="max-h-44  overflow-y-auto">
+										<div class="max-h-44 overflow-y-auto">
 											{#each filteredItems as item (item.value)}
 												<Button
 													variant="ghost"

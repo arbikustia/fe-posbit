@@ -111,6 +111,11 @@
 					childAccess: [ROLES.SUPERADMIN, ROLES.ADMIN]
 				},
 				{
+					label: 'Inventory',
+					href: '/report/inventory',
+					childAccess: [ROLES.SUPERADMIN, ROLES.ADMIN]
+				},
+				{
 					label: 'Monitoring Stock',
 					href: '/report/monitoring-stock',
 					childAccess: [ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.GUDANG]

@@ -101,7 +101,7 @@ export function usePurchasePage() {
 		detailFromParams: any[];
 		allData: any[];
 		originalData: any[]; // Data asli dari API sebelum difilter
-		isStatusOpen:boolean
+		isStatusOpen: boolean;
 	};
 
 	const initialFilters = getInitialFilters();
@@ -133,7 +133,7 @@ export function usePurchasePage() {
 		detailFromParams: [],
 		allData: [],
 		originalData: [], // Data asli dari API
-		isStatusOpen:false
+		isStatusOpen: false
 	});
 
 	// Fetch items from gudang
@@ -269,9 +269,12 @@ export function usePurchasePage() {
 			if (url.pathname === '/purchase') {
 				url.searchParams.set('page', String(pageNumber));
 				url.searchParams.set('size', String(state.pageSize));
-				if (state.searchTerm) url.searchParams.set('search', state.searchTerm); else url.searchParams.delete('search');
-				if (state.paymentStatus) url.searchParams.set('payment', state.paymentStatus); else url.searchParams.delete('payment');
-				if (state.statusPo) url.searchParams.set('status', state.statusPo); else url.searchParams.delete('status');
+				if (state.searchTerm) url.searchParams.set('search', state.searchTerm);
+				else url.searchParams.delete('search');
+				if (state.paymentStatus) url.searchParams.set('payment', state.paymentStatus);
+				else url.searchParams.delete('payment');
+				if (state.statusPo) url.searchParams.set('status', state.statusPo);
+				else url.searchParams.delete('status');
 				if (startDate) url.searchParams.set('start', startDate);
 				if (endDate) url.searchParams.set('end', endDate);
 				goto(url.toString(), { replaceState: true, keepFocus: true });
@@ -302,7 +305,7 @@ export function usePurchasePage() {
 				// updateTable();
 			} else {
 				state.originalData = [];
-				state.allData = []; 	
+				state.allData = [];
 				state.table = [];
 				state.totalCount = 0;
 				state.totalPages = 0;
@@ -336,18 +339,17 @@ export function usePurchasePage() {
 		handleGetPaged(pageNum, state.searchTerm);
 
 		// Update table dengan page baru
-		// updateTable(); 
+		// updateTable();
 	}
 
 	$effect(() => {
 		(async () => {
 			if (state.searchTerm) {
-				console.log(state.searchTerm)
+				console.log(state.searchTerm);
 				handleGetPaged(state.currentPage, state.searchTerm);
 			}
 		})();
 	});
-
 
 	onMount(() => {
 		handleGetPaged();
@@ -450,6 +452,7 @@ export function usePurchasePage() {
 					qty: detail.qty || 1,
 					qty_keluar: detail.qty_keluar || 0,
 					qty_delivery: detail.qty_delivery || 0,
+					discount: detail.discount || 0,
 					price: detail.price || 0,
 					priceKey: detail.priceKey || 'Harga Normal',
 					name: detail.name || ''
@@ -520,7 +523,8 @@ export function usePurchasePage() {
 				qty: item.qty,
 				qty_keluar: matching.qty_keluar || 0,
 				qty_delivery: matching.qty_delivery || 0,
-				price: item.price
+				price: item.price,
+				discount: item.discount ?? 0
 			};
 		});
 		console.warn(validateForm, 'lklkl');
@@ -539,7 +543,12 @@ export function usePurchasePage() {
 			keterangan: values.keterangan ?? '',
 			labels: values.labels ?? [],
 			ongkir: values.ongkir ?? 0,
-			details: values.details ?? []
+			details: (values.details ?? []).map((d: any) => ({
+				item_id: d.item_id,
+				qty: d.qty,
+				price: d.price ?? 0,
+				discount: d.discount ?? 0
+			}))
 		};
 
 		try {

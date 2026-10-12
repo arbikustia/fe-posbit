@@ -17,10 +17,28 @@
 		}).format(num || 0);
 	}
 
+	function formatIDR(value: number | string) {
+		if (!value) return '';
+		const num = Number(String(value).replace(/[^\d]/g, ''));
+		return num.toLocaleString('id-ID', {
+			style: 'currency',
+			currency: 'IDR',
+			minimumFractionDigits: 0
+		});
+	}
+
+	function handleDiscountInput(event: Event, row: any) {
+		const target = event.target as HTMLInputElement;
+		const rawValue = target.value.replace(/[^\d]/g, '');
+		row.discount = Number(rawValue || 0);
+		target.value = formatIDR(rawValue);
+	}
+
 	// 🔹 Hitung total harga semua produk
 	$effect(() => {
 		pageState.totalAll = pageState.itemTable.reduce(
-			(sum: number, item: any) => sum + item.harga_jual * (item.qty || 1),
+			(sum: number, item: any) =>
+				sum + Math.max(item.harga_jual * (item.qty || 1) - (item.discount || 0), 0),
 			0
 		);
 	});
@@ -73,6 +91,7 @@
 						<th class="px-3 py-2.5 text-xs sm:px-4 sm:py-3 md:text-sm">Label</th>
 						<th class="px-3 py-2.5 text-xs sm:px-4 sm:py-3 md:text-sm">Harga Jual</th>
 						<th class="px-3 py-2.5 text-xs sm:px-4 sm:py-3 md:text-sm">Qty</th>
+						<th class="px-3 py-2.5 text-xs sm:px-4 sm:py-3 md:text-sm">Discount</th>
 						<th class="px-3 py-2.5 text-center text-xs sm:px-4 sm:py-3 md:text-sm">Action</th>
 					</tr>
 				</thead>
@@ -80,7 +99,7 @@
 				<tbody class="divide-y divide-gray-200 overflow-auto overflow-y-auto">
 					{#if pageState.itemTable.length === 0}
 						<tr>
-							<td colspan="7" class="py-4 text-center text-sm text-gray-500">
+							<td colspan="8" class="py-4 text-center text-sm text-gray-500">
 								No items have been added
 							</td>
 						</tr>
@@ -95,6 +114,17 @@
 									{formatCurrency(row.harga_jual)}
 								</td>
 								<td class="px-3 py-2.5 text-xs text-gray-900">{row.qty}</td>
+								<td class="px-3 py-2.5 text-xs text-gray-900">
+									<input
+										type="text"
+										inputmode="numeric"
+										value={formatIDR(row.discount)}
+										oninput={(event) => handleDiscountInput(event, row)}
+										placeholder="Rp 0"
+										aria-label={`Discount ${row.name}`}
+										class="h-8 w-28 rounded-md border border-gray-300 px-2 text-xs outline-none focus:border-blue-500"
+									/>
+								</td>
 
 								<!-- Tombol Delete -->
 								<td class="px-3 py-2.5 text-center">

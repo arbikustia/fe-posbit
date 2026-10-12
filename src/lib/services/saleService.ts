@@ -36,7 +36,9 @@ export const saleService = {
         {
             barcode_id: string,
             item_id: string,
-            qty: number
+            qty: number,
+            price: number,
+            discount: number
         }[]
 
     }) => {

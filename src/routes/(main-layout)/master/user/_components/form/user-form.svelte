@@ -3,6 +3,8 @@
 	import Input from '$lib/components/ui/input/input.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Select from '$lib/components/ui/select/index.js';
+	import { Switch } from '$lib/components/ui/switch/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
 	import type { SuperForm } from 'sveltekit-superforms';
 	import type z from 'zod';
 	import type { userSchema } from './schema';
@@ -145,6 +147,21 @@
 			</Form.Control>
 			<Form.FieldErrors class="mt-1 text-sm text-red-600" />
 		</Form.Field>
+
+		{#if isEditing}
+			<!-- STATUS (Active/Inactive) -->
+			<Form.Field {form} name="is_active" class="mt-4">
+				<Form.Control>
+					<Form.Label class="text-sm font-medium text-gray-700">Status</Form.Label>
+					<div class="flex items-center space-x-2">
+						<Switch id="is_active" bind:checked={$formData.is_active} />
+						<Label for="is_active" class="text-sm">
+							{$formData.is_active ? 'Active' : 'Inactive'}
+						</Label>
+					</div>
+				</Form.Control>
+			</Form.Field>
+		{/if}
 
 		<!-- BUTTONS -->
 		<div class="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">

@@ -11,7 +11,7 @@
 	const role = getUserRole()?.toLocaleLowerCase();
 	$: tabs = page.url.searchParams.get('tabs');
 	const { state: pageState, handleGetSummary, handleGetChart } = useDashboardPage();
-	const { state: inventoryState } = useDashboardInventory();
+	const { state: inventoryState, handleDateFilter } = useDashboardInventory();
 </script>
 
 <svelte:head>
@@ -32,7 +32,13 @@
 			<div class="@container/main flex flex-1 flex-col gap-4">
 				<!-- 🔹 Konten utama -->
 				<div class="flex flex-col gap-4 md:gap-6">
-					<HighlightCard state={pageState} inventoryState={inventoryState} {handleGetSummary} {handleGetChart} />
+					<HighlightCard
+						state={pageState}
+						{inventoryState}
+						{handleGetSummary}
+						{handleGetChart}
+						{handleDateFilter}
+					/>
 					<ChartVisitors state={pageState} />
 				</div>
 			</div>

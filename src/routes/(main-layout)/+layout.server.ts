@@ -30,6 +30,7 @@ export const load: LayoutServerLoad = async (event) => {
 			'/report/sales',
 			'/report/purchase',
 			'/report/shift',
+			'/report/inventory',
 			'/report/monitoring-stock',
 			'/report/monitoring-stock-2'
 		],
@@ -40,6 +41,7 @@ export const load: LayoutServerLoad = async (event) => {
 			'/report/sales',
 			'/report/purchase',
 			'/report/shift',
+			'/report/inventory',
 			'/sto',
 			'/report/monitoring-stock',
 			'/report/monitoring-stock-2'

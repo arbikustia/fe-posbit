@@ -19,30 +19,19 @@ export const userService = {
 		return response.data;
 	},
 
-	getPaged: (params: { PageNumber: number, PageSize: number, SearchTerm?: string }) => {
+	getPaged: (params: { PageNumber: number; PageSize: number; SearchTerm?: string }) => {
 		return apiClient.get<RestApiResponse<unknown>>(
 			`/users/paged?PageNumber=${params.PageNumber}&PageSize=${params.PageSize}&SearchTerm=${params.SearchTerm}`
 		);
 	},
 	getRole: () => {
-		return apiClient.get<RestApiResponse<unknown>>(
-			`/role/get-all-role`
-		);
+		return apiClient.get<RestApiResponse<unknown>>(`/role/get-all-role`);
 	},
 	delete: (id: string) => {
-		return apiClient.delete<RestApiResponse<unknown>>(
-			`/users/${id}`
-		);
+		return apiClient.delete<RestApiResponse<unknown>>(`/users/${id}`);
 	},
-	create: (body: {
-		username: string;
-		email: string;
-		password: string;
-		role: string[];
-	}) => {
-		return apiClient.post<RestApiResponse<unknown>>(
-			`/users`, body
-		);
+	create: (body: { username: string; email: string; password: string; role: string[] }) => {
+		return apiClient.post<RestApiResponse<unknown>>(`/users`, body);
 	},
 	update: (body: {
 		id: string;
@@ -50,9 +39,12 @@ export const userService = {
 		email: string;
 		password: string;
 		role: string[];
+		is_active: boolean;
 	}) => {
-		return apiClient.put<RestApiResponse<unknown>>(
-			`/users/${body.id}`, body
-		);
-	},
+		return apiClient.put<RestApiResponse<unknown>>(`/users/${body.id}`, {
+			...body,
+			lockout_enabled: body.is_active,
+			is_active: undefined
+		});
+	}
 };

@@ -32,7 +32,14 @@
 	let selectedItems = $state<string[]>([]);
 
 	let itemDetails = $state<
-		{ item_id: string; qty: number; price: number; priceKey: string; name: string }[]
+		{
+			item_id: string;
+			qty: number;
+			price: number;
+			discount: number;
+			priceKey: string;
+			name: string;
+		}[]
 	>([]);
 
 	let open = $state(false);
@@ -264,8 +271,9 @@
 				priceKey = packageLabel;
 			}
 
-			const name = existing?.name;
-			return { item_id: id, qty, price, priceKey, name };
+			const name = existing?.name ?? '';
+			const discount = existing?.discount ?? 0;
+			return { item_id: id, qty, price, discount, priceKey, name };
 		});
 
 		itemDetails = mapped;
@@ -289,7 +297,9 @@
 		const priceKey = detail?.priceKey || packageLabel;
 
 		const updated = itemDetails.map((i) =>
-			i.item_id === id ? { ...i, qty, price, priceKey, qty_keluar: qty_keluar ?? 0 } : i
+			i.item_id === id
+				? { ...i, qty, price, priceKey, qty_keluar: qty_keluar ?? 0, discount: i.discount }
+				: i
 		);
 		itemDetails = updated;
 		formData.update((f) => ({ ...f, details: updated }));
@@ -559,6 +569,17 @@
 		target.value = formatIDR(raw);
 	}
 
+	function updateItemDiscount(itemId: string, event: Event) {
+		const target = event.target as HTMLInputElement;
+		const raw = target.value.replace(/[^\d]/g, '');
+		const discount = Number(raw || 0);
+		itemDetails = itemDetails.map((item) =>
+			item.item_id === itemId ? { ...item, discount } : item
+		);
+		formData.update((form) => ({ ...form, details: itemDetails }));
+		target.value = formatIDR(raw);
+	}
+
 	function handleTotalAmountInput(event: Event) {
 		const target = event.target as HTMLInputElement;
 		const raw = target.value.replace(/[^\d]/g, '');
@@ -584,7 +605,9 @@
 				const description = String(item.deskripsi ?? '').toLowerCase();
 				const combined = `${item.label ?? ''} ${item.deskripsi ?? ''}`.toLowerCase();
 
-				return label.includes(q) || value.includes(q) || description.includes(q) || combined.includes(q);
+				return (
+					label.includes(q) || value.includes(q) || description.includes(q) || combined.includes(q)
+				);
 			})
 			.slice(0, LIMIT); // tetap batasi render
 	});
@@ -749,7 +772,7 @@
 									(total: number, item: any) => total + (item.qty || 0) * (item.price || 0),
 									0
 								)
-						  )}
+							)}
 				</span>
 			</div>
 			<!-- {#if selectedItems.length > 3}
@@ -775,7 +798,7 @@
 				return textA.localeCompare(textB);
 			}) as detail, index (detail.item_id)}
 				{@const item = itemOptions.find((i) => i.value === detail.item_id)}
-				{@const subtotal = (detail.price ?? 0) * detail.qty}
+				{@const subtotal = Math.max((detail.price ?? 0) * detail.qty - (detail.discount ?? 0), 0)}
 				{@const detailFromParam =
 					pageState?.detailFromParams?.find((d) => d.item_id === detail.item_id) ?? {}}
 				{@const minQty = Math.max(1, detailFromParam.qty_keluar ?? 0)}
@@ -790,7 +813,8 @@
 								<span class="text-red-500">Rp 0 (Marketplace)</span>
 							{:else}
 								Rp {detail.price?.toLocaleString('id-ID')}
-							{/if} • Qty Keluar : {detailFromParam.qty_keluar ?? 0} • Qty Delivery : {detailFromParam.qty_delivery ?? 0}
+							{/if} • Qty Keluar : {detailFromParam.qty_keluar ?? 0} • Qty Delivery : {detailFromParam.qty_delivery ??
+								0}
 						</div>
 					</div>
 
@@ -842,6 +866,18 @@
 										)}>+</button
 								>
 							</div>
+						</div>
+						<div class="flex items-center gap-2">
+							<span class="text-muted-foreground text-sm">Discount:</span>
+							<input
+								type="text"
+								inputmode="numeric"
+								value={formatIDR(detail.discount ?? 0)}
+								oninput={(e) => updateItemDiscount(detail.item_id, e)}
+								placeholder="Rp 0"
+								aria-label={`Discount ${item?.label}`}
+								class="h-8 w-28 rounded-md border border-gray-300 px-2 text-xs outline-none focus:border-blue-500"
+							/>
 						</div>
 						<div class="w-32 text-right">
 							<p class="text-muted-foreground text-xs">Subtotal</p>

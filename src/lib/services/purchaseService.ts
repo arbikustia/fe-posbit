@@ -95,6 +95,8 @@ export const purchaseService = {
 		details: {
 			item_id: string;
 			qty: number;
+			price?: number;
+			discount?: number;
 		}[];
 	}) => {
 		return apiClient.post<RestApiResponse<unknown>>(`/purchase-order`, body);
@@ -204,4 +206,3 @@ export const purchaseService = {
 		);
 	}
 };
-

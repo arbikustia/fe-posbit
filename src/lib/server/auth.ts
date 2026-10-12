@@ -99,7 +99,7 @@ function clearAllStorage() {
 }
 
 export async function login(event: RequestEvent, username: string, password: string) {
-	const res = await fetch('https://bantupos.daalushijab.site/api/authentication', {
+	const res = await fetch('https://svr.bantuit.my.id/api/authentication', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'

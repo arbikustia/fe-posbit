@@ -28,6 +28,7 @@
 		role: string;
 		email: string;
 		last_created: string;
+		is_active: boolean;
 		open?: boolean;
 	};
 
@@ -150,6 +151,12 @@
 								</th>
 								<th
 									scope="col"
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Status
+								</th>
+								<th
+									scope="col"
 									class="px-3 py-2.5 text-center text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
 									Action
@@ -176,7 +183,7 @@
 												row.role == 'Admin' && 'bg-green-500/10 text-green-700',
 												row.role == 'Cashier' && 'bg-blue-500/10 text-blue-700',
 												row.role == 'Gudang' && 'bg-yellow-500/10 text-yellow-700',
-												row.role == 'Superadmin' && 'bg-red-500/10 text-red-700',
+												row.role == 'Superadmin' && 'bg-red-500/10 text-red-700'
 											)}
 										>
 											{row.role}
@@ -191,6 +198,18 @@
 										class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 									>
 										{row.last_created}
+									</td>
+									<td class="px-3 py-2.5 whitespace-nowrap sm:px-4 sm:py-3">
+										<span
+											class={cn(
+												'inline-flex rounded-md px-2 py-0.5 text-xs font-medium md:py-1 md:text-sm',
+												row.is_active
+													? 'bg-green-500/10 text-green-700'
+													: 'bg-gray-200 text-gray-700'
+											)}
+										>
+											{row.is_active ? 'Active' : 'Inactive'}
+										</span>
 									</td>
 									<td class="px-3 py-2.5 text-center whitespace-nowrap sm:px-4 sm:py-3">
 										{#if row.open}
@@ -221,7 +240,7 @@
 																row.email ?? ''
 															)}&id=${encodeURIComponent(String(row.id ?? ''))}&password=${encodeURIComponent(
 																String(row.password ?? '')
-															)}`
+															)}&is_active=${encodeURIComponent(String(row.is_active ?? true))}`
 														)}
 												>
 													<Icon

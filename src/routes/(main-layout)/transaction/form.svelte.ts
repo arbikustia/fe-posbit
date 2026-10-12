@@ -40,7 +40,8 @@ export function useTransactionForm() {
 			name: item.name,
 			label_name: item.label_name,
 			harga_jual: Number(item.harga_jual) || 0,
-			qty: 1
+			qty: 1,
+			discount: 0
 		}));
 	}
 
@@ -166,7 +167,7 @@ export function useTransactionForm() {
 			const res: any = await itemService.getListitemFormBarcode({
 				PageNumber: 1,
 				PageSize: 10,
-				SearchTerm: ""
+				SearchTerm: ''
 			});
 
 			if (res?.data?.data) {
@@ -188,7 +189,6 @@ export function useTransactionForm() {
 			state.isLoading = false;
 		}
 	}
-
 
 	// 🔹 Effect: Fetch customer data jika nomor diinput
 	$effect(() => {
@@ -226,12 +226,11 @@ export function useTransactionForm() {
 		})();
 	});
 
-
 	$effect(() => {
 		(async () => {
 			handleSearchProduct(state.searchProduct);
-		})()
-	})
+		})();
+	});
 
 	onMount(() => {
 		handleGetListItemGudang();

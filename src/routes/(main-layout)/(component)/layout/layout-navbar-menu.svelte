@@ -419,6 +419,31 @@
 						</svg>
 					</LayoutNavBarMenuItem>
 				{/if}
+				{#if isSuperadmin || isAdmin}
+					<LayoutNavBarMenuItem
+						href="/report/inventory"
+						label="Inventory"
+						extendClass="text-xs w-full text-start h-10 flex justify-start"
+					>
+						<svg
+							slot="icon"
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							class="size-5"
+						>
+							<path
+								fill="none"
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M21 8V21H3V8M1 3h22v5H1zm10 5v13"
+							/>
+						</svg>
+					</LayoutNavBarMenuItem>
+				{/if}
 				{#if isSuperadmin || isAdmin || isGudang}
 					<LayoutNavBarMenuItem
 						href="/report/monitoring-stock"

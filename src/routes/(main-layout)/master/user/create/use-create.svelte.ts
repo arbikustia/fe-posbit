@@ -57,6 +57,7 @@ export function useUserPage() {
 			role: item.role,
 			email: item.email,
 			last_created: item.last_created,
+			is_active: item.is_active ?? true,
 			open: true
 		}));
 	}
@@ -110,7 +111,8 @@ export function useUserPage() {
 			username: values.userName,
 			email: values.email,
 			password: values.password,
-			role: [values.role]
+			role: [values.role],
+			is_active: values.is_active
 		};
 
 		try {
@@ -120,7 +122,8 @@ export function useUserPage() {
 					username: body.username,
 					email: body.email,
 					password: body.password,
-					role: body.role
+					role: body.role,
+					is_active: body.is_active
 				});
 				toast.success('User updated successfully');
 			} else {
@@ -147,7 +150,7 @@ export function useUserPage() {
 		const qp = url.searchParams;
 		const hasAny =
 			qp.has('username') || qp.has('email') || qp.has('role') || qp.has('id') || qp.has('password');
-			
+
 		if (hasAny) {
 			formData.update((f) => ({
 				...f,
@@ -155,7 +158,10 @@ export function useUserPage() {
 				email: qp.get('email') ?? f.email,
 				role: qp.get('role') ?? f.role,
 				id: qp.get('id') ?? (f as any).id,
-				password: qp.get('password') ?? f.password
+				password: qp.get('password') ?? f.password,
+				is_active: qp.has('is_active')
+					? qp.get('is_active') === 'true'
+					: ((f as any).is_active ?? true)
 			}));
 		}
 	});
