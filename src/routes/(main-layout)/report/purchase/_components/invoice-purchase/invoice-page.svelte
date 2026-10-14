@@ -111,8 +111,9 @@
 			doc.setFont('helvetica', 'bold');
 			doc.setFontSize(10);
 			doc.text('ITEM', margin + 5, y + 5);
-			doc.text('HARGA', 260, y + 5);
-			doc.text('JML', 380, y + 5);
+			doc.text('HARGA', 230, y + 5);
+			doc.text('DISKON', 315, y + 5);
+			doc.text('JML', 400, y + 5);
 			doc.text('TOTAL', 450, y + 5);
 
 			y += 20;
@@ -131,26 +132,25 @@
 				.forEach((item: any) => {
 					const price = Number(item.price) || 0;
 					const qty = Number(item.qty) || 0;
-					const total = price * qty;
+					const itemDiscount = Number(item.discount) || 0;
+					const total = Math.max(price * qty - itemDiscount, 0);
 					subtotal += total;
 
-					// Handle long item names
+					// Wrap long item names inside ITEM column.
 					const itemName = item.name + ' ' + (item.description || '');
-					const maxNameLength = 40;
-					const truncatedName =
-						itemName.length > maxNameLength
-							? itemName.substring(0, maxNameLength - 3) + '...'
-							: itemName;
+					const itemLines = doc.splitTextToSize(itemName, 175);
+					const rowHeight = Math.max(20, itemLines.length * 12 + 8);
 
-					doc.text(truncatedName, margin + 5, y);
-					doc.text(`RP ${price.toLocaleString('id-ID')}`, 260, y);
-					doc.text(`${qty}`, 380, y);
+					doc.text(itemLines, margin + 5, y);
+					doc.text(`RP ${price.toLocaleString('id-ID')}`, 230, y);
+					doc.text(`RP ${itemDiscount.toLocaleString('id-ID')}`, 315, y);
+					doc.text(`${qty}`, 400, y);
 					doc.text(`RP ${total.toLocaleString('id-ID')}`, 450, y);
 
 					doc.setDrawColor(200);
 					doc.setLineWidth(0.3);
-					doc.line(margin, y + 5, pageWidth - margin, y + 5);
-					y += 20;
+					doc.line(margin, y + rowHeight - 5, pageWidth - margin, y + rowHeight - 5);
+					y += rowHeight;
 
 					// Check if we need a new page
 					if (y > 700) {
@@ -181,23 +181,9 @@
 			}, 0);
 
 			const totalOngkir = Number(row.ongkir) || 0;
-			let totalBayar = 0;
-			if (row.biaya_label !== null) {
-				if (row.package_name.toLowerCase() == 'shopee') {
-					totalBayar = row.total_amount + totalLabel + totalOngkir + row.biaya_label;
-				} else {
-					totalBayar = subtotal + totalLabel + totalOngkir + row.biaya_label;
-				}
-			} else {
-				if (row.package_name.toLowerCase() == 'shopee') {
-					totalBayar = row.total_amount + totalLabel + totalOngkir ;
-				} else {
-					totalBayar = subtotal + totalLabel + totalOngkir ;
-				}
-			}
 			const downPayment = Number(row.down_payment) || 0;
 			const discount = Number(row.discount_amount) || 0;
-			totalBayar = totalBayar - discount;
+			const totalBayar = Math.max(subtotal - discount, 0);
 			const sisaBayar = totalBayar - downPayment;
 
 			// === TOTALS (right side) ===
@@ -213,12 +199,9 @@
 
 			doc.setFont('helvetica', 'normal');
 			doc.text('SUB TOTAL :', 320, y);
-			doc.text(
-				`RP ${row.package_name.toLowerCase() == 'shopee' ? row.total_amount.toLocaleString('id-ID') : subtotal.toLocaleString('id-ID')}`,
-				pageWidth - margin,
-				y,
-				{ align: 'right' }
-			);
+			doc.text(`RP ${subtotal.toLocaleString('id-ID')}`, pageWidth - margin, y, {
+				align: 'right'
+			});
 			y += 15;
 
 			// === LABEL SECTION ===

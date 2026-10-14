@@ -76,7 +76,11 @@ export function useSalesPage() {
 					item_id: detail.item_id,
 					qty: detail.qty ?? detail.quantity ?? 0,
 					price: detail.price ?? 0,
-					subtotal: (detail.qty ?? detail.quantity ?? 0) * (detail.price ?? 0)
+					discount: detail.discount ?? 0,
+					subtotal: Math.max(
+						(detail.qty ?? detail.quantity ?? 0) * (detail.price ?? 0) - (detail.discount ?? 0),
+						0
+					)
 				})),
 				// PENTING: Default FALSE, hanya preserve jika row sudah ada sebelumnya
 				open: existingRow ? existingRow.open : false

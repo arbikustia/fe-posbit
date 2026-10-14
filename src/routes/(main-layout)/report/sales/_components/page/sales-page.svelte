@@ -431,12 +431,18 @@
 									<td
 										class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 									>
-										{formatCurrency(row.total_amount)}
+										{formatCurrency(
+											row.total_amount -
+												(row.details ?? []).reduce(
+													(total: number, detail: any) => total + (detail.discount ?? 0),
+													0
+												)
+										)}
 									</td>
 									<td
 										class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 									>
-										{formatCurrency((row.total_amount * row.discount_amount) / 100)} 
+										{formatCurrency((row.total_amount * row.discount_amount) / 100)}
 									</td>
 									<td
 										class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
@@ -507,6 +513,9 @@
 																	>Price</th
 																>
 																<th class="px-3 py-2 text-right text-xs font-medium text-gray-600"
+																	>Discount</th
+																>
+																<th class="px-3 py-2 text-right text-xs font-medium text-gray-600"
 																	>Subtotal</th
 																>
 															</tr>
@@ -519,6 +528,9 @@
 																	<td class="px-3 py-2 text-center text-gray-900">{detail.qty}</td>
 																	<td class="px-3 py-2 text-right text-gray-900"
 																		>{formatCurrency(detail.price)}</td
+																	>
+																	<td class="px-3 py-2 text-right text-gray-900"
+																		>{formatCurrency(detail.discount)}</td
 																	>
 																	<td class="px-3 py-2 text-right font-medium text-gray-900"
 																		>{formatCurrency(detail.subtotal)}</td

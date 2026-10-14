@@ -142,6 +142,8 @@
 					name: d.name,
 					qty: d.qty,
 					qty_keluar: d.qty_keluar || 0,
+					qty_delivery: d.qty_delivery || 0,
+					discount: d.discount || 0,
 					price: d.price || 0,
 					priceKey: row.package_name || 'Harga Normal'
 				})) || [],
@@ -481,6 +483,7 @@
 																<th class="py-1 text-left">Name</th>
 																<th class="py-1 text-left">Desc</th>
 																<th class="py-1 text-left">Price</th>
+																<th class="py-1 text-left">Discount</th>
 																<th class="py-1 text-left">Qty</th>
 																<th class="py-1 text-left">Qty Keluar</th>
 																<th class="py-1 text-left">Qty Delivery</th>
@@ -494,6 +497,9 @@
 																	<td class="py-1 text-gray-700">{detail.description}</td>
 																	<td class="py-1 text-gray-700"
 																		>Rp{detail.price.toLocaleString()}</td
+																	>
+																	<td class="py-1 text-gray-700"
+																		>Rp{(detail.discount || 0).toLocaleString()}</td
 																	>
 																	<td class="py-1 text-gray-700">{detail.qty}</td>
 																	<td class="py-1 text-left text-gray-700"
@@ -512,7 +518,15 @@
 											<span class="text-xs text-gray-400 italic">No details</span>
 										{/if}
 									</td>
-									<td class="px-3 py-2.5 text-xs">Rp {row.total_amount.toLocaleString()}</td>
+									<td class="px-3 py-2.5 text-xs"
+										>Rp {(
+											row.total_amount -
+											(row.purchase_order_details ?? []).reduce(
+												(total: number, detail: any) => total + (detail.discount || 0),
+												0
+											)
+										).toLocaleString()}</td
+									>
 									<td class="px-3 py-2.5 text-xs">Rp {row.discount_amount.toLocaleString()}</td>
 									<td class="px-3 py-2.5 text-xs"
 										>Rp {(row.total_amount - row.discount_amount - row.down_payment).toLocaleString()}</td

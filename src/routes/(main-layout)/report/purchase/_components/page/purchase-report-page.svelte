@@ -427,6 +427,7 @@
 																<th class="py-1 text-left">Name</th>
 																<th class="py-1 text-left">Desc</th>
 																<th class="py-1 text-left">Price</th>
+																<th class="py-1 text-left">Discount</th>
 																<th class="py-1 text-left">Qty</th>
 																<th class="py-1 text-left">Qty Keluar</th>
 																<th class="py-1 text-left">Qty Delivery</th>
@@ -440,6 +441,9 @@
 																	<td class="py-1 text-gray-700">{detail.description}</td>
 																	<td class="py-1 text-gray-700"
 																		>Rp{detail.price.toLocaleString()}</td
+																	>
+																	<td class="py-1 text-gray-700"
+																		>Rp{(detail.discount || 0).toLocaleString()}</td
 																	>
 																	<td class="py-1 text-gray-700">{detail.qty}</td>
 																	<td class="py-1 text-left text-gray-700"
@@ -459,7 +463,15 @@
 										{/if}
 									</td>
 									<td class="px-3 py-2.5 text-xs"
-										>Rp {role == 'gudang' ? '*****' : row.total_amount.toLocaleString()}</td
+										>Rp {role == 'gudang'
+											? '*****'
+											: (
+													row.total_amount -
+													(row.purchase_order_details ?? []).reduce(
+														(total: number, detail: any) => total + (detail.discount || 0),
+														0
+													)
+												).toLocaleString()}</td
 									>
 									<td class="px-3 py-2.5 text-xs"
 										>Rp {role == 'gudang' ? '*****' : row.discount_amount?.toLocaleString('id-ID') || 0}</td
