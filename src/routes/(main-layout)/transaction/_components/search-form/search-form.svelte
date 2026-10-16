@@ -191,73 +191,74 @@
 			});
 	});
 
-	function handlePurchase() {
+	async function handlePurchase() {
+		if (pageState.isPurchasing) return;
+
 		if ((pageState.amountPaid || 0) < (pageState.grandTotal || 0)) {
 			toast.error('Amount Received kurang dari Grand Total. Periksa nominal pembayaran.');
 			return;
 		}
 
-		pageState.isLoading = true; // optional, spinner loading
+		if (pageState.itemTable.length === 0 || !pageState.customerName || !pageState.customerNumber) {
+			toast.error('Pastikan item, customer name, dan nomor customer terisi.');
+			return;
+		}
+
+		pageState.isPurchasing = true;
+		pageState.isLoading = true;
 
 		console.log('Data Transaksi:', {
 			...pageState,
 			time: pageState.currentTime
 		});
 
-		if (
-			pageState.itemTable.length > 0 &&
-			pageState.customerName !== '' &&
-			pageState.customerNumber !== ''
-		) {
+		try {
 			printThermalNota();
-			saleService
-				.create({
-					customer_id: pageState?.customerData?.id || null,
-					customer_name: pageState.customerName || '',
-					phone: pageState.customerNumber || '',
-					is_member: !!pageState.customerData,
-					cashier_id: idCashier,
-					total_amount: pageState.totalAll || 0,
-					discount_amount: pageState.discount || 0,
-					final_amount: pageState.grandTotal || 0,
-					point_used: 0,
-					point_earned: 0,
-					payment_method: pageState.paymentMethod || 'CASH',
-					amount_receive: pageState.amountPaid || 0,
-					chance: (pageState.amountPaid || 0) - (pageState.grandTotal || 0),
-					details: pageState.itemTable.map((item: any) => ({
-						barcode_id: item.barcode_id,
-						item_id: item.item_id,
-						qty: item.qty || 1,
-						price: item.harga_jual,
-						discount: item.discount || 0
-					}))
-				})
-				.then(async (res) => {
-					// ✅ Refresh item gudang setelah transaksi
-					if (res.data.status) {
-						pageState.customerName = '';
-						pageState.customerNumber = null;
-						pageState.customerData = null;
-						pageState.itemTable = [];
-						pageState.amountPaid = null;
-						pageState.totalAll = 0;
-						pageState.grandTotal = 0;
-						pageState.discount = 0;
-						pageState.searchProduct = '';
-						pageState.paymentMethod = 'CASH';
-						await handleGetListItemGudang();
-						toast.success('Purchase completed and item list updated');
-					} else {
-						toast.error('Failed to complete purchase');
-					}
-				})
-				.catch((err) => {
-					toast.error('Failed to complete purchase');
-				});
-		}
+			const res: any = await saleService.create({
+				customer_id: pageState?.customerData?.id || null,
+				customer_name: pageState.customerName || '',
+				phone: pageState.customerNumber || '',
+				is_member: !!pageState.customerData,
+				cashier_id: idCashier,
+				total_amount: pageState.totalAll || 0,
+				discount_amount: pageState.discount || 0,
+				final_amount: pageState.grandTotal || 0,
+				point_used: 0,
+				point_earned: 0,
+				payment_method: pageState.paymentMethod || 'CASH',
+				amount_receive: pageState.amountPaid || 0,
+				chance: (pageState.amountPaid || 0) - (pageState.grandTotal || 0),
+				details: pageState.itemTable.map((item: any) => ({
+					barcode_id: item.barcode_id,
+					item_id: item.item_id,
+					qty: item.qty || 1,
+					price: item.harga_jual,
+					discount: item.discount || 0
+				}))
+			});
 
-		pageState.isLoading = false;
+			if (res.data.status) {
+				pageState.customerName = '';
+				pageState.customerNumber = null;
+				pageState.customerData = null;
+				pageState.itemTable = [];
+				pageState.amountPaid = null;
+				pageState.totalAll = 0;
+				pageState.grandTotal = 0;
+				pageState.discount = 0;
+				pageState.searchProduct = '';
+				pageState.paymentMethod = 'CASH';
+				await handleGetListItemGudang();
+				toast.success('Purchase completed and item list updated');
+			} else {
+				toast.error('Failed to complete purchase');
+			}
+		} catch (err) {
+			toast.error('Failed to complete purchase');
+		} finally {
+			pageState.isPurchasing = false;
+			pageState.isLoading = false;
+		}
 	}
 
 	// 🔹 Fungsi format ke IDR
