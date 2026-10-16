@@ -285,8 +285,6 @@
 									>Payment Status</th
 								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Status Po</th>
-								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Down Payment</th
-								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Ongkir</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Payment</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Label</th>
@@ -295,8 +293,10 @@
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700"
 									>Order Details</th
 								>
-								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Diskon</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Down Payment</th
+								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Sisa</th>
 								<th class="px-3 py-2.5 text-center text-xs font-medium text-gray-700"
 									>Description</th
@@ -392,8 +392,6 @@
 											)}>{row.status_po}</span
 										>
 									</td>
-									<td class="px-3 py-2.5 text-xs">Rp {row.down_payment.toLocaleString() || '-'}</td>
-
 									<td class="px-3 py-2.5 text-xs">Rp {row.ongkir?.toLocaleString() || '0'}</td>
 
 									<td class="px-3 py-2.5 text-xs">{row.payment_method}</td>
@@ -519,6 +517,9 @@
 											<span class="text-xs text-gray-400 italic">No details</span>
 										{/if}
 									</td>
+									<td class="px-3 py-2.5 text-xs"
+										>Rp {(Number(row.discount_amount) || 0).toLocaleString('id-ID')}</td
+									>
 									<td class="px-3 py-2.5 text-xs">
 										Rp {(
 											(Number(row.total_amount) || 0) -
@@ -529,9 +530,9 @@
 											(Number(row.discount_amount) || 0)
 										).toLocaleString('id-ID')}
 									</td>
-									<td class="px-3 py-2.5 text-xs"
-										>Rp {(Number(row.discount_amount) || 0).toLocaleString('id-ID')}</td
-									>
+									<td class="px-3 py-2.5 text-xs">
+										Rp {(Number(row.down_payment) || 0).toLocaleString('id-ID')}
+									</td>
 									<td class="px-3 py-2.5 text-xs">
 										Rp {(
 											(Number(row.total_amount) || 0) -

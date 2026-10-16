@@ -130,14 +130,14 @@
 			doc.rect(tableX, tableTop, tableRight - tableX, headerHeight, 'FD');
 			doc.setTextColor(0, 0, 0);
 			doc.setFont('helvetica', 'bold');
-			doc.setFontSize(9);
-			doc.text('ITEM', tableX + 6, tableTop + 16);
-			doc.text('HARGA', columnX.price + columnWidth.price - 6, tableTop + 16, { align: 'right' });
-			doc.text('DISKON', columnX.discount + columnWidth.discount - 6, tableTop + 16, {
+			doc.setFontSize(8);
+			doc.text('ITEM', tableX + 6, tableTop + 15);
+			doc.text('HARGA', columnX.price + columnWidth.price - 6, tableTop + 15, { align: 'right' });
+			doc.text('DISKON', columnX.discount + columnWidth.discount - 6, tableTop + 15, {
 				align: 'right'
 			});
-			doc.text('JML', columnX.qty + columnWidth.qty / 2, tableTop + 16, { align: 'center' });
-			doc.text('TOTAL', tableRight - 6, tableTop + 16, { align: 'right' });
+			doc.text('JML', columnX.qty + columnWidth.qty / 2, tableTop + 15, { align: 'center' });
+			doc.text('TOTAL', tableRight - 6, tableTop + 15, { align: 'right' });
 
 			const drawColumnLines = (top: number, bottom: number) => {
 				doc.setDrawColor(220, 220, 220);
@@ -168,10 +168,12 @@
 
 					const itemName = `${item.name || ''} ${item.description || ''}`.trim();
 					const itemLines = doc.splitTextToSize(itemName, columnWidth.item - 12);
-					const rowHeight = Math.max(28, itemLines.length * 12 + 14);
-					const textY = y + 17;
+					const rowHeight = Math.max(24, itemLines.length * 10 + 12);
+					const textY = y + 15;
 					const right = (value: string, x: number) => doc.text(value, x, textY, { align: 'right' });
 
+					doc.setFont('helvetica', 'normal');
+					doc.setFontSize(8);
 					doc.text(itemLines, tableX + 6, textY);
 					right(`RP ${price.toLocaleString('id-ID')}`, columnX.price + columnWidth.price - 6);
 					right(
@@ -298,8 +300,8 @@
 			y += 15;
 
 			// DISKON
-			doc.setFont('helvetica', 'bold');
-			doc.setFontSize(11);
+			doc.setFont('helvetica', 'normal');
+			doc.setFontSize(10);
 			doc.text('DISKON :', 320, y);
 			doc.text(`RP ${row.discount_amount?.toLocaleString('id-ID') || 0}`, pageWidth - margin, y, {
 				align: 'right'
@@ -307,8 +309,8 @@
 			y += 15;
 
 			// TOTAL BAYAR
-			doc.setFont('helvetica', 'bold');
-			doc.setFontSize(11);
+			doc.setFont('helvetica', 'normal');
+			doc.setFontSize(10);
 			doc.text('TOTAL BAYAR :', 320, y);
 			doc.text(`RP ${totalBayar.toLocaleString('id-ID')}`, pageWidth - margin, y, {
 				align: 'right'
@@ -327,6 +329,7 @@
 
 				// SISA
 				doc.setFont('helvetica', 'bold');
+				doc.setFontSize(12);
 				doc.text('SISA :', 320, y);
 				doc.text(`RP ${sisaBayar.toLocaleString('id-ID')}`, pageWidth - margin, y, {
 					align: 'right'
