@@ -431,13 +431,7 @@
 									<td
 										class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 									>
-										{formatCurrency(
-											row.total_amount -
-												(row.details ?? []).reduce(
-													(total: number, detail: any) => total + (detail.discount ?? 0),
-													0
-												)
-										)}
+										{formatCurrency(row.total_amount)}
 									</td>
 									<td
 										class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"

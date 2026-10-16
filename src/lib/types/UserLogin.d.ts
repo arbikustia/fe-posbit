@@ -5,6 +5,7 @@ export type UserLogin = {
 };
 
 export type UserInfo = {
+	id?: string | number;
 	fullName: string;
 	username: string;
 	email: string;

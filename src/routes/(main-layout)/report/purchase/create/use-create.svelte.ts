@@ -145,6 +145,7 @@ export function usePurchasePage() {
 			total_amount: item.total_amount ?? 0,
 			final_amount: item.final_amount ?? 0,
 			biaya_label: item.biaya_label ?? 0,
+			discount_amount: item.discount_amount ?? 0,
 			down_payment: item.down_payment ?? 0,
 			payment_method: item.payment_method ?? '-',
 			package_id: item.package_id ?? '-',

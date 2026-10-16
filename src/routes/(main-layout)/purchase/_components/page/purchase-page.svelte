@@ -121,7 +121,7 @@
 	async function handleEdit(row: any) {
 		console.log('row Edit', row);
 		// Siapkan data untuk edit
-		const editData:any = {
+		const editData: any = {
 			id: row.id,
 			customer_id: row.person_id,
 			payment_method: row.payment_method,
@@ -296,7 +296,7 @@
 									>Order Details</th
 								>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Total</th>
-								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Dikon</th>
+								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Diskon</th>
 								<th class="px-3 py-2.5 text-left text-xs font-medium text-gray-700">Sisa</th>
 								<th class="px-3 py-2.5 text-center text-xs font-medium text-gray-700"
 									>Description</th
@@ -436,7 +436,8 @@
 																<td class="py-2 text-right font-semibold text-gray-800">
 																	Rp {row.label
 																		.reduce(
-																			(sum:any, item:any) => sum + (item.price || 0) * (item.qty || 0),
+																			(sum: any, item: any) =>
+																				sum + (item.price || 0) * (item.qty || 0),
 																			0
 																		)
 																		.toLocaleString('id-ID')}
@@ -518,19 +519,30 @@
 											<span class="text-xs text-gray-400 italic">No details</span>
 										{/if}
 									</td>
-									<td class="px-3 py-2.5 text-xs"
-										>Rp {(
-											row.total_amount -
+									<td class="px-3 py-2.5 text-xs">
+										Rp {(
+											(Number(row.total_amount) || 0) -
 											(row.purchase_order_details ?? []).reduce(
-												(total: number, detail: any) => total + (detail.discount || 0),
+												(total: number, detail: any) => total + (Number(detail.discount) || 0),
 												0
-											)
-										).toLocaleString()}</td
-									>
-									<td class="px-3 py-2.5 text-xs">Rp {row.discount_amount.toLocaleString()}</td>
+											) -
+											(Number(row.discount_amount) || 0)
+										).toLocaleString('id-ID')}
+									</td>
 									<td class="px-3 py-2.5 text-xs"
-										>Rp {(row.total_amount - row.discount_amount - row.down_payment).toLocaleString()}</td
+										>Rp {(Number(row.discount_amount) || 0).toLocaleString('id-ID')}</td
 									>
+									<td class="px-3 py-2.5 text-xs">
+										Rp {(
+											(Number(row.total_amount) || 0) -
+											(row.purchase_order_details ?? []).reduce(
+												(total: number, detail: any) => total + (Number(detail.discount) || 0),
+												0
+											) -
+											(Number(row.discount_amount) || 0) -
+											(Number(row.down_payment) || 0)
+										).toLocaleString('id-ID')}
+									</td>
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.keterangan && row.keterangan.trim().length > 0}
 											<Popover.Root>

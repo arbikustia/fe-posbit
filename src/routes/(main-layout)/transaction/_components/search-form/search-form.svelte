@@ -15,7 +15,8 @@
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 	import { saleService } from '@/services/saleService';
 	import { toast } from 'svelte-sonner';
-	import { userService } from '@/services/userService';
+	import { userStore } from '@/stores/userStore';
+	import { get } from 'svelte/store';
 
 	let {
 		variant = 'default',
@@ -176,20 +177,12 @@
 		}
 	}
 
-	let idCashier = $state('');
-
-	onMount(async () => {
-		await userService
-			.getPaged({
-				PageNumber: 1,
-				PageSize: 1000000,
-				SearchTerm: ''
-			})
-			.then((res: any) => {
-				let cashier = res.data.data.find((u: any) => u.username === pageState.username).id;
-				idCashier = cashier;
-			});
-	});
+	function getCashierId() {
+		const userInfo = get(userStore)?.userInfo as any;
+		const cashierId = userInfo?.id;
+		if (!cashierId) throw new Error('Logged-in user ID is missing');
+		return String(cashierId);
+	}
 
 	async function handlePurchase() {
 		if (pageState.isPurchasing) return;
@@ -207,6 +200,16 @@
 		pageState.isPurchasing = true;
 		pageState.isLoading = true;
 
+		try {
+			getCashierId();
+		} catch (error) {
+			console.error('Failed to resolve cashier:', error);
+			toast.error('Cashier session ID tidak ditemukan. Muat ulang halaman.');
+			pageState.isPurchasing = false;
+			pageState.isLoading = false;
+			return;
+		}
+
 		console.log('Data Transaksi:', {
 			...pageState,
 			time: pageState.currentTime
@@ -219,7 +222,7 @@
 				customer_name: pageState.customerName || '',
 				phone: pageState.customerNumber || '',
 				is_member: !!pageState.customerData,
-				cashier_id: idCashier,
+				cashier_id: getCashierId(),
 				total_amount: pageState.totalAll || 0,
 				discount_amount: pageState.discount || 0,
 				final_amount: pageState.grandTotal || 0,

@@ -17,7 +17,7 @@ export function decodeJwt(token: string): { [key: string]: unknown } | null {
 }
 
 export function setAuthCookie(event: RequestEvent, response: any): void {
-	const { accessToken, refreshToken, role, fullName, email, username } = response;
+	const { accessToken, refreshToken, id, role, fullName, email, username } = response;
 	console.log(role, 'niini');
 	if (!accessToken) {
 		throw new Error('Auth Failed, please contact Administrator');
@@ -41,6 +41,7 @@ export function setAuthCookie(event: RequestEvent, response: any): void {
 	});
 
 	const userInfo: UserInfo = {
+		id,
 		fullName: fullName,
 		email: email,
 		username: username,

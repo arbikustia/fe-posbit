@@ -370,6 +370,7 @@
 					qty: d.qty || 1,
 					qty_keluar: d.qty_keluar || 0,
 					qty_delivery: d.qty_delivery || 0,
+					discount: d.discount ?? 0,
 					price: d.price, // Langsung gunakan price dari data
 					priceKey: d.priceKey || packageLabel,
 					name: d.name || item?.label || ''
@@ -514,6 +515,7 @@
 						qty: d.qty,
 						qty_keluar: d.qty_keluar,
 						qty_delivery: d.qty_delivery || 0,
+						discount: d.discount ?? 0,
 						price: d.price, // Gunakan price yang sudah ada
 						priceKey: d.priceKey || packageLabel,
 						name: d.name
@@ -769,7 +771,8 @@
 						? 'Rp 0'
 						: formatIDR(
 								itemDetails.reduce(
-									(total: number, item: any) => total + (item.qty || 0) * (item.price || 0),
+									(total: number, item: any) =>
+										total + Math.max((item.qty || 0) * (item.price || 0) - (item.discount || 0), 0),
 									0
 								)
 							)}

@@ -45,8 +45,8 @@
 	};
 
 	onMount(async () => {
-		 handleGetPaged();
-		 console.log('l')
+		handleGetPaged();
+		console.log('l');
 	});
 
 	function closeDeleteModal() {
@@ -462,23 +462,36 @@
 											<span class="text-xs text-gray-400 italic">No details</span>
 										{/if}
 									</td>
+									<td class="px-3 py-2.5 text-xs">
+										Rp {role == 'gudang'
+											? '*****'
+											: (
+													(Number(row.total_amount) || 0) -
+													(row.purchase_order_details ?? []).reduce(
+														(total: number, detail: any) => total + (Number(detail.discount) || 0),
+														0
+													) -
+													(Number(row.discount_amount) || 0)
+												).toLocaleString('id-ID')}
+									</td>
 									<td class="px-3 py-2.5 text-xs"
 										>Rp {role == 'gudang'
 											? '*****'
+											: row.discount_amount?.toLocaleString('id-ID') || 0}</td
+									>
+									<td class="px-3 py-2.5 text-xs">
+										Rp {role == 'gudang'
+											? '*****'
 											: (
-													row.total_amount -
+													(Number(row.total_amount) || 0) -
 													(row.purchase_order_details ?? []).reduce(
-														(total: number, detail: any) => total + (detail.discount || 0),
+														(total: number, detail: any) => total + (Number(detail.discount) || 0),
 														0
-													)
-												).toLocaleString()}</td
-									>
-									<td class="px-3 py-2.5 text-xs"
-										>Rp {role == 'gudang' ? '*****' : row.discount_amount?.toLocaleString('id-ID') || 0}</td
-									>
-									<td class="px-3 py-2.5 text-xs"
-										>Rp {role == 'gudang' ? '*****' : (row.total_amount - row.down_payment - row.discount_amount).toLocaleString('id-ID')}</td
-									>
+													) -
+													(Number(row.discount_amount) || 0) -
+													(Number(row.down_payment) || 0)
+												).toLocaleString('id-ID')}
+									</td>
 
 									<td class="px-3 py-2.5 text-xs">
 										{#if row.keterangan && row.keterangan.trim().length > 0}

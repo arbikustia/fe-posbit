@@ -104,19 +104,49 @@
 
 			y += 90;
 
-			// === TABLE HEADER ===
-			doc.setDrawColor(192, 192, 192);
-			doc.rect(margin, y - 10, pageWidth - margin * 2, 20);
+			// === TABLE ===
+			const tableX = margin;
+			const tableRight = pageWidth - margin;
+			const columnX = {
+				item: tableX,
+				price: tableX + 190,
+				discount: tableX + 285,
+				qty: tableX + 380,
+				total: tableX + 425
+			};
+			const columnWidth = {
+				item: 180,
+				price: 90,
+				discount: 90,
+				qty: 45,
+				total: tableRight - columnX.total
+			};
+			const tableTop = y - 10;
+			const headerHeight = 24;
+
+			doc.setFillColor(245, 245, 245);
+			doc.setDrawColor(180, 180, 180);
+			doc.setLineWidth(0.5);
+			doc.rect(tableX, tableTop, tableRight - tableX, headerHeight, 'FD');
 			doc.setTextColor(0, 0, 0);
 			doc.setFont('helvetica', 'bold');
-			doc.setFontSize(10);
-			doc.text('ITEM', margin + 5, y + 5);
-			doc.text('HARGA', 230, y + 5);
-			doc.text('DISKON', 315, y + 5);
-			doc.text('JML', 400, y + 5);
-			doc.text('TOTAL', 450, y + 5);
+			doc.setFontSize(9);
+			doc.text('ITEM', tableX + 6, tableTop + 16);
+			doc.text('HARGA', columnX.price + columnWidth.price - 6, tableTop + 16, { align: 'right' });
+			doc.text('DISKON', columnX.discount + columnWidth.discount - 6, tableTop + 16, {
+				align: 'right'
+			});
+			doc.text('JML', columnX.qty + columnWidth.qty / 2, tableTop + 16, { align: 'center' });
+			doc.text('TOTAL', tableRight - 6, tableTop + 16, { align: 'right' });
 
-			y += 20;
+			const drawColumnLines = (top: number, bottom: number) => {
+				doc.setDrawColor(220, 220, 220);
+				[columnX.price, columnX.discount, columnX.qty, columnX.total].forEach((x) =>
+					doc.line(x, top, x, bottom)
+				);
+			};
+			drawColumnLines(tableTop, tableTop + headerHeight);
+			y = tableTop + headerHeight;
 
 			// === TABLE ITEMS ===
 			doc.setFont('helvetica', 'normal');
@@ -136,29 +166,35 @@
 					const total = Math.max(price * qty - itemDiscount, 0);
 					subtotal += total;
 
-					// Wrap long item names inside ITEM column.
-					const itemName = item.name + ' ' + (item.description || '');
-					const itemLines = doc.splitTextToSize(itemName, 175);
-					const rowHeight = Math.max(28, itemLines.length * 12 + 16);
-					const textY = y + 12;
+					const itemName = `${item.name || ''} ${item.description || ''}`.trim();
+					const itemLines = doc.splitTextToSize(itemName, columnWidth.item - 12);
+					const rowHeight = Math.max(28, itemLines.length * 12 + 14);
+					const textY = y + 17;
+					const right = (value: string, x: number) => doc.text(value, x, textY, { align: 'right' });
 
-					doc.text(itemLines, margin + 5, textY);
-					doc.text(`RP ${price.toLocaleString('id-ID')}`, 230, textY);
-					doc.text(`RP ${itemDiscount.toLocaleString('id-ID')}`, 315, textY);
-					doc.text(`${qty}`, 400, textY);
-					doc.text(`RP ${total.toLocaleString('id-ID')}`, 450, textY);
+					doc.text(itemLines, tableX + 6, textY);
+					right(`RP ${price.toLocaleString('id-ID')}`, columnX.price + columnWidth.price - 6);
+					right(
+						`RP ${itemDiscount.toLocaleString('id-ID')}`,
+						columnX.discount + columnWidth.discount - 6
+					);
+					doc.text(`${qty}`, columnX.qty + columnWidth.qty / 2, textY, { align: 'center' });
+					right(`RP ${total.toLocaleString('id-ID')}`, tableRight - 6);
 
-					doc.setDrawColor(200);
-					doc.setLineWidth(0.3);
-					doc.line(margin, y + rowHeight, pageWidth - margin, y + rowHeight);
+					doc.setDrawColor(210, 210, 210);
+					doc.line(tableX, y + rowHeight, tableRight, y + rowHeight);
+					drawColumnLines(y, y + rowHeight);
 					y += rowHeight;
 
-					// Check if we need a new page
 					if (y > 700) {
 						doc.addPage();
 						y = margin;
 					}
 				});
+
+			doc.setDrawColor(150, 150, 150);
+			doc.line(tableX, tableTop, tableX, y);
+			doc.line(tableRight, tableTop, tableRight, y);
 
 			y += 15;
 
@@ -187,8 +223,9 @@
 			);
 			const totalOngkir = Number(row.ongkir) || 0;
 			const downPayment = Number(row.down_payment) || 0;
+			const biayaLabel = Number(row.biaya_label) || 0;
 			const discount = Number(row.discount_amount) || 0;
-			const totalBayar = Math.max(subtotal - discount, 0);
+			const totalBayar = Math.max(subtotal + totalLabel + biayaLabel + totalOngkir - discount, 0);
 			const sisaBayar = totalBayar - downPayment;
 
 			// === TOTALS (right side) ===
