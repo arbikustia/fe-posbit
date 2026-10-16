@@ -105,10 +105,12 @@
 		nota += '--------------------------------\n';
 
 		let subtotal = 0;
+		let totalItemDiscount = 0;
 		for (const item of pageState.itemTable) {
-			const { name, harga_jual, qty = 1 } = item;
-			const total = harga_jual * qty;
+			const { name, harga_jual, qty = 1, discount = 0 } = item;
+			const total = Math.max(harga_jual * qty - discount, 0);
 			subtotal += total;
+			totalItemDiscount += discount;
 
 			// Lebar maksimum kertas thermal (misal 32 karakter total)
 			const namaCol = 12; // lebar kolom nama
@@ -131,6 +133,11 @@
 			const qtyStr = String(qty).padStart(qtyCol, ' ');
 			nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
 
+			if (discount > 0) {
+				const discStr = `(-Rp${discount.toLocaleString('id-ID')})`;
+				nota += `${discStr.padStart(32, ' ')}\n`;
+			}
+
 			// Jika nama lebih panjang, cetak sisanya di bawah (hanya nama)
 			for (let i = 1; i < namaPotong.length; i++) {
 				nota += `${namaPotong[i]}\n`;
@@ -142,9 +149,10 @@
 		const diskonNilai = (subtotal * diskonPersen) / 100;
 		const totalBayar = subtotal - diskonNilai;
 
-		nota += `Subtotal    :Rp${pageState.totalAll?.toLocaleString('id-ID')}\n`;
-		nota += `Diskon      :${pageState.discount || 0}% (Rp${diskonNilai})\n`;
-		nota += `Total Bayar :Rp${pageState.grandTotal?.toLocaleString('id-ID')}\n`;
+		nota += `Subtotal         :Rp${pageState.totalAll?.toLocaleString('id-ID')}\n`;
+		nota += `Total Diskon Item:Rp${totalItemDiscount.toLocaleString('id-ID')}\n`;
+		nota += `Diskon           :${pageState.discount || 0}% (Rp${diskonNilai})\n`;
+		nota += `Total Bayar      :Rp${pageState.grandTotal?.toLocaleString('id-ID')}\n`;
 		nota += `Bayar       :Rp${pageState.amountPaid?.toLocaleString('id-ID')}\n`;
 		nota += `Kembali     :Rp${((pageState.amountPaid || 0) - (pageState.grandTotal || 0))?.toLocaleString('id-ID')}\n`;
 
@@ -184,6 +192,11 @@
 	});
 
 	function handlePurchase() {
+		if ((pageState.amountPaid || 0) < (pageState.grandTotal || 0)) {
+			toast.error('Amount Received kurang dari Grand Total. Periksa nominal pembayaran.');
+			return;
+		}
+
 		pageState.isLoading = true; // optional, spinner loading
 
 		console.log('Data Transaksi:', {

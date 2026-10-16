@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 
 	const { row } = $props();
-	
+
 	let jsPDF: any = null;
 	let isGenerating = false;
 
@@ -139,17 +139,18 @@
 					// Wrap long item names inside ITEM column.
 					const itemName = item.name + ' ' + (item.description || '');
 					const itemLines = doc.splitTextToSize(itemName, 175);
-					const rowHeight = Math.max(20, itemLines.length * 12 + 8);
+					const rowHeight = Math.max(28, itemLines.length * 12 + 16);
+					const textY = y + 12;
 
-					doc.text(itemLines, margin + 5, y);
-					doc.text(`RP ${price.toLocaleString('id-ID')}`, 230, y);
-					doc.text(`RP ${itemDiscount.toLocaleString('id-ID')}`, 315, y);
-					doc.text(`${qty}`, 400, y);
-					doc.text(`RP ${total.toLocaleString('id-ID')}`, 450, y);
+					doc.text(itemLines, margin + 5, textY);
+					doc.text(`RP ${price.toLocaleString('id-ID')}`, 230, textY);
+					doc.text(`RP ${itemDiscount.toLocaleString('id-ID')}`, 315, textY);
+					doc.text(`${qty}`, 400, textY);
+					doc.text(`RP ${total.toLocaleString('id-ID')}`, 450, textY);
 
 					doc.setDrawColor(200);
 					doc.setLineWidth(0.3);
-					doc.line(margin, y + rowHeight - 5, pageWidth - margin, y + rowHeight - 5);
+					doc.line(margin, y + rowHeight, pageWidth - margin, y + rowHeight);
 					y += rowHeight;
 
 					// Check if we need a new page
@@ -180,6 +181,10 @@
 				return sum + (Number(label.price * label.qty) || 0);
 			}, 0);
 
+			const totalItemDiscount = items.reduce(
+				(sum: number, item: any) => sum + (Number(item.discount) || 0),
+				0
+			);
 			const totalOngkir = Number(row.ongkir) || 0;
 			const downPayment = Number(row.down_payment) || 0;
 			const discount = Number(row.discount_amount) || 0;
@@ -200,6 +205,13 @@
 			doc.setFont('helvetica', 'normal');
 			doc.text('SUB TOTAL :', 320, y);
 			doc.text(`RP ${subtotal.toLocaleString('id-ID')}`, pageWidth - margin, y, {
+				align: 'right'
+			});
+			y += 15;
+
+			doc.setFont('helvetica', 'normal');
+			doc.text('TOTAL DISKON ITEM :', 320, y);
+			doc.text(`RP ${totalItemDiscount.toLocaleString('id-ID')}`, pageWidth - margin, y, {
 				align: 'right'
 			});
 			y += 15;
@@ -248,7 +260,7 @@
 			});
 			y += 15;
 
-			// DISKON	
+			// DISKON
 			doc.setFont('helvetica', 'bold');
 			doc.setFontSize(11);
 			doc.text('DISKON :', 320, y);
@@ -287,7 +299,6 @@
 
 			// === FOOTER SIGNATURE ===
 			const footerY = 650;
-
 
 			// Open PDF
 			const pdfBlob = doc.output('blob');
