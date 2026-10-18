@@ -149,8 +149,8 @@
 			nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
 
 			if (discount > 0) {
-				const discStr = `(-Rp${discount.toLocaleString('id-ID')})`;
-				nota += `${discStr.padStart(32, ' ')}\n`;
+				const discStr = `(-Rp${discount.toLocaleString('id-ID')})`.padStart(32, ' ');
+				nota += `\x1B\x4D\x01${discStr}\n\x1B\x4D\x00`;
 			}
 
 			// Jika nama lebih panjang, cetak sisanya di bawah (hanya nama)
