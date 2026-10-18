@@ -4,18 +4,15 @@ import type { RestApiResponse } from '$lib/types/api/base/RestApi';
 
 /** Satu baris Laporan Inventory */
 export type InventoryReport = {
-	itemId: string;
+	item_id: string;
 	name: string;
 	description: string;
 	type: string;
-	stockAwal: number;
+	stock_awal: number;
 	pemasukan: number;
-	pengeluaranDelivery: number;
-	pengeluaranJahit: number;
-	pengeluaranNG: number;
-	pengeluaranSample: number;
-	pemasukanReturn: number;
-	stockAkhir: number;
+	pengeluaran_customer: number;
+	return_gudang: number;
+	stock_akhir: number;
 };
 
 export const inventoryReportService = {

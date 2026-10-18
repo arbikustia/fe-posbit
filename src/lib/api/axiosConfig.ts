@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const axiosInstance = axios.create({
 	//baseURL: process.env.BASEAPIURL || 'https://api.example.com',
-	baseURL: 'https://api.example.com',
+	baseURL: 'https://pos.daalushijab.site/api/',
 	timeout: 10000,
 	headers: {
 		'Content-Type': 'application/json'

@@ -124,20 +124,23 @@
 			const tableTop = y - 10;
 			const headerHeight = 24;
 
-			doc.setFillColor(245, 245, 245);
-			doc.setDrawColor(180, 180, 180);
-			doc.setLineWidth(0.5);
-			doc.rect(tableX, tableTop, tableRight - tableX, headerHeight, 'FD');
-			doc.setTextColor(0, 0, 0);
-			doc.setFont('helvetica', 'bold');
-			doc.setFontSize(8);
-			doc.text('ITEM', tableX + 6, tableTop + 15);
-			doc.text('HARGA', columnX.price + columnWidth.price - 6, tableTop + 15, { align: 'right' });
-			doc.text('DISKON', columnX.discount + columnWidth.discount - 6, tableTop + 15, {
-				align: 'right'
-			});
-			doc.text('JML', columnX.qty + columnWidth.qty / 2, tableTop + 15, { align: 'center' });
-			doc.text('TOTAL', tableRight - 6, tableTop + 15, { align: 'right' });
+			const drawTableHeader = (top: number) => {
+				doc.setFillColor(245, 245, 245);
+				doc.setDrawColor(180, 180, 180);
+				doc.setLineWidth(1);
+				doc.rect(tableX, top, tableRight - tableX, headerHeight, 'FD');
+				doc.setTextColor(0, 0, 0);
+				doc.setFont('helvetica', 'bold');
+				doc.setFontSize(8);
+				doc.text('ITEM', tableX + 6, top + 15);
+				doc.text('HARGA', columnX.price + columnWidth.price - 6, top + 15, { align: 'right' });
+				doc.text('DISKON', columnX.discount + columnWidth.discount - 6, top + 15, {
+					align: 'right'
+				});
+				doc.text('JML', columnX.qty + columnWidth.qty / 2, top + 15, { align: 'center' });
+				doc.text('TOTAL', tableRight - 6, top + 15, { align: 'right' });
+			};
+			drawTableHeader(tableTop);
 
 			const drawColumnLines = (top: number, bottom: number) => {
 				doc.setDrawColor(220, 220, 220);
@@ -145,7 +148,15 @@
 					doc.line(x, top, x, bottom)
 				);
 			};
+			const drawTableOuterLines = (top: number, bottom: number, drawTop = false) => {
+				doc.setDrawColor(150, 150, 150);
+				doc.setLineWidth(1);
+				if (drawTop) doc.line(tableX, top, tableRight, top);
+				doc.line(tableX, top, tableX, bottom);
+				doc.line(tableRight, top, tableRight, bottom);
+			};
 			drawColumnLines(tableTop, tableTop + headerHeight);
+			let tableSegmentTop = tableTop;
 			y = tableTop + headerHeight;
 
 			// === TABLE ITEMS ===
@@ -169,6 +180,17 @@
 					const itemName = `${item.name || ''} ${item.description || ''}`.trim();
 					const itemLines = doc.splitTextToSize(itemName, columnWidth.item - 12);
 					const rowHeight = Math.max(24, itemLines.length * 10 + 12);
+
+					if (y + rowHeight > 700) {
+						drawTableOuterLines(tableSegmentTop, y);
+						doc.addPage();
+						drawTableHeader(margin);
+						tableSegmentTop = margin;
+						y = margin + headerHeight;
+						drawColumnLines(margin, y);
+						drawTableOuterLines(tableSegmentTop, tableSegmentTop, true);
+					}
+
 					const textY = y + 15;
 					const right = (value: string, x: number) => doc.text(value, x, textY, { align: 'right' });
 
@@ -187,17 +209,17 @@
 					doc.line(tableX, y + rowHeight, tableRight, y + rowHeight);
 					drawColumnLines(y, y + rowHeight);
 					y += rowHeight;
-
-					if (y > 700) {
-						doc.addPage();
-						y = margin;
-					}
 				});
 
-			doc.setDrawColor(150, 150, 150);
-			doc.line(tableX, tableTop, tableX, y);
-			doc.line(tableRight, tableTop, tableRight, y);
+			drawTableOuterLines(tableSegmentTop, y);
 
+			// Keep payment info, left notice, and totals on same page.
+			const labelArray = row.label || [];
+			const paymentSectionHeight = 220 + labelArray.length * 15;
+			if (y + paymentSectionHeight > 780) {
+				doc.addPage();
+				y = margin;
+			}
 			y += 15;
 
 			// === PAYMENT INFO ===
@@ -214,7 +236,6 @@
 			doc.text(`PEMBELIAN ANDA `, margin, y + 180);
 
 			// === CALCULATE TOTALS ===
-			const labelArray = row.label || [];
 			const totalLabel = labelArray.reduce((sum: number, label: any) => {
 				return sum + (Number(label.price * label.qty) || 0);
 			}, 0);
@@ -267,12 +288,6 @@
 						align: 'right'
 					});
 					y += 15;
-
-					// Check if we need a new page
-					if (y > 700) {
-						doc.addPage();
-						y = margin;
-					}
 				});
 			} else {
 				// Jika tidak ada label, tampilkan 0
@@ -301,7 +316,7 @@
 
 			// DISKON
 			doc.setFont('helvetica', 'normal');
-			doc.setFontSize(10);
+			doc.setFontSize(8);
 			doc.text('DISKON :', 320, y);
 			doc.text(`RP ${row.discount_amount?.toLocaleString('id-ID') || 0}`, pageWidth - margin, y, {
 				align: 'right'
@@ -310,7 +325,7 @@
 
 			// TOTAL BAYAR
 			doc.setFont('helvetica', 'normal');
-			doc.setFontSize(10);
+			doc.setFontSize(8);
 			doc.text('TOTAL BAYAR :', 320, y);
 			doc.text(`RP ${totalBayar.toLocaleString('id-ID')}`, pageWidth - margin, y, {
 				align: 'right'
@@ -320,7 +335,7 @@
 			if (downPayment > 0) {
 				// DP
 				doc.setFont('helvetica', 'normal');
-				doc.setFontSize(10);
+				doc.setFontSize(8);
 				doc.text('DP :', 320, y);
 				doc.text(`RP ${downPayment.toLocaleString('id-ID')}`, pageWidth - margin, y, {
 					align: 'right'
@@ -329,7 +344,7 @@
 
 				// SISA
 				doc.setFont('helvetica', 'bold');
-				doc.setFontSize(12);
+				doc.setFontSize(8);
 				doc.text('SISA :', 320, y);
 				doc.text(`RP ${sisaBayar.toLocaleString('id-ID')}`, pageWidth - margin, y, {
 					align: 'right'

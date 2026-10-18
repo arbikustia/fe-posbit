@@ -493,17 +493,6 @@
 					</div>
 
 					<Button
-						variant="outline"
-						onclick={printThermalNota}
-						disabled={pageState.itemTable.length === 0 || pageState.isPurchasing}
-						class="h-12 w-full flex-none text-lg"
-						size="lg"
-					>
-						<Icon icon="solar:printer-linear" width="20" height="20" class="mr-1" />
-						<span class="ml-1">Generate Nota</span>
-					</Button>
-
-					<Button
 						onclick={handlePurchase}
 						disabled={pageState.isPurchasing}
 						class={cn('h-12 w-full flex-none text-lg', { 'min-h-11': variant === 'default' })}

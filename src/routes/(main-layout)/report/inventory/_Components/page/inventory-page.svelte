@@ -144,7 +144,17 @@
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
-									Item
+									Item ID
+								</th>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Nama Item
+								</th>
+								<th
+									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
+								>
+									Deskripsi
 								</th>
 								<th
 									class="px-3 py-2.5 text-left text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
@@ -164,27 +174,12 @@
 								<th
 									class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
-									Pengeluaran Delivery
+									Pengeluaran Customer
 								</th>
 								<th
 									class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
 								>
-									Pengeluaran Jahit
-								</th>
-								<th
-									class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>
-									Pengeluaran NG
-								</th>
-								<th
-									class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>
-									Pengeluaran Sample
-								</th>
-								<th
-									class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
-								>
-									Pemasukan Return
+									Return Gudang
 								</th>
 								<th
 									class="px-3 py-2.5 text-right text-xs font-medium text-gray-700 sm:px-4 sm:py-3 md:text-sm"
@@ -197,7 +192,7 @@
 						<tbody class="divide-y divide-gray-200 bg-white">
 							{#if state.table.length === 0}
 								<tr>
-									<td colspan="11" class="px-4 py-8 text-center text-sm text-gray-500">
+									<td colspan="10" class="px-4 py-8 text-center text-sm text-gray-500">
 										No inventory data found
 									</td>
 								</tr>
@@ -212,7 +207,17 @@
 										<td
 											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
+											{row.item_id}
+										</td>
+										<td
+											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+										>
 											{row.name}
+										</td>
+										<td
+											class="max-w-64 px-3 py-2.5 text-xs text-gray-900 sm:px-4 sm:py-3 md:text-sm"
+										>
+											{row.description || '-'}
 										</td>
 										<td
 											class="px-3 py-2.5 text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
@@ -226,7 +231,7 @@
 										<td
 											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
-											{row.stockAwal}
+											{row.stock_awal}
 										</td>
 										<td
 											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
@@ -236,34 +241,17 @@
 										<td
 											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
-											{row.pengeluaranDelivery}
+											{row.pengeluaran_customer}
 										</td>
 										<td
 											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
-											{row.pengeluaranJahit}
-										</td>
-										<td
-											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-										>
-											<span class={row.pengeluaranNG > 0 ? 'text-red-600' : ''}>
-												{row.pengeluaranNG}
-											</span>
-										</td>
-										<td
-											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-										>
-											{row.pengeluaranSample}
-										</td>
-										<td
-											class="px-3 py-2.5 text-right text-xs whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
-										>
-											{row.pemasukanReturn}
+											{row.return_gudang}
 										</td>
 										<td
 											class="px-3 py-2.5 text-right text-xs font-semibold whitespace-nowrap text-gray-900 sm:px-4 sm:py-3 md:text-sm"
 										>
-											{row.stockAkhir}
+											{row.stock_akhir}
 										</td>
 									</tr>
 								{/each}
