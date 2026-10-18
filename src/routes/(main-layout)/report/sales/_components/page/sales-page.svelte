@@ -112,6 +112,27 @@
 		}).format(date);
 	}
 
+	function wrapReceiptName(name: unknown, width: number) {
+		const words = String(name ?? '-')
+			.trim()
+			.split(/\s+/);
+		const lines: string[] = [];
+		let line = '';
+
+		for (const word of words) {
+			if (!line || line.length + word.length + 1 <= width) {
+				line += `${line ? ' ' : ''}${word}`;
+				continue;
+			}
+
+			lines.push(line);
+			line = word;
+		}
+
+		if (line) lines.push(line);
+		return lines.flatMap((value) => value.match(new RegExp(`.{1,${width}}`, 'g')) ?? ['-']);
+	}
+
 	// Fungsi print nota thermal untuk report
 	function printReportNota(sale: any) {
 		if (!browser) return;
@@ -142,34 +163,27 @@
 		nota += '--------------------------------\n';
 
 		let subtotal = 0;
+		let totalItemDiscount = 0;
 		if (sale.details && sale.details.length > 0) {
 			for (const item of sale.details) {
-				const { name, price, qty = 1 } = item;
-				const total = price * qty;
+				const { name, price, qty = 1, discount = 0 } = item;
+				const total = Math.max(price * qty - discount, 0);
 				subtotal += total;
+				totalItemDiscount += discount;
 
-				// Lebar maksimum kertas thermal (misal 32 karakter total)
-				const namaCol = 12; // lebar kolom nama
+				const namaCol = 12;
 				const hargaCol = 8;
 				const qtyCol = 3;
-				const totalCol = 9;
-
-				// Bagi nama jadi beberapa baris (setiap baris maks 12 karakter)
-				const namaPotong = [];
-				let sisa = String(name);
-
-				while (sisa.length > 0) {
-					namaPotong.push(sisa.substring(0, namaCol));
-					sisa = sisa.substring(namaCol);
-				}
-
-				// Baris pertama (nama + angka)
+				const namaPotong = wrapReceiptName(name, namaCol);
 				const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
 				const hrg = String(price.toLocaleString('id-ID')).padStart(hargaCol, ' ');
 				const qtyStr = String(qty).padStart(qtyCol, ' ');
 				nota += `${namaBaris1}       Rp${hrg}${qtyStr}\n`;
 
-				// Jika nama lebih panjang, cetak sisanya di bawah (hanya nama)
+				if (discount > 0) {
+					nota += `${`(-Rp${discount.toLocaleString('id-ID')})`.padStart(32, ' ')}\n`;
+				}
+
 				for (let i = 1; i < namaPotong.length; i++) {
 					nota += `${namaPotong[i]}\n`;
 				}
@@ -184,8 +198,9 @@
 		const bayar = sale.amount_receive || totalBayar;
 		const kembali = bayar - totalBayar;
 
-		nota += `Subtotal    :Rp${subtotal.toLocaleString('id-ID')}\n`;
-		nota += `Diskon      :${diskonNilai || 0}% (Rp${((subtotal * diskonNilai) / 100).toLocaleString('id-ID')})\n`;
+		nota += `Subtotal         :Rp${subtotal.toLocaleString('id-ID')}\n`;
+		nota += `Total Diskon Item:Rp${totalItemDiscount.toLocaleString('id-ID')}\n`;
+		nota += `Diskon           :${diskonNilai || 0}% (Rp${((subtotal * diskonNilai) / 100).toLocaleString('id-ID')})\n`;
 		nota += `Total Bayar :Rp${totalBayar.toLocaleString('id-ID')}\n`;
 		nota += `Bayar       :Rp${bayar.toLocaleString('id-ID')}\n`;
 		nota += `Kembali     :Rp${kembali.toLocaleString('id-ID')}\n`;

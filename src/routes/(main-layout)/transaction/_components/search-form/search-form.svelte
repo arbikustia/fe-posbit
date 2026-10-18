@@ -23,7 +23,7 @@
 		state: pageState = $bindable(),
 		handleGetListItemGudang
 	}: any = $props();
-	let timer: NodeJS.Timeout | null = null;
+	let timer: ReturnType<typeof setInterval> | null = null;
 
 	function getCookie(name: string) {
 		if (!browser) return null;
@@ -53,6 +53,26 @@
 			maximumFractionDigits: 0
 		}).format(num || 0);
 	}
+	function wrapReceiptName(name: unknown, width: number) {
+		const words = String(name ?? '-')
+			.trim()
+			.split(/\s+/);
+		const lines: string[] = [];
+		let line = '';
+
+		for (const word of words) {
+			if (!line || line.length + word.length + 1 <= width) {
+				line += `${line ? ' ' : ''}${word}`;
+				continue;
+			}
+			lines.push(line);
+			line = word;
+		}
+
+		if (line) lines.push(line);
+		return lines.flatMap((value) => value.match(new RegExp(`.{1,${width}}`, 'g')) ?? ['-']);
+	}
+
 	// 🔹 Fungsi Print Nota Thermal
 	function printThermalNota() {
 		if (!browser) return;
@@ -119,14 +139,8 @@
 			const qtyCol = 3;
 			const totalCol = 9;
 
-			// Bagi nama jadi beberapa baris (setiap baris maks 12 karakter)
-			const namaPotong = [];
-			let sisa = String(name);
-
-			while (sisa.length > 0) {
-				namaPotong.push(sisa.substring(0, namaCol));
-				sisa = sisa.substring(namaCol);
-			}
+			// Bagi nama per kata, lalu pecah kata panjang agar tidak terpotong.
+			const namaPotong = wrapReceiptName(name, namaCol);
 
 			// Baris pertama (nama + angka)
 			const namaBaris1 = namaPotong[0].padEnd(namaCol, ' ');
@@ -477,6 +491,17 @@
 							/>
 						</div>
 					</div>
+
+					<Button
+						variant="outline"
+						onclick={printThermalNota}
+						disabled={pageState.itemTable.length === 0 || pageState.isPurchasing}
+						class="h-12 w-full flex-none text-lg"
+						size="lg"
+					>
+						<Icon icon="solar:printer-linear" width="20" height="20" class="mr-1" />
+						<span class="ml-1">Generate Nota</span>
+					</Button>
 
 					<Button
 						onclick={handlePurchase}
