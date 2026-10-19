@@ -495,7 +495,7 @@
 																	<td class="py-1 text-gray-700">{detail.name}</td>
 																	<td class="py-1 text-gray-700">{detail.description}</td>
 																	<td class="py-1 text-gray-700"
-																		>Rp{detail.price.toLocaleString()}</td
+																		>Rp{(Number(detail.price) || 0).toLocaleString('id-ID')}</td
 																	>
 																	<td class="py-1 text-gray-700"
 																		>Rp{(detail.discount || 0).toLocaleString()}</td

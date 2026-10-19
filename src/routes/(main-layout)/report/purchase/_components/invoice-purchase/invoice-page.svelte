@@ -301,9 +301,14 @@
 				// biaya_label
 				doc.setFont('helvetica', 'normal');
 				doc.text('BIAYA PASANG LABEL :', 320, y);
-				doc.text(`RP ${row.biaya_label.toLocaleString('id-ID')}`, pageWidth - margin, y, {
-					align: 'right'
-				});
+				doc.text(
+					`RP ${(Number(row.biaya_label) || 0).toLocaleString('id-ID')}`,
+					pageWidth - margin,
+					y,
+					{
+						align: 'right'
+					}
+				);
 				y += 15;
 			}
 			// ONGKIR
