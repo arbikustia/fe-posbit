@@ -132,6 +132,7 @@
 			total_amount: row.total_amount,
 			final_amount: row.final_amount,
 			biaya_label: row.biaya_label,
+			discount_amount: row.discount_amount,
 			down_payment: row.down_payment,
 			labels: row.label || [],
 			ongkir: row.ongkir || 0,
